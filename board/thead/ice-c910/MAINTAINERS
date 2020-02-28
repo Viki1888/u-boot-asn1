@@ -1,0 +1,6 @@
+THEAD ICE C910 BOARD
+M:	Qin Fenglin <fenglin.qfl@alibaba-inc.com>
+S:	Maintained
+F:	board/thead/ice-c910/
+F:	include/configs/ice-c910.h
+F:	configs/ice_c910_defconfig
