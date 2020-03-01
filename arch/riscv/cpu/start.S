@@ -204,7 +204,9 @@ spl_secondary_hart_stack_gd_setup:
 	beqz	a0, 1f
 	mv	a1, a0
 	la	a0, secondary_harts_relocation_error
+#ifdef CONFIG_SPL_PRINTF
 	jal	printf
+#endif
 	jal	hang
 
 	/* set new global data pointer on main hart */
@@ -345,7 +347,9 @@ relocate_secondary_harts:
 	beqz	a0, 1f
 	mv	a1, a0
 	la	a0, secondary_harts_relocation_error
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_PRINTF)
 	jal	printf
+#endif
 	jal	hang
 
 	/* restore relocation offset */
