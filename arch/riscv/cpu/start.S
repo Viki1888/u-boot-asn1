@@ -39,7 +39,7 @@ secondary_harts_relocation_error:
 .section .text
 .globl _start
 _start:
-#if CONFIG_IS_ENABLED(RISCV_MMODE)
+#if CONFIG_IS_ENABLED(RISCV_MMODE) || CONFIG_PPL_BUILD
 	csrr	a0, CSR_MHARTID
 #endif
 
@@ -77,11 +77,14 @@ call_board_init_f:
 	li	t0, -16
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_STACK)
 	li	t1, CONFIG_SPL_STACK
+#elif defined(CONFIG_PPL_BUILD) && defined(CONFIG_PPL_STACK)
+	li	t1, CONFIG_PPL_STACK
 #else
 	li	t1, CONFIG_SYS_INIT_SP_ADDR
 #endif
 	and	sp, t1, t0		/* force 16 byte alignment */
 
+#ifndef CONFIG_PPL_BUILD
 call_board_init_f_0:
 	mv	a0, sp
 	jal	board_init_f_alloc_reserve
@@ -152,6 +155,7 @@ wait_for_gd_init:
 	 */
 	bnez	s2, secondary_hart_loop
 #endif
+#endif // CONFIG_PPL_BUILD
 
 	/* Enable cache */
 	jal	icache_enable
@@ -217,6 +221,14 @@ spl_call_board_init_r:
 	mv	a1, zero
 	jal	board_init_r
 #endif
+
+#ifdef CONFIG_PPL_BUILD
+spl_call_board_init_r:
+	mv	a0, zero
+	mv	a1, zero
+	jal	board_init_r
+
+#else  // ifdef CONFIG_PPL_BUILD
 
 /*
  * void relocate_code (addr_sp, gd, addr_moni)
@@ -376,6 +388,8 @@ call_board_init_r:
  * jump to it ...
  */
 	jr	t4			/* jump to board_init_r() */
+
+#endif // ifdef CONFIG_PPL_BUILD
 
 #ifdef CONFIG_SMP
 hart_out_of_bounds_loop:

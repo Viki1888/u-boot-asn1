@@ -866,6 +866,7 @@ ALL-$(CONFIG_SPL_FRAMEWORK) += u-boot.img
 endif
 endif
 ALL-$(CONFIG_TPL) += tpl/u-boot-tpl.bin
+ALL-$(CONFIG_PPL) += ppl/u-boot-ppl.bin
 ALL-$(CONFIG_OF_SEPARATE) += u-boot.dtb
 ifeq ($(CONFIG_SPL_FRAMEWORK),y)
 ALL-$(CONFIG_OF_SEPARATE) += u-boot-dtb.img
@@ -1847,6 +1848,12 @@ tpl/u-boot-tpl.bin: tools prepare \
 	$(Q)$(MAKE) obj=tpl -f $(srctree)/scripts/Makefile.spl all
 	$(TPL_SIZE_CHECK)
 
+ppl/u-boot-ppl: tools prepare
+	$(Q)$(MAKE) obj=ppl -f $(srctree)/scripts/Makefile.ppl all
+
+ppl/u-boot-ppl.bin: ppl/u-boot-ppl
+	@:
+
 TAG_SUBDIRS := $(patsubst %,$(srctree)/%,$(u-boot-dirs) include)
 
 FIND := find
@@ -1921,7 +1928,7 @@ CHANGELOG:
 
 # Directories & files removed with 'make clean'
 CLEAN_DIRS  += $(MODVERDIR) \
-	       $(foreach d, spl tpl, $(patsubst %,$d/%, \
+	       $(foreach d, spl tpl ppl, $(patsubst %,$d/%, \
 			$(filter-out include, $(shell ls -1 $d 2>/dev/null))))
 
 CLEAN_FILES += include/bmp_logo.h include/bmp_logo_data.h tools/version.h \

@@ -22,6 +22,14 @@ config SYS_TEXT_BASE
     default 0x40000000 if !RISCV_SMODE
     default 0x40200000 if RISCV_SMODE
 
+config PPL_TEXT_BASE
+    hex
+    default 0x3fe430000
+
+config PPL_MAX_SIZE
+    hex
+    default 0xf000
+
 config SPL_TEXT_BASE
     hex
     default 0x3fe400000

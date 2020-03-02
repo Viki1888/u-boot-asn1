@@ -6,7 +6,7 @@
 
 obj-y += board_common.o
 
-ifdef CONFIG_SPL_BUILD
+ifneq ($(CONFIG_SPL_BUILD)$(CONFIG_PPL_BUILD),)
 
 ifdef CONFIG_BOARD_MMC_SUPPORT
 obj-y += mmc/emmc.o
