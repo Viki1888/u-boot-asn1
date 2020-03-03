@@ -7,6 +7,7 @@
 #include <linux/types.h>
 #include <common.h>
 #include <console.h>
+#include <asm/csr.h>
 #include <asm/io.h>
 #include <spl.h>
 #include <asm/spl.h>
@@ -21,6 +22,11 @@
 
 // #define DEBUG_RAM_IMAGE
 
+
+ulong get_tbclk (void)
+{
+    return CPU_DEFAULT_FREQ;
+}
 
 void board_init_f(ulong dummy)
 {
@@ -74,7 +80,7 @@ void board_init_r(gd_t *gd, ulong dummy)
     Different DDR address and size will create different uboot address. */
     phys_addr_t opensbi_baseaddr = CONFIG_SPL_OPENSBI_LOAD_ADDR;
     phys_addr_t uboot_baseaddr = CONFIG_SYS_TEXT_BASE;
-    phys_addr_t fdt_baseaddr = uboot_baseaddr - 0x1000;
+    phys_addr_t fdt_baseaddr = uboot_baseaddr - 0x10000;
 
     mini_printf("The U-Boot-spl start.\n");
     mini_printf("U-Boot version is 2020.07, internal version is %s\n", UBOOT_INTERNAL_VERSION);
@@ -115,7 +121,7 @@ void board_init_r(gd_t *gd, ulong dummy)
         load_image(FLASH_FDT_READ_ADDR, FLASH_FDT_SIZE, fdt_baseaddr);
 
         image_entry = (void (*)(u32, phys_addr_t))(opensbi_baseaddr);
-        image_entry(0, fdt_baseaddr);
+        image_entry(CSR_MHARTID, fdt_baseaddr);
     }
 
     // always loop

@@ -72,30 +72,28 @@ void board_init_f(ulong dummy)
 void board_init_r(gd_t *gd, ulong dummy)
 {
     int	i;
-    s8	om_judge;
+    s8 om_judge;
     /* Because of the relocation of uboot, the address of uboot in DDR will change.
     So we prepare the uboot at the address which is calculated by uboot itself.
     Different DDR address and size will create different uboot address. */
-    u8	*sram_base = (u8 *)CONFIG_PPL_TEXT_BASE;
-    u64	sram_baseaddr = CONFIG_PPL_TEXT_BASE;
-    void	(*fp)(void);
+    phys_addr_t spl_baseaddr = CONFIG_SPL_TEXT_BASE;
+    void (*image_entry)(void);
     u32	retlen;
     u32	ret;
 
     mini_printf("The U-Boot-ppl start.\n");
     mini_printf("U-Boot version is 2020.07, internal version is %s\n", UBOOT_INTERNAL_VERSION);
-    //gpio_set_reuse(GPIOD, 0xff, GPIO_BEHARDWARE);
-    om_judge = get_boot_select();
 
+    om_judge = get_boot_select();
     switch (om_judge) {
     case 0x1:
         /* The mode of spi flash */
         mini_printf("This is spiflash mode.\n");
         for (i = 0; i < (FLASH_SPL_SIZE + 255) / 256; i++) {
-            spiflash_read(0, FLASH_SPL_READ_ADDR + (i * 256), sram_base + (i * 256) , 256, &retlen);
+            spiflash_read(0, FLASH_SPL_READ_ADDR + (i * 256), (u8 *)(spl_baseaddr + (i * 256)), 256, &retlen);
         }
-        fp = (void (*)(void))(sram_baseaddr);
-        (*fp)();
+        image_entry = (void (*)(void))(spl_baseaddr);
+        image_entry();
         break;
     case 0x2:
         /* The mode of emmc */
@@ -107,10 +105,10 @@ void board_init_r(gd_t *gd, ulong dummy)
         }
         mini_printf("eMMC init ready.\n");
         for (i = 0; i < (FLASH_SPL_SIZE + 511) / 512; i++) {
-            emmc_emmc_read(0, (FLASH_SPL_READ_ADDR + (i * 512)) / 0x200, 512, (u8 *)(sram_baseaddr + (i * 512)));
+            emmc_emmc_read(0, (FLASH_SPL_READ_ADDR + (i * 512)) / 0x200, 512, (u8*)(spl_baseaddr + (i * 512)));
         }
-        fp = (void (*)(void))(sram_baseaddr);
-        (*fp)();
+        image_entry = (void (*)(void))(spl_baseaddr);
+        image_entry();
         break;
     default:
         mini_printf("OM mode is %x, please check the OM.\n", om_judge);
