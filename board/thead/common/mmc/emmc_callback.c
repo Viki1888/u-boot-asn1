@@ -423,7 +423,9 @@ static void r1_response_read_data_postproc(void *the_data, u32 *interrupt_status
     the_task_status->cmd_status = CMD_STATE_READDAT;
 
     while (1) {
-        //  printf("*interrupt_status =%x,error_status =%x\n",*interrupt_status,the_task_status->error_status);
+        *interrupt_status = emmc_read_register(RINTSTS);
+        // mini_printf("*interrupt_status =%x,error_status =%x\n",*interrupt_status,the_task_status->error_status);
+
         if ((*interrupt_status & INTMSK_RXDR)) {
             emmc_read_in_data(the_task_status, INTMSK_RXDR);
             emmc_set_register(RINTSTS, INTMSK_RXDR);
@@ -441,7 +443,6 @@ static void r1_response_read_data_postproc(void *the_data, u32 *interrupt_status
         if ((*interrupt_status & INTMSK_SBE)) {
             emmc_set_register(RINTSTS, INTMSK_SBE);
         }
-        *interrupt_status = emmc_read_register(RINTSTS);
     }
 
     return;

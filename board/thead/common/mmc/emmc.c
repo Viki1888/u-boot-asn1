@@ -1251,25 +1251,6 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
     /* Zero the global emmc_status_info structure which keeps info about the host controller ip */
     memset(&emmc_status_info, 0, sizeof(emmc_status_info));
 
-    /* Befor proceeding further lets reset the host controller IP
-    This can be achieved by writing 0x00000001 to CTRL register */
-    buffer_reg = 0x00000001;
-    emmc_clear_bits(CTRL, buffer_reg);
-    emmc_delay(10);
-    emmc_set_bits(CTRL, buffer_reg);
-
-    emmc_set_bits(CTRL, FIFO_RESET);
-    emmc_delay(10);
-
-    /* Now make CTYPE to default i.e, all the cards connected will work in 1 bit mode initially*/
-    buffer_reg = 0x0;
-    emmc_clear_bits(CTYPE, buffer_reg);
-
-    /* No. of cards supported by the IP */
-    buffer_reg = emmc_read_register(HCON);
-    num_of_cards = HCON_NUM_CARDS(buffer_reg);
-    emmc_status_info.num_of_cards = num_of_cards;
-
     /* Power up only those cards/devices which are connected
         - Shut-down the card/device once wait for some time
         - Enable the power to the card/Device. wait for some time
@@ -1280,13 +1261,35 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
     emmc_set_register(PWREN, buffer_reg);
     emmc_delay(100);
 
+    /* Befor proceeding further lets reset the host controller IP */
+    emmc_set_register(CTRL, CTRL_RESET | FIFO_RESET | DMA_RESET);
+    emmc_delay(100);
+    while (emmc_read_register(CTRL) & (CTRL_RESET | FIFO_RESET | DMA_RESET)) {
+        mini_printf("Fail-reset, try again!!!\n");
+        emmc_delay(20);
+    }
+
+    /* Now make CTYPE to default i.e, all the cards connected will work in 1 bit mode initially*/
+    buffer_reg = 0xffffffff;//0x0;
+    // buffer_reg = 0x0;
+    emmc_clear_bits(CTYPE, buffer_reg);
+
+    /* No. of cards supported by the IP */
+    buffer_reg = emmc_read_register(HCON);
+    num_of_cards = HCON_NUM_CARDS(buffer_reg);
+    emmc_status_info.num_of_cards = num_of_cards;
+
     /* disable interrupt */
 
     emmc_set_register(RINTSTS, 0xffffffff);
+    emmc_set_register(INTMSK, 0);
     emmc_clear_bits(CTRL, INT_ENABLE);
 
     /* Set Data and Response timeout to Maximum Value */
     emmc_set_register(TMOUT, 0xffffffff);
+
+    emmc_set_register(CLKENA, 0);
+    emmc_set_register(CLKSRC, 0);
 
     /* Enable the clocks to the all connected cards/drives
     - Note this command is to CIU of host controller ip
@@ -1331,7 +1334,9 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
         }
         emmc_set_bus_width(slot_num);
         emmc_select_area(slot_num, EMMC_BOOT_PARTITION_1);
-        memcpy(emmc_card_info, &card_info, sizeof(card_info_t));
+        if (emmc_card_info) {
+            memcpy(emmc_card_info, &card_info, sizeof(card_info_t));
+        }
         return 0;
     }
 

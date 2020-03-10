@@ -6,6 +6,7 @@
 
 obj-y += board_common.o
 
+
 ifneq ($(CONFIG_SPL_BUILD)$(CONFIG_PPL_BUILD),)
 
 ifdef CONFIG_BOARD_MMC_SUPPORT
@@ -27,3 +28,9 @@ CFLAGS_spi.o            += -I$(srctree)/board/$(BOARDDIR)
 CFLAGS_spiflash.o       += -I$(srctree)/board/$(BOARDDIR)
 
 endif
+
+
+obj-$(CONFIG_CMD_BOOT_SLAVE) += boot/bootslave.o
+
+CFLAGS_bootslave.o      += -I$(srctree)/board/$(BOARDDIR)
+

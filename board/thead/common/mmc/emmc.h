@@ -11,8 +11,14 @@
 
 #define MMC_DEBUG 0
 #define PDEBUG(fmt, ...)
-#define MMC_FOD_DIVIDER_VALUE  ((HSP_DEFAULT_FREQ / 400000) >> 1)         /* 400KHz */
-#define ONE_BIT_BUS_FREQ ((HSP_DEFAULT_FREQ / 3000000) >> 1)         /* Switching to high-speed mode 3MHz */
+// #define MMC_FOD_DIVIDER_VALUE  ((HSP_DEFAULT_FREQ / 400000) >> 1)         /* 400KHz */
+// #define ONE_BIT_BUS_FREQ ((HSP_DEFAULT_FREQ / 3000000) >> 1)         /* Switching to high-speed mode 3MHz */
+#define MMC_FOD_DIVIDER_VALUE   ((HSP_DEFAULT_FREQ % 400000)? \
+                                 (HSP_DEFAULT_FREQ / 2 / 400000 + 1): \
+                                 (HSP_DEFAULT_FREQ / 2 / 400000))  /* 400KHz */
+#define ONE_BIT_BUS_FREQ    (HSP_DEFAULT_FREQ % 3000000? \
+                            (HSP_DEFAULT_FREQ / 2 / 3000000 + 1): \
+                            (HSP_DEFAULT_FREQ / 2 / 3000000)) /* Switching to high-speed mode 3MHz */
 
 /* Retry counts */
 #define CMD1_RETRY_COUNT   10   /*changed from 50 Just to be cautious--Manju */
@@ -392,6 +398,7 @@ typedef struct {
 
 #define GET_FIFO_COUNT(x)               (((x)&0x3ffe0000)>>17)
 #define GET_R6_RCA(x)                   (((x)&0xffff0000)>>16)
+#define STATUS_FIFO_EMPTY               0x00000004
 #define STATUS_FIFO_FULL                0x00000008
 
 #define READY_FOR_DATA_RETRIES          20
