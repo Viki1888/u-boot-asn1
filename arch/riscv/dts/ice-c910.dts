@@ -7,7 +7,7 @@
 
     memory@0 {
         device_type = "memory";
-        reg = <0x0 0x40000000 0x0 0x20000000>;
+        reg = <0x0 0x00000000 0x0 0x60000000>;
     };
 
     cpus {
@@ -103,7 +103,6 @@
             compatible = "snps,dw-mshc";
             reg = <0x3 0xfffb0000 0x0 0x400>;
             bus-width = <8>;
-            fifo-depth = <256>;
             clocks = <&dummy_apb>, <&dummy_apb>;
             clock-names = "biu", "ciu";
             max-frequency = <25000000>;

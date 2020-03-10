@@ -144,27 +144,27 @@ set *0x3fe830330 |= (1 << 22)
 set $mcor = 0x70013
 
 # Enable L2 Cache
-#set $mccr2 = 0xe0010009
+set $mccr2 = 0xe0010009
 
 # Enable L1 Cache
-#set $mhcr = 0x11ff
+set $mhcr = 0x11ff
 
 # Enable CPU Features
-#set $mxstatus = 0x638000
-#set $mhint = 0x16e30c
+set $mxstatus = 0x638000
+set $mhint = 0x16e30c
 
 set $sbi_addr = 0x40000000
 set $uboot_addr = $sbi_addr + 0x00200000
 set $fdt_addr = $uboot_addr - 0x00010000
 
 # Load dtb
-restore uboot.dtb binary $fdt_addr
+restore uboot_c910.dtb binary $fdt_addr
 set $a1 = $fdt_addr
 
 # Load uboot
-restore u-boot.bin binary $uboot_addr
+restore uboot_c910.bin binary $uboot_addr
 
 # Load sbi
-restore fw_jump_1G.bin binary $sbi_addr
+restore opensbi_c910.bin binary $sbi_addr
 set $pc = $sbi_addr
 

@@ -23,6 +23,12 @@
 // #define DEBUG_RAM_IMAGE
 
 
+extern int vm_init(void);
+extern int sdram_init(void);
+extern int io_init(void);
+extern int spl_enable_cache(void);
+
+
 ulong get_tbclk (void)
 {
     return CPU_DEFAULT_FREQ;
@@ -32,7 +38,9 @@ void board_init_f(ulong dummy)
 {
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
-    //sdram_init();
+    vm_init();
+    sdram_init();
+    io_init();
     mini_printf("Wellcome to SPL!\n");
 }
 
@@ -83,7 +91,7 @@ void board_init_r(gd_t *gd, ulong dummy)
     phys_addr_t fdt_baseaddr = uboot_baseaddr - 0x10000;
 
     mini_printf("The U-Boot-spl start.\n");
-    mini_printf("U-Boot version is 2020.07, internal version is %s\n", UBOOT_INTERNAL_VERSION);
+    mini_printf("U-Boot version is 2020.03, internal version is %s\n", UBOOT_INTERNAL_VERSION);
 
     load_image = NULL;
     om_judge = get_boot_select();
@@ -121,6 +129,8 @@ void board_init_r(gd_t *gd, ulong dummy)
         load_image(FLASH_FDT_READ_ADDR, FLASH_FDT_SIZE, fdt_baseaddr);
 
         image_entry = (void (*)(u32, phys_addr_t))(opensbi_baseaddr);
+        mini_printf("Jump to image_entry: %x, fdt_baseaddr: %x\n", image_entry, fdt_baseaddr);
+        spl_enable_cache();
         image_entry(CSR_MHARTID, fdt_baseaddr);
     }
 

@@ -47,6 +47,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
     imply CMD_FAT
     imply CMD_NET
     imply CMD_PING
+    imply CMD_BOOT_SLAVE
     imply MII
     imply NET_RANDOM_ETHADDR
     imply PHY_LIB

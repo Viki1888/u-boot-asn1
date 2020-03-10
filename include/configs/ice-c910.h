@@ -45,6 +45,7 @@
 #define CONFIG_SYS_LOAD_ADDR        (CONFIG_SYS_TEXT_BASE + SZ_1M)
 #define CONFIG_SYS_MALLOC_LEN       SZ_8M
 #define CONFIG_SYS_BOOTM_LEN        SZ_64M
+#define CONFIG_SYS_CACHELINE_SIZE   128
 
 
 #define UBOOT_INTERNAL_VERSION "0.1"
@@ -52,20 +53,21 @@
 #define CONFIG_BOARD_CONSOLE_SUPPORT
 #define CONFIG_BOARD_MMC_SUPPORT
 #define CONFIG_BOARD_SPIFLASH_SUPPORT
+#define CONFIG_SUPPORT_EMMC_BOOT
 
 
 /* Network Configuration */
 #define CONFIG_DW_ALTDESCRIPTOR
-#define CONFIG_MII		1
-#define CONFIG_PHY_MARVELL	1
-#define CONFIG_NET_RETRY_COUNT	20
+#define CONFIG_MII              1
+#define CONFIG_PHY_MARVELL      1
+#define CONFIG_NET_RETRY_COUNT  20
 
 
 /* Image address in Flash */
 #define FLASH_PPL_READ_ADDR     0x0
 #define FLASH_PPL_SIZE          0x03000
 #define FLASH_SPL_READ_ADDR     0x03000 /* 12K */
-#define FLASH_SPL_SIZE          0x39000
+#define FLASH_SPL_SIZE          0x28000
 #define FLASH_FDT_READ_ADDR     0x3c000 /* 240K */
 #define FLASH_FDT_SIZE          0x04000
 #define FLASH_OPENSBI_READ_ADDR 0x40000 /* 256K */
@@ -77,30 +79,29 @@
 /* Environment options */
 
 #ifdef CONFIG_IS_ASIC
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice-c910-evb.dtb ; "
+#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice_ck910_evb.dtb ; "
 #else
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice-c910.dtb ; "
+#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice_ck910.dtb ; "
 #endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
+    "fdt_high=0xffffffffffffffff\0" \
+    "initrd_high=0xffffffffffffffff\0" \
+    "ppl_start_sector=0\0"      /* uboot ppl start sector = FLASH_PPL_READ_ADDR / 0x200 */ \
+    "spl_start_sector=0x18\0"   /* uboot ppl start sector = FLASH_SPL_READ_ADDR / 0x200 */ \
     "uboot_start_sector=0x480\0"   /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
+    "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
     "dtb_start_sector=0x1000\0"    /* dtb start sector */ \
-    "dtb_size_sectors=0x1000\0"    /* dtb size in sectors -> 2MB */ \
+    "dtb_size_sectors=0x100\0"     /* dtb size in sectors -> 128KB */ \
     "linux_start_sector=0x2000\0"  /* linux start sector */  \
     "linux_size_sectors=0xa000\0"  /* linux size in sectors -> 20MB */ \
-    "ramdisk_start_sector=c000\0"  /* ramdisk start sector */ \
-    "ramdisk_size_sectors=10000\0" /* ramdisk size in sectors -> 32MB */ \
-    "dtb_load_addr_virt=0x8f000000\0" \
-    "linux_load_addr_virt=0x90000000\0" \
-    "ramdisk_load_addr_virt=0x91000000\0" \
-    "update_uboot=" \
-        "tftpboot ${dtb_load_addr_virt} u-boot.bin ; " \
-        "setexpr fw_sz ${filesize} / 0x200 ; " \
-        "setexpr fw_sz ${fw_sz} + 1 ; " \
-        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
-        "mmc write ${dtb_load_addr_virt} ${uboot_start_sector} ${fw_sz} ; " \
-        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
-        "\0" \
+    "ramdisk_start_sector=0xc000\0" /* ramdisk start sector */ \
+    "ramdisk_size_sectors=0x10000\0" /* ramdisk size in sectors -> 32MB */ \
+    "slave_spl_load_addr_virt=0x20f00000\0" \
+    "sram_addr_virt=0x3fe400000\0"   /* PHYS_SRAM_1 */ \
+    "dtb_load_addr_virt=0x00f00000\0" \
+    "linux_load_addr_virt=0x20000000\0" \
+    "ramdisk_load_addr_virt=0x21000000\0" \
     "update_dtb=" \
         TFTP_LOAD_DTB \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -109,28 +110,37 @@
         "setenv dtb_size_sectors ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
+    "update_linux=" \
+        "tftpboot ${linux_load_addr_virt} uImage_c910 ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc write ${linux_load_addr_virt} ${linux_start_sector} ${fw_sz} ; " \
+        "setenv linux_size_sectors ${fw_sz} ; " \
+        "saveenv ; " \
+        "\0" \
     "update_ramdisk=" \
-        "tftpboot ${ramdisk_load_addr_virt} rootfs.cpio.gz ; " \
+        "tftpboot ${ramdisk_load_addr_virt} rootfs_c910.img ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${fw_sz} ; " \
         "setenv ramdisk_size_sectors ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
-    "update_linux=" \
-        "tftpboot ${linux_load_addr_virt} uImage ; " \
-        "setexpr fw_sz ${filesize} / 0x200 ; " \
-        "setexpr fw_sz ${fw_sz} + 1 ; " \
-        "mmc write ${linux_load_addr_virt} ${linux_start_sector} ${fw_sz} ; " \
-        "setenv linux_size_sectors ${fw_sz} ; " \
-        "saveenv ; " \
+    "boot_slave=" \
+        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
+        "mmc read ${slave_spl_load_addr_virt} ${slave_spl_start_sector} 0x40;" \
+        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "cp ${slave_spl_load_addr_virt} ${sram_addr_virt} 0x8000;" \
+        "bootslave ${sram_addr_virt}; " \
         "\0"
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
         "mmc read ${dtb_load_addr_virt} ${dtb_start_sector} ${dtb_size_sectors} ; " \
-        "mmc read ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${ramdisk_size_sectors} ; " \
         "mmc read ${linux_load_addr_virt} ${linux_start_sector} ${linux_size_sectors} ; " \
+        "mmc read ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${ramdisk_size_sectors} ; " \
+        "run boot_slave; " \
         "bootm ${linux_load_addr_virt} ${ramdisk_load_addr_virt} ${dtb_load_addr_virt}"
+
 
 #endif /* __CONFIG_H */

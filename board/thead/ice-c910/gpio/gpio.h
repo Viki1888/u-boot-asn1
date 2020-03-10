@@ -17,7 +17,6 @@
 typedef enum{
     GPIOA = GPIOA_BASEADDR,
     GPIOB = GPIOB_BASEADDR,
-    GPIOC = GPIOC_BASEADDR,
 }enum_gpio_device_t;
 
 typedef enum{

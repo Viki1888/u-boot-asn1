@@ -16,6 +16,6 @@ s8 get_boot_select(void)
 {
     int8_t *bootsel = (s8 *)OM_BASEADDR;
 
-    return (*bootsel);
+    return ((*bootsel) & 0x3);
 }
 

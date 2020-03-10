@@ -6,7 +6,9 @@
 
 obj-y += c910_ice.o
 
-ifneq ($(CONFIG_SPL_BUILD)$(CONFIG_PPL_BUILD),)
+ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_PPL_BUILD),)
+obj-y += c910_cache.o
+else
 obj-y += gpio/gpio.o
 obj-y += om/om.o
 endif

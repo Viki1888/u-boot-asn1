@@ -18,6 +18,9 @@
 #include "../om/om.h"
 
 
+extern int vm_init(void);
+
+
 int printf(const char *fmt, ...)
 {
     return 0;
@@ -66,34 +69,60 @@ void board_init_f(ulong dummy)
 {
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
+    vm_init();
     mini_printf("\nWellcome to PPL!\n");
+}
+
+#ifdef DEBUG_RAM_IMAGE
+static void ram_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
+{
+    // please use gdb load image to ram
+}
+#endif
+
+static void spiflash_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
+{
+    int i, retlen;
+    for (i = 0; i < (size + 255) / 256; i++) {
+        spiflash_read(0, offset + (i * 256), baseaddr + (i * 256) , 256, &retlen);
+    }
+}
+
+static void emmc_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
+{
+    int i;
+    for (i = 0; i < (size + 511) / 512; i++) {
+        emmc_emmc_read(0, (offset + (i * 512)) / 0x200, 512, (u8 *)(baseaddr + (i * 512)));
+    }
 }
 
 void board_init_r(gd_t *gd, ulong dummy)
 {
-    int	i;
+    u32 ret;
     s8 om_judge;
+    void (*load_image)(u32 offset, u32 size, phys_addr_t baseaddr);
+    void (*image_entry)(void);
     /* Because of the relocation of uboot, the address of uboot in DDR will change.
     So we prepare the uboot at the address which is calculated by uboot itself.
     Different DDR address and size will create different uboot address. */
     phys_addr_t spl_baseaddr = CONFIG_SPL_TEXT_BASE;
-    void (*image_entry)(void);
-    u32	retlen;
-    u32	ret;
 
     mini_printf("The U-Boot-ppl start.\n");
-    mini_printf("U-Boot version is 2020.07, internal version is %s\n", UBOOT_INTERNAL_VERSION);
+    mini_printf("U-Boot version is 2020.03, internal version is %s\n", UBOOT_INTERNAL_VERSION);
 
+    load_image = NULL;
     om_judge = get_boot_select();
     switch (om_judge) {
+#ifdef DEBUG_RAM_IMAGE
+    case 0x0:
+        mini_printf("This is ram mode.\n");
+        load_image = ram_load_image;
+        break;
+#endif
     case 0x1:
         /* The mode of spi flash */
         mini_printf("This is spiflash mode.\n");
-        for (i = 0; i < (FLASH_SPL_SIZE + 255) / 256; i++) {
-            spiflash_read(0, FLASH_SPL_READ_ADDR + (i * 256), (u8 *)(spl_baseaddr + (i * 256)), 256, &retlen);
-        }
-        image_entry = (void (*)(void))(spl_baseaddr);
-        image_entry();
+        load_image = spiflash_load_image;
         break;
     case 0x2:
         /* The mode of emmc */
@@ -104,16 +133,21 @@ void board_init_r(gd_t *gd, ulong dummy)
             break;
         }
         mini_printf("eMMC init ready.\n");
-        for (i = 0; i < (FLASH_SPL_SIZE + 511) / 512; i++) {
-            emmc_emmc_read(0, (FLASH_SPL_READ_ADDR + (i * 512)) / 0x200, 512, (u8*)(spl_baseaddr + (i * 512)));
-        }
-        image_entry = (void (*)(void))(spl_baseaddr);
-        image_entry();
+        load_image = emmc_load_image;
         break;
     default:
         mini_printf("OM mode is %x, please check the OM.\n", om_judge);
         break;
     }
+
+    if (load_image) {
+        load_image(FLASH_SPL_READ_ADDR, FLASH_SPL_SIZE, spl_baseaddr);
+        image_entry = (void (*)(void))(spl_baseaddr);
+        mini_printf("Jump to image_entry: %x\n", image_entry);
+        image_entry();
+    }
+
+    // always loop
     while (1);
 }
 
