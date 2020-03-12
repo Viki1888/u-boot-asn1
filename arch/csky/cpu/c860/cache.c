@@ -20,7 +20,15 @@ void flush_cache(unsigned long addr, unsigned long size)
 
     __asm__ __volatile__("mtcr %0,cr17\n\t": :"r"(value));
 }
+
 void flush_dcache_range(unsigned long start, unsigned long stop)
+{
+    int value = 0x33;
+
+    __asm__ __volatile__("mtcr %0,cr17\n\t": :"r"(value));
+}
+
+void flush_dcache_all(void)
 {
     int value = 0x33;
 

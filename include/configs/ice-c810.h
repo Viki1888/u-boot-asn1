@@ -107,14 +107,7 @@
 
 /* Environment options */
 
-#ifdef CONFIG_IS_ASIC
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice-c810-evb.dtb ; "
-#else
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice-c810.dtb ; "
-#endif
-
 #define CONFIG_EXTRA_ENV_SETTINGS \
-    "uboot_start_sector=0x1200\0"  /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
     "dtb_start_sector=0x41000\0"   /* dtb start sector */ \
     "dtb_size_sectors=0x1000\0"    /* dtb size in sectors 2MB */ \
     "linux_start_sector=0x42000\0" /* linux start sector */  \
@@ -122,31 +115,7 @@
     "dtb_load_addr_virt=0x8f000000\0" \
     "dtb_load_addr_phys=0x8f000000\0"  \
     "linux_load_addr_virt=0x90000000\0"  \
-    "linux_load_addr_phys=0x90000000\0" \
-    "update_uboot=" \
-        "tftpboot ${dtb_load_addr_virt} u-boot.bin ; " \
-        "setexpr fw_sz ${filesize} / 0x200 ; " \
-        "setexpr fw_sz ${fw_sz} + 1 ; " \
-        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
-        "mmc write ${dtb_load_addr_phys} ${uboot_start_sector} ${fw_sz} ; " \
-        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
-        "\0" \
-    "update_dtb=" \
-        TFTP_LOAD_DTB \
-        "setexpr fw_sz ${filesize} / 0x200 ; " \
-        "setexpr fw_sz ${fw_sz} + 1 ; " \
-        "mmc write ${dtb_load_addr_phys} ${dtb_start_sector} ${fw_sz} ; " \
-        "setenv dtb_size_sectors ${fw_sz} ; " \
-        "saveenv ; " \
-        "\0" \
-    "update_linux=" \
-        "tftpboot ${linux_load_addr_virt} uImage ; " \
-        "setexpr fw_sz ${filesize} / 0x200 ; " \
-        "setexpr fw_sz ${fw_sz} + 1 ; " \
-        "mmc write ${linux_load_addr_phys} ${linux_start_sector} ${fw_sz} ; " \
-        "setenv linux_size_sectors ${fw_sz} ; " \
-        "saveenv ; " \
-        "\0"
+    "linux_load_addr_phys=0x90000000\0"
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \

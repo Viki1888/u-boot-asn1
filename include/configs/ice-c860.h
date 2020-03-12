@@ -42,6 +42,7 @@
 #define CONFIG_SYS_MEMTEST_START    0x30000000    /* memtest works on */
 #define CONFIG_SYS_MEMTEST_END      0x33F00000    /* 63 MB in DRAM */
 #define CONFIG_SYS_MONITOR_BASE     CONFIG_SYS_TEXT_BASE
+#define CONFIG_SYS_CACHELINE_SIZE   128
 
 #define CONFIG_SPL_STACK  (CONFIG_SYS_SRAM_BASE + 0x8000 - 0x8)
 #define CONFIG_SPL_MAX_FOOTPRINT    0x4000
@@ -104,21 +105,25 @@
 
 
 #ifdef CONFIG_IS_ASIC
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice_ck860_evb.dtb ; "
+#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c860/ice_evb.dtb ; "
+#define TFTP_LOAD_SLAVE_DTB "tftpboot ${dtb_load_addr_virt} c810/ice_ck810_evb.dtb ; "
 #else
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} ice_ck860.dtb ; "
+#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c860/ice.dtb ; "
+#define TFTP_LOAD_SLAVE_DTB "tftpboot ${dtb_load_addr_virt} c810/ice_ck810.dtb ; "
 #endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
     "fdt_start_sector=0x980\0"     /* fdt start sector = FLASH_FDT_READ_ADDR / 0x200 */ \
     "uboot_start_sector=0xa00\0"   /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
-    "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
-    "slave_dtb_start_sector=0x1180\0"   /* dtb start sector */ \
-    "slave_uboot_start_sector=0x1200\0"  /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
     "dtb_start_sector=0x21000\0"   /* dtb start sector */ \
     "dtb_size_sectors=0x1000\0"    /* dtb size in sectors -> 2MB */ \
     "linux_start_sector=0x22000\0" /* linux start sector */  \
     "linux_size_sectors=0x14000\0" /* linux size in sectors -> 40MB */ \
+    "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
+    "slave_fdt_start_sector=0x1180\0"   /* slave fdt start sector */ \
+    "slave_uboot_start_sector=0x1200\0"  /* slave uboot start sector */ \
+    "slave_dtb_start_sector=0x41000\0" \
+    "slave_linux_start_sector=0x42000\0" \
     "sram_addr_virt=0xbe400000\0"  /* PHYS_SRAM_1 */ \
     "slave_spl_load_addr_virt=0x8e000000\0" \
     "slave_spl_load_addr_phys=0x0e000000\0" \
@@ -126,6 +131,22 @@
     "dtb_load_addr_phys=0x0f000000\0"  \
     "linux_load_addr_virt=0x90000000\0"  \
     "linux_load_addr_phys=0x10000000\0" \
+    "update_fdt=" \
+        "tftpboot ${dtb_load_addr_virt} c860/dt.dtb ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
+        "mmc write ${dtb_load_addr_phys} ${fdt_start_sector} ${fw_sz} ; " \
+        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "\0" \
+    "update_uboot=" \
+        "tftpboot ${dtb_load_addr_virt} c860/u-boot.bin ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
+        "mmc write ${dtb_load_addr_phys} ${uboot_start_sector} ${fw_sz} ; " \
+        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "\0" \
     "update_dtb=" \
         TFTP_LOAD_DTB \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -135,12 +156,48 @@
         "saveenv ; " \
         "\0" \
     "update_linux=" \
-        "tftpboot ${linux_load_addr_virt} uImage_c860 ; " \
+        "tftpboot ${linux_load_addr_virt} c860/uImage ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${linux_load_addr_phys} ${linux_start_sector} ${fw_sz} ; " \
         "setenv linux_size_sectors ${fw_sz} ; " \
         "saveenv ; " \
+        "\0" \
+    "update_slave_spl=" \
+        "tftpboot ${dtb_load_addr_virt} c810/u-boot-spl.bin ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
+        "mmc write ${dtb_load_addr_phys} ${slave_spl_start_sector} ${fw_sz} ; " \
+        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "\0" \
+    "update_slave_fdt=" \
+        "tftpboot ${dtb_load_addr_virt} c810/dt.dtb ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
+        "mmc write ${dtb_load_addr_phys} ${slave_fdt_start_sector} ${fw_sz} ; " \
+        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "\0" \
+    "update_slave_uboot=" \
+        "tftpboot ${dtb_load_addr_virt} c810/u-boot.bin ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
+        "mmc write ${dtb_load_addr_phys} ${slave_uboot_start_sector} ${fw_sz} ; " \
+        "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "\0" \
+    "update_slave_dtb=" \
+        TFTP_LOAD_SLAVE_DTB \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc write ${dtb_load_addr_phys} ${slave_dtb_start_sector} ${fw_sz} ; " \
+        "\0" \
+    "update_slave_linux=" \
+        "tftpboot ${linux_load_addr_virt} c810/uImage ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc write ${linux_load_addr_phys} ${slave_linux_start_sector} ${fw_sz} ; " \
         "\0" \
     "boot_slave=" \
         "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
