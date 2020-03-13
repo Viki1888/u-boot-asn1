@@ -33,7 +33,8 @@ int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
     // set slave jump addr
     writel(slave_jump_addr, SYSREG_BASEADDR);
 
-    flush_cache(0,0);
+    flush_cache(slave_ddr_base, 0x10000);
+    flush_cache(SYSREG_BASEADDR, 0x1000);
 
     // release slave cpu
     printf("reset slave cpu\n");
