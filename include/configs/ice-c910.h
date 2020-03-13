@@ -27,17 +27,17 @@
  * Physical Memory Map
  */
 
-// PPL base: 0x3_fe43_0000, size: 0xf000(60KB)
-#define CONFIG_PPL_BSS_START_ADDR        0x3fe43c000 // base+48KB
+// PPL base: 0x3_fe40_0000, size: 0x10000(64KB)
+#define CONFIG_PPL_BSS_START_ADDR        0x3fe40d000 // base+52KB
 #define CONFIG_PPL_BSS_MAX_SIZE               0x3000 // 12KB
-#define CONFIG_PPL_STACK  (CONFIG_PPL_TEXT_BASE + 0xc000 - 0x10)
+#define CONFIG_PPL_STACK  (CONFIG_PPL_BSS_START_ADDR - 0x10)
 
-// SPL base: 0x3_fe40_0000, size: 0x30000(192KB)
+// SPL base: 0x3_fe41_0000, size: 0x2f000(188KB)
 #define CONFIG_SPL_BSS_START_ADDR       0x3fe428000  // base+160KB
 #define CONFIG_SPL_BSS_MAX_SIZE              0x8000  // 32KB
 #define CONFIG_SYS_SPL_MALLOC_START     0x3fe430000
 #define CONFIG_SYS_SPL_MALLOC_SIZE       0x0000f000
-#define CONFIG_SPL_STACK  (CONFIG_SPL_TEXT_BASE + 0x28000 - 0x10)
+#define CONFIG_SPL_STACK  (CONFIG_SPL_BSS_START_ADDR - 0x10)
 #define CONFIG_SPL_LOAD_FIT_ADDRESS      0x40000000
 
 
