@@ -2,6 +2,7 @@
 
 dtb-$(CONFIG_TARGET_ICE_C860) += ice-c860.dtb
 dtb-$(CONFIG_TARGET_ICE_C810) += ice-c810.dtb
+dtb-$(CONFIG_TARGET_TIANHUO_C860) += tianhuo-c860.dtb
 dtb-$(CONFIG_TARGET_TIANHUO_C810) += tianhuo-c810.dtb
 
 targets += $(dtb-y)
