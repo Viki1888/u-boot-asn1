@@ -7,7 +7,7 @@
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 #include <common.h>
-#include <asm/datatype.h>
+#include <asm/types.h>
 
 typedef enum {
     CLOCK_CPU_FREQ_1000M = 1000 * 1000 * 1000,

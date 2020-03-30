@@ -8,9 +8,14 @@
 #include <command.h>
 #include <asm/byteorder.h>
 #include <asm/io.h>
-#include <hardware.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+
+extern int disable_slave_cpu(void);
+extern int set_slave_cpu_entry(phys_addr_t entry);
+extern int enable_slave_cpu(void);
+
 
 #ifdef CONFIG_CMD_BOOT_SLAVE
 int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
@@ -23,7 +28,7 @@ int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
     }
 
     // hold slave cpu
-    writel(0, SLAVE_RESET_CONTROL);
+    disable_slave_cpu();
 
     slave_ddr_base = simple_strtoull(argv[1], NULL, 16);
     slave_jump_addr = *slave_ddr_base;
@@ -31,14 +36,12 @@ int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
     printf("slave_jump_addr: 0x%x\n", slave_jump_addr);
 
     // set slave jump addr
-    writel(slave_jump_addr, SYSREG_BASEADDR);
-
-    flush_cache(slave_ddr_base, 0x10000);
-    flush_cache(SYSREG_BASEADDR, 0x1000);
+    set_slave_cpu_entry(slave_jump_addr);
 
     // release slave cpu
+    flush_cache(slave_ddr_base, 0x10000);
     printf("reset slave cpu\n");
-    writel(1, SLAVE_RESET_CONTROL);
+    enable_slave_cpu();
 
     return 0;
 }

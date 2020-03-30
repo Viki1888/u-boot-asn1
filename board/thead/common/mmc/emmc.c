@@ -73,6 +73,7 @@ u32 emmc_set_clk_freq(u32 divider)
     u32 retval;
 
     if (divider > MAX_DIVIDER_VALUE) {
+        mini_printf("invalid divider: %d, will set to 0xff\n", divider);
         divider = 0xff;
     }
 
@@ -139,6 +140,7 @@ void emmc_send_raw_command(u32 slot, u32 cmd, u32 arg)
     u32 buff_cmd;
     buff_cmd = cmd | CMD_DONE_BIT;
     SET_CARD_NUM(buff_cmd, slot);
+    mini_printf("send raw command:%d, arg:%d\n", buff_cmd, arg);
     emmc_execute_command(buff_cmd, arg);
     return;
 }
@@ -173,6 +175,7 @@ u32 emmc_read_in_data(current_task_status_t *the_task_status, u32 the_interrupt_
 
     while (fifo_level > 0) {
         *((u32 *)(u8_buffer + (count << 2))) = emmc_read_register(FIFODAT);
+        //mini_printf("read: %x %d %d\n", *((uint32_t *)(u8_buffer + (count << 2))), the_task_status->num_bytes_read, fifo_level);
         fifo_level--;
         count++;
     }
@@ -298,10 +301,11 @@ void emmc_reset_fifo(void)
 
 u32 emmc_wait_cmd(emmc_postproc_callback the_callback)
 {
-    u32 int_status;
+    u32 status, int_status;
 
     /* Read the masked interrupt status to see what interrupt has occured */
     int_status = emmc_read_register(RINTSTS);
+    status = emmc_read_register(STATUS);
 
     while (1) {
         int_status = emmc_read_register(RINTSTS);
@@ -314,6 +318,8 @@ u32 emmc_wait_cmd(emmc_postproc_callback the_callback)
         emmc_set_register(RINTSTS, 0xFFFFFFFF);
         return ERRCMDRETRIESOVER;
     }
+
+    //mini_printf("int_status:%x, status:%x\n", int_status, status);
 
     the_callback(&current_task, &int_status);
     emmc_set_register(RINTSTS, 0xFFFFFFFF);
@@ -425,12 +431,14 @@ u32 emmc_put_in_trans_state(u32 slot)
     u32 retval = 0, resp_buffer;
     card_state_e the_state;
 
-
+#if !defined(CONFIG_MMC_BROKEN_CD)
     if (emmc_read_register(CDETECT) & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
+#endif
 
     if ((retval = emmc_get_status_of_card(slot, &the_state))) {
+        mini_printf("card borked out\n");
         return retval;
     }
 
@@ -444,6 +452,7 @@ u32 emmc_put_in_trans_state(u32 slot)
     }
 
     if (CARD_STATE_STBY != the_state) {
+        mini_printf("card error out\n");
         return ERRFSMSTATE;
     }
 
@@ -500,7 +509,7 @@ u32 emmc_select_area(u32 slot , emmc_area_e area)
         return retval;
     }
 
-    emmc_send_serial_command(slot, UNADD_CMD7, 0x00010000, &resp_buff, NULL, 0);
+    // emmc_send_serial_command(slot, UNADD_CMD7, 0x00010000, &resp_buff, NULL, 0);
 
     return 0;
 }
@@ -554,9 +563,11 @@ u32 emmc_set_mmc_voltage_range(u32 slot)
     }
 
     if (0 == count) {
+        mini_printf("Giving up set voltage after %d\n", CMD1_RETRY_COUNT);
         card_info.card_state = CARD_STATE_INA;
         return ERRHARDWARE;
     } else {
+        mini_printf("new_ocr:%x, resp_buffer:%x\n", new_ocr, resp_buffer);
         if ((new_ocr & OCR_27TO36) != OCR_27TO36) {
             card_info.card_state = CARD_STATE_INA;
             return ERRHARDWARE;
@@ -582,13 +593,14 @@ u32 emmc_get_cid(u32 slot)
     //char product_name[7];
     //int product_revision[2];
     //int month, year;
+#if !defined(CONFIG_MMC_BROKEN_CD)
     /* Check if the card is connected */
     buffer_reg = emmc_read_register(CDETECT);
 
     if (buffer_reg & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
-
+#endif
 
     if (CARD_STATE_READY != card_info.card_state) {
         return ERRFSMSTATE;
@@ -609,7 +621,14 @@ u32 emmc_get_cid(u32 slot)
     }
 
     if (0 == count) {
+        mini_printf("FAILED TO GET CID OF THE CARD !!\n");
         return ERRHARDWARE;
+    } else {
+        mini_printf("cid: %x,%x,%x,%x\n",
+            card_info.the_cid[0],
+            card_info.the_cid[1],
+            card_info.the_cid[2],
+            card_info.the_cid[3]);
     }
 
     /* Print out some  informational message about the card
@@ -649,12 +668,14 @@ u32 emmc_set_rca(u32 slot)
     u32 buffer_reg, resp_buffer, retval = 0;
     u32 the_rca;
 
+#if !defined(CONFIG_MMC_BROKEN_CD)
     /* Check if the card is connected */
     buffer_reg = emmc_read_register(CDETECT);
 
     if (buffer_reg & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
+#endif
 
     // PDEBUG("Setting the rca for card %x to %x\n", slot, slot + 1);
     the_rca = (slot + 1) << 16;
@@ -682,13 +703,16 @@ u32 emmc_process_MMC_csd(u32 slot)
 {
     u32 buffer_reg, retval;
     u32 read_block_size, write_block_size;
-    u32 blocknr;
+    u64 card_size;
+    u32 blocknr, blocklen;
 
+#if !defined(CONFIG_MMC_BROKEN_CD)
     buffer_reg = emmc_read_register(CDETECT);
 
     if (buffer_reg & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
+#endif
 
     if ((retval = emmc_send_serial_command(slot, CMD9, 0x00010000, card_info.the_csd, NULL, 0))) {
         return retval;
@@ -703,6 +727,9 @@ u32 emmc_process_MMC_csd(u32 slot)
     an explanation for the calculation of these values
     */
     blocknr = (CSD_C_SIZE(card_info.the_csd) + 1) * (1 << (CSD_C_SIZE_MULT(card_info.the_csd) + 2));
+    blocklen = read_block_size;
+    card_size = (uint64_t)blocknr * (uint64_t)blocklen;
+    mini_printf("write_block_size =%d, read_block_size=%d\n",write_block_size,read_block_size);
 
     /*MMC4.2 High Capacity cards should support 512B read access and write access mandatarily*/
 
@@ -725,7 +752,7 @@ u32 emmc_process_MMC_csd(u32 slot)
         card_size a non zero value. Note that for MMC4.2 cards the card size information
         is available in card's ext_csd register
     */
-    card_info.card_size = blocknr;
+    card_info.card_size = card_size;
     return 0;
 }
 
@@ -820,10 +847,14 @@ u32 emmc_read_write_bytes(u32 slot, u32 *resp_buffer,
     u32 num_of_blocks, command_to_send, num_of_primary_dwords = 0, the_block_size;
     u32 arg_to_send;
 
+    //mini_printf("custom_command:%d\n", custom_command);
+
+#if !defined(CONFIG_MMC_BROKEN_CD)
     /* Check if the card is inserted */
     if (emmc_read_register(CDETECT) & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
+#endif
 
     /* Set the block size pertinent to the type of operation
     */
@@ -836,6 +867,8 @@ u32 emmc_read_write_bytes(u32 slot, u32 *resp_buffer,
     if (start > end) {
         return ERRADDRESSRANGE;
     }
+
+    //mini_printf("read/write: %x,%x,%x,%x\n", start, end, card_info.card_size, the_block_size);
 
 #if CONDIF_SUPPORT_MULTI_BLOCK
 
@@ -856,6 +889,7 @@ u32 emmc_read_write_bytes(u32 slot, u32 *resp_buffer,
         state.
         */
         if ((retval = emmc_put_in_trans_state(slot))) {
+            mini_printf("TRANS STATE FAILED\n");
             goto HOUSEKEEP;
         }
     }
@@ -947,6 +981,7 @@ u32 emmc_read_write_bytes(u32 slot, u32 *resp_buffer,
     */
     if (read_or_write) {
         if ((retval = emmc_is_card_ready_for_data(slot))) {
+            mini_printf("card  not ready, %d\n", retval);
             goto HOUSEKEEP;
         }
     }
@@ -1000,22 +1035,38 @@ u32 emmc_process_extcsd(u32 slot)
     u32 i = 0;
     u8 *the_extcsd_buffer = card_info.the_extcsd_bytes;
     u32 resp[4], retval;
+    u64 capacity;
 
+
+#if !defined(CONFIG_MMC_BROKEN_CD)
     if (emmc_read_register(CDETECT) & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
+#endif
 
     /* (10 - 1) << 16 is 512 , the size of the extcsd register */
     retval = emmc_read_write_bytes(slot, resp, the_extcsd_buffer, 0, 512, 0, 0,
                                 CMD8 | 10 << CUSTOM_BLKSIZE_SHIFT | CUSTCOM_DONT_CMD16);
 
-    for (i = 0; i < 512 / 4 ; i = i + 4)
-        mini_printf("Ext_csd[%d . . .] = %x  %x  %x  %x\n", i * 4, card_info.the_extcsd[i + 0], card_info.the_extcsd[i + 1],
-                    card_info.the_extcsd[i + 2], card_info.the_extcsd[i + 3]);
-
-    {
+    if (retval != 0)
         return retval;
-    }
+
+    for (i = 0; i < 512 / 4 ; i += 4)
+        mini_printf("Ext_csd[%d . . .] = %x  %x  %x  %x\n", i * 4,
+                   the_extcsd_buffer[i + 0], the_extcsd_buffer[i + 1],
+                   the_extcsd_buffer[i + 2], the_extcsd_buffer[i + 3]);
+
+    card_info.card_boot_size = ECSD_BOOT_SIZE_MULTI(the_extcsd_buffer) << 17;
+    card_info.card_rpmb_size = ECSD_RPMB_SIZE_MULTI(the_extcsd_buffer) << 17;
+
+    capacity = ((uint32_t)(the_extcsd_buffer[212])) |
+               ((uint32_t)(the_extcsd_buffer[213]) << 8) |
+               ((uint32_t)(the_extcsd_buffer[214]) << 16) |
+               ((uint32_t)(the_extcsd_buffer[215]) << 24);
+    capacity *= card_info.card_read_blksize;
+    card_info.card_size = capacity;
+
+    return retval;
 }
 #endif
 /**
@@ -1045,14 +1096,17 @@ u32 emmc_process_extcsd(u32 slot)
 u32 emmc_reset_mmc_card(u32 slot)
 {
     u32 buffer_reg;
+    u32 version;
     u32 retval = 0;
 
+#if !defined(CONFIG_MMC_BROKEN_CD)
     /* Check if the card is connected */
     buffer_reg = emmc_read_register(CDETECT);
 
     if (buffer_reg & (1 << slot)) {
         return ERRCARDNOTCONN;
     }
+#endif
 
     /* Fod the clock and OD the bus since we start enumerating now */
     emmc_set_bits(CTRL, ENABLE_OD_PULLUP);
@@ -1105,13 +1159,41 @@ u32 emmc_reset_mmc_card(u32 slot)
     }
 
     card_info.card_state = CARD_STATE_TRAN;
-#ifdef CONDIF_SUPPORT_EMMC_EXTCSD
 
-    if ((retval = emmc_process_extcsd(slot))) {
-        return 1;
+    version  = (card_info.the_csd[3] >> 26) & 0xf;
+    mini_printf("mmc version:%d\n", version);
+    switch (version) {
+    case 0:
+        card_info.version = MMC_VERSION_1_2;
+        break;
+    case 1:
+        card_info.version = MMC_VERSION_1_4;
+        break;
+    case 2:
+        card_info.version = MMC_VERSION_2_2;
+        break;
+    case 3:
+        card_info.version = MMC_VERSION_3;
+        break;
+    case 4:
+        card_info.version = MMC_VERSION_4;
+        break;
+    default:
+        card_info.version = MMC_VERSION_1_2;
+        break;
     }
 
+    if (card_info.version >= MMC_VERSION_4) {
+#ifdef CONDIF_SUPPORT_EMMC_EXTCSD
+        if ((retval = emmc_process_extcsd(slot))) {
+            return 1;
+        }
 #endif
+    } else {
+        card_info.card_boot_size = 0;
+        card_info.card_rpmb_size = 0;
+    }
+
 HOUSEKEEP:
     //PDEBUG("Returning %x\n", retval);
     return retval;
@@ -1161,18 +1243,19 @@ card_type_e emmc_get_card_type(u32 slot)
 {
     u32 buffer_reg, retval;
 
+#if !defined(CONFIG_MMC_BROKEN_CD)
     /*Read the CDETECT bit 0 => card connected. Note this is not true for CEATA so you find a hack in the emmc_read_register() */
     buffer_reg = emmc_read_register(CDETECT);
 
     if ((buffer_reg & (1 << slot))) {
         return NONE_TYPE;
     }
+#endif
 
     /*
         Clear the CTYPE register bit for of IP. This bit indicates whether the card connected is 8/4/1 bit card
     */
-    //   emmc_clear_bits(CTYPE, (1 << slot));
-    //  emmc_set_bits(CTYPE, (1 << slot));
+    emmc_clear_bits(CTYPE, (1 << slot));
 
     /* Lets Issue ACMD41 to see whether it is SDMEM. CMD55 should preced and ACMD command
     If nonzero response to CMD55 => the card is not an SD type so move to detect whether it is MMC?
@@ -1196,6 +1279,7 @@ card_type_e emmc_get_card_type(u32 slot)
     if (retval != ERRRESPTIMEOUT) {
         return ERRTYPE;
     } else {
+        mini_printf("ACMD41 has timed out\n");
     }
 
     /* Not an SD .. May be MMC type? */
@@ -1282,14 +1366,14 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
     /* disable interrupt */
 
     emmc_set_register(RINTSTS, 0xffffffff);
-    emmc_set_register(INTMSK, 0);
+    // emmc_set_register(INTMSK, 0);
     emmc_clear_bits(CTRL, INT_ENABLE);
 
     /* Set Data and Response timeout to Maximum Value */
     emmc_set_register(TMOUT, 0xffffffff);
 
-    emmc_set_register(CLKENA, 0);
-    emmc_set_register(CLKSRC, 0);
+    // emmc_set_register(CLKENA, 0);
+    // emmc_set_register(CLKSRC, 0);
 
     /* Enable the clocks to the all connected cards/drives
     - Note this command is to CIU of host controller ip
@@ -1307,6 +1391,7 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
     - Setup Tx Watermark
     - Setup Rx Watermark */
     emmc_set_bits(FIFOTH,  0x20060007);
+    // emmc_set_bits(FIFOTH,  0x203f0040);
     emmc_status_info.fifo_depth = 7 * 2;
 
     slot_num = num_of_cards - 1;
@@ -1323,6 +1408,7 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
 #ifdef EMMC_SUPPORT_GET_CARD
 
     case SD_TYPE:
+        mini_printf(" not suuport SD %d\n", slot_num);
         break;
 #endif
 
@@ -1330,18 +1416,23 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
         retval = emmc_reset_mmc_card(slot_num);
 
         if (retval) {
+            mini_printf("MMC reset returned the error %d\n", retval);
             break;
         }
-        emmc_set_bus_width(slot_num);
+        //emmc_set_bus_width(slot_num);
         emmc_select_area(slot_num, EMMC_BOOT_PARTITION_1);
         if (emmc_card_info) {
             memcpy(emmc_card_info, &card_info, sizeof(card_info_t));
         }
+
+        mini_printf("The card_boot_size is %d\n", card_info.card_boot_size);
+        mini_printf("The card_size is %x\n", card_info.card_size);
+
         return 0;
     }
 
     default:
-        mini_printf("ERROR");
+        mini_printf("BAD CARD FOUND AT SLOT %d\n", slot_num);
     }
 
     return ERRCARDNOTFOUND;

@@ -20,6 +20,31 @@
                             (HSP_DEFAULT_FREQ / 2 / 3000000 + 1): \
                             (HSP_DEFAULT_FREQ / 2 / 3000000)) /* Switching to high-speed mode 3MHz */
 
+/* Judge the version of emmc */
+#define SD_VERSION_SD   (1 << 31)
+#define MMC_VERSION_MMC (1 << 30)
+
+#define MAKE_SDMMC_VERSION(a, b, c) \
+    ((((uint32_t)(a)) << 16) | ((uint32_t)(b) << 8) | (uint32_t)(c))
+#define MAKE_SD_VERSION(a, b, c) \
+    (SD_VERSION_SD | MAKE_SDMMC_VERSION(a, b, c))
+#define MAKE_MMC_VERSION(a, b, c) \
+    (MMC_VERSION_MMC | MAKE_SDMMC_VERSION(a, b, c))
+
+#define MMC_VERSION_UNKNOWN MAKE_MMC_VERSION(0, 0, 0)
+#define MMC_VERSION_1_2     MAKE_MMC_VERSION(1, 2, 0)
+#define MMC_VERSION_1_4     MAKE_MMC_VERSION(1, 4, 0)
+#define MMC_VERSION_2_2     MAKE_MMC_VERSION(2, 2, 0)
+#define MMC_VERSION_3       MAKE_MMC_VERSION(3, 0, 0)
+#define MMC_VERSION_4       MAKE_MMC_VERSION(4, 0, 0)
+#define MMC_VERSION_4_1     MAKE_MMC_VERSION(4, 1, 0)
+#define MMC_VERSION_4_2     MAKE_MMC_VERSION(4, 2, 0)
+#define MMC_VERSION_4_3     MAKE_MMC_VERSION(4, 3, 0)
+#define MMC_VERSION_4_41    MAKE_MMC_VERSION(4, 4, 1)
+#define MMC_VERSION_4_5     MAKE_MMC_VERSION(4, 5, 0)
+#define MMC_VERSION_5_0     MAKE_MMC_VERSION(5, 0, 0)
+#define MMC_VERSION_5_1     MAKE_MMC_VERSION(5, 1, 0)
+
 /* Retry counts */
 #define CMD1_RETRY_COUNT   10   /*changed from 50 Just to be cautious--Manju */
 #define ACMD41_RETRY_COUNT 1000 /*changed from 50 Just to be cautious--Manju */
@@ -146,6 +171,7 @@ static inline u32 CSD_C_SIZE_INLINE(u32 *csd_array)
 #define BOOT_BUS_WIDTH_8                0x00000002
 #define RESET_BOOT_BUS_WIDTH_1
 #define ECSD_BOOT_SIZE_MULTI(x)         (x)[226]
+#define ECSD_RPMB_SIZE_MULTI(x)         (x)[168]
 
 #define ECSD_BOOT_INFO(x)               (x)[228]
 #define ALT_BOOT_MODE                   0x00000001 //If 1 Device/card supports alternate boot mode. If 0, doesnot supports alternate boot mode
@@ -296,7 +322,10 @@ typedef struct {
     u32 orig_card_write_blksize;
     u32 orig_card_read_blksize;
     u32 card_size;
+    u32 card_boot_size;
+    u32 card_rpmb_size;
     u32 divider_val;
+    u32 version;
 } card_info_t;
 
 #define the_cid	cid_union.cid_dwords

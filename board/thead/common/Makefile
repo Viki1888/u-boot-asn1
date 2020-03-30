@@ -22,7 +22,6 @@ obj-y += spiflash/spiflash.o
 endif
 
 CFLAGS_emmc_interface.o += -I$(srctree)/board/$(BOARDDIR)
-CFLAGS_uart.o           += -I$(srctree)/board/$(BOARDDIR)
 CFLAGS_mini_printf.o    += -I$(srctree)/board/$(BOARDDIR)
 CFLAGS_spi.o            += -I$(srctree)/board/$(BOARDDIR)
 CFLAGS_spiflash.o       += -I$(srctree)/board/$(BOARDDIR)
@@ -31,6 +30,4 @@ endif
 
 
 obj-$(CONFIG_CMD_BOOT_SLAVE) += boot/bootslave.o
-
-CFLAGS_bootslave.o      += -I$(srctree)/board/$(BOARDDIR)
 

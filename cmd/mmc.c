@@ -101,9 +101,10 @@ static struct mmc *init_mmc_device(int dev, bool force_init)
 		return NULL;
 	}
 
+#if !defined(CONFIG_MMC_BROKEN_CD)
 	if (!mmc_getcd(mmc))
 		force_init = true;
-
+#endif
 	if (force_init)
 		mmc->has_init = 0;
 	if (mmc_init(mmc))

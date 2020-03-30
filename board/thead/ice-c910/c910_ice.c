@@ -6,6 +6,7 @@
 
 #include <asm/asm.h>
 #include <asm/types.h>
+#include "hardware.h"
 
 
 #define csr_write(csr, val)                                        \
@@ -104,4 +105,24 @@ int board_init(void)
 	/* For now do nothing */
 
 	return 0;
+}
+
+int disable_slave_cpu(void)
+{
+    writel(0, SLAVE_RESET_CONTROL);
+    return 0;
+}
+
+int set_slave_cpu_entry(phys_addr_t entry)
+{
+    // set slave jump addr
+    writel(entry, SYSREG_BASEADDR);
+    flush_cache(SYSREG_BASEADDR, 0x1000);
+    return 0;
+}
+
+int enable_slave_cpu(void)
+{
+    printf("reset slave cpu\n");
+    writel(1, SLAVE_RESET_CONTROL);
 }

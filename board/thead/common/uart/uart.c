@@ -6,8 +6,6 @@
 
 #include <common.h>
 #include <serial.h>
-#include <gpio/gpio.h>
-#include <hardware.h>
 #include "../uart.h"
 #include "uart.h"
 
@@ -17,20 +15,6 @@ s32 uart_open(phys_addr_t uart_addrbase)
 {
     volatile UART_REG *info = (UART_REG *)uart_addrbase;
     s32 divisor;
-
-    if (uart_addrbase == UART0_BASEADDR) {
-#ifdef GPIOC_BASEADDR
-        gpio_set_reuse(GPIOC, 0x3, GPIO_BEHARDWARE);
-#endif
-#ifdef UART2_BASEADDR
-    } else if (uart_addrbase == UART2_BASEADDR) {
-        gpio_set_reuse(GPIOB, 0x3, GPIO_BEHARDWARE);
-#endif
-#ifdef UART3_BASEADDR
-    } else if (uart_addrbase == UART3_BASEADDR) {
-        gpio_set_reuse(GPIOB, 0x30, GPIO_BEHARDWARE);
-#endif
-    }
 
     /*baudrate=(seriak clock freq)/(16*divisor).*/
     divisor = ((LSP_DEFAULT_FREQ / 115200) >> 4);
