@@ -10,5 +10,6 @@ ifdef CONFIG_SPL_BUILD
 obj-y += spl/clock.o
 obj-y += spl/ddr.o
 obj-y += spl/ddr_phy.o
+obj-y += spl/multi_bin.o
 obj-y += spl/spl.o
 endif

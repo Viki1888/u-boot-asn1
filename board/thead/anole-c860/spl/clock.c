@@ -179,7 +179,8 @@ void sys_clk_config(void)
     //*(volatile unsigned int*)(0xfff770c0) = 0xd68;
 
     //MII Mode
-    *(volatile unsigned int*)(0xfe83025c) = 0x0; //MII MODE
+    *(volatile unsigned int*)(0xfff71000) = 0x1; //gpio0, reset phy
+    *(volatile unsigned int*)(0xfe83025c) = 0x0; //MII MODE, 0:MII/GMII, 1:RGMII, 4:RMII
     *(volatile unsigned int*)(0xfe83031c) = 0x1; //CLK_OUT pad enable
     *(volatile unsigned int*)(0xfff770c0) = 0x18a;
 }

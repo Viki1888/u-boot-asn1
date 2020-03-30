@@ -21,6 +21,13 @@ extern void sys_clk_config(void);
 extern s32 uart_open(u32 uart_addrbase);
 extern void sdram_init(void);
 
+extern int check_multi_bin_magic(phys_addr_t img_baseaddr);
+extern int clear_multi_bin_magic(phys_addr_t img_baseaddr);
+extern int load_from_multi_bin(phys_addr_t img_baseaddr, phys_addr_t fdt_baseaddr, phys_addr_t uboot_baseaddr);
+
+
+#define UBOOT_IMG_BASEADDR (u32)(0xfe500000)
+
 
 void board_init_f(ulong dummy)
 {
@@ -46,7 +53,7 @@ void board_init_r(gd_t *gd, ulong dummy)
 {
     u32 ret;
     s8 om_judge;
-    void (*load_image)(u32 offset, u32 size, phys_addr_t baseaddr);
+    u8 image_loaded;
     void (*image_entry)(u32, phys_addr_t);
     /* Because of the relocation of uboot, the address of uboot in DDR will change.
     So we prepare the uboot at the address which is calculated by uboot itself.
@@ -55,18 +62,45 @@ void board_init_r(gd_t *gd, ulong dummy)
     phys_addr_t fdt_baseaddr = uboot_baseaddr - 0x10000;
 
     mini_printf("The U-Boot-spl start.\n");
-    mini_printf("U-Boot version is 2020.01, internal version is %s-beta4\n", UBOOT_INTERNAL_VERSION);
+    mini_printf("U-Boot version is 2020.01, internal version is %s\n", UBOOT_INTERNAL_VERSION);
 
-    ret = emmc_host_init(NULL);
-    if (ret != 0) {
-        mini_printf("The eMMC is not exist.\n");
+    if (check_multi_bin_magic(UBOOT_IMG_BASEADDR) == 0) {
+        om_judge = 0;
     } else {
+        om_judge = 1;
+    }
+
+    image_loaded = 0;
+    switch (om_judge) {
+    case 0x0:
+        mini_printf("This is ram mode.\n");
+        ret = load_from_multi_bin(UBOOT_IMG_BASEADDR, fdt_baseaddr, uboot_baseaddr);
+        if (ret != 0) {
+            mini_printf("load from ram failed.\n");
+            break;
+        }
+
+        clear_multi_bin_magic(UBOOT_IMG_BASEADDR);
+        image_loaded = 1;
+        break;
+
+    default:
+        mini_printf("This is eMMC mode.\n");
+        ret = emmc_host_init(NULL);
+        if (ret != 0) {
+            mini_printf("The eMMC is not exist.\n");
+            break;
+        }
         mini_printf("eMMC init ready.\n");
 
         mini_printf("load image to, uboot_baseaddr: %x, fdt_baseaddr: %x\n", uboot_baseaddr, fdt_baseaddr);
         emmc_load_image(FLASH_UBOOT_READ_ADDR, FLASH_UBOOT_SIZE, uboot_baseaddr);
         emmc_load_image(FLASH_FDT_READ_ADDR, FLASH_FDT_SIZE, fdt_baseaddr);
+        image_loaded = 1;
+        break;
+    }
 
+    if (image_loaded) {
         image_entry = (void (*)(u32, phys_addr_t))(*((u32*)uboot_baseaddr));
         mini_printf("Jump to image_entry: %x\n", image_entry);
         image_entry(0, fdt_baseaddr);
