@@ -5,6 +5,7 @@
 #
 
 obj-y := anole_c860_evb.o
+obj-y += clock/clock.o
 
 ifdef CONFIG_SPL_BUILD
 obj-y += spl/clock.o
