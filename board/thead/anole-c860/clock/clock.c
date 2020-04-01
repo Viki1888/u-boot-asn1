@@ -75,7 +75,10 @@ void gmac_clk_config(u32 interface)
 
 void clock_init(void)
 {
-#ifdef CONFIG_PHY_INTERFACE_RGMII
+	// release phy by gpio0_0
+	*(volatile unsigned int*)(0xbff71000) = 0x1;
+
+#ifdef CONFIG_RGMII
 	gmac_clk_config(PHY_INTERFACE_MODE_RGMII);
 #else
 	gmac_clk_config(PHY_INTERFACE_MODE_MII);
