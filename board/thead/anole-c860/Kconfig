@@ -13,7 +13,12 @@ config SYS_BOARD
     default "anole-c860"
 
 config SYS_CONFIG_NAME
+    string "Board configuration name"
     default "anole-c860"
+    help
+    This option contains information about board configuration name.
+    Based on this option include/configs/<CONFIG_SYS_CONFIG_NAME>.h header
+    will be used for board configuration.
 
 config SYS_TEXT_BASE
     default 0x17800000
