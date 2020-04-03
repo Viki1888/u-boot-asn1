@@ -23,7 +23,7 @@ GATED CLOCK:
 4)I2S/PCIE/USB/GMAC: enable in software driver when needed
 *************************************************/
 
-void sys_clk_config(void)
+void sys_clk_config(int ddr_freq)
 {
     unsigned int read;
 
@@ -117,21 +117,53 @@ void sys_clk_config(void)
     *(volatile unsigned int *)(0xfff77078) = 0x0c800c80;
 
     //DDRC clock
-    //*(volatile unsigned int *)(0xfff77020) = 0x01208502; //798MHz, 3192MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01305e01; //752MHz, 3008MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01305b01; //728MHz, 2912MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01305801; //704MHz, 2816MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01305501; //680MHz, 2720MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01305301; //664MHz, 2656MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01305101; //648MHz, 2592MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01304e01; //624MHz, 2496MT
-    *(volatile unsigned int *)(0xfff77020) = 0x01304b01; //600MHz, 2400MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01405b01; //546MHz, 2184MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01405301; //498MHz, 2000MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01404b01; //450MHz, 1800MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01303201; //400MHz, 1600MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01605701; //348MHz, 1392MT
-    //*(volatile unsigned int *)(0xfff77020) = 0x01604b01; //300MHz, 1200MT
+    switch (ddr_freq) {
+    case 3192:
+        *(volatile unsigned int *)(0xfff77020) = 0x01208502; //798MHz, 3192MT
+        break;
+    case 3008:
+        *(volatile unsigned int *)(0xfff77020) = 0x01305e01; //752MHz, 3008MT
+        break;
+    case 2912:
+        *(volatile unsigned int *)(0xfff77020) = 0x01305b01; //728MHz, 2912MT
+        break;
+    case 2816:
+        *(volatile unsigned int *)(0xfff77020) = 0x01305801; //704MHz, 2816MT
+        break;
+    case 2720:
+        *(volatile unsigned int *)(0xfff77020) = 0x01305501; //680MHz, 2720MT
+        break;
+    case 2656:
+        *(volatile unsigned int *)(0xfff77020) = 0x01305301; //664MHz, 2656MT
+        break;
+    case 2592:
+        *(volatile unsigned int *)(0xfff77020) = 0x01305101; //648MHz, 2592MT
+        break;
+    case 2496:
+        *(volatile unsigned int *)(0xfff77020) = 0x01304e01; //624MHz, 2496MT
+        break;
+    case 2400:
+        *(volatile unsigned int *)(0xfff77020) = 0x01607d01; //500MHz, 2400MT
+        break;
+    case 2184:
+        *(volatile unsigned int *)(0xfff77020) = 0x01405b01; //546MHz, 2184MT
+        break;
+    case 2000:
+        *(volatile unsigned int *)(0xfff77020) = 0x01405301; //498MHz, 2000MT
+        break;
+    case 1800:
+        *(volatile unsigned int *)(0xfff77020) = 0x01404b01; //450MHz, 1800MT
+        break;
+    case 1600:
+        *(volatile unsigned int *)(0xfff77020) = 0x01303201; //400MHz, 1600MT
+        break;
+    case 1392:
+        *(volatile unsigned int *)(0xfff77020) = 0x01605701; //348MHz, 1392MT
+        break;
+    default:
+        *(volatile unsigned int *)(0xfff77020) = 0x01604b01; //300MHz, 1200MT
+        break;
+    }
     *(volatile unsigned int *)(0xfff77024) = 0x03000000;
     *(volatile unsigned int *)(0xfff77028) = 0x3;	//reconfig
     read = *(volatile unsigned int *)(0xfff77020);	//readback

@@ -20,6 +20,10 @@
 #include <cpu_func.h>
 DECLARE_GLOBAL_DATA_PTR;
 
+
+__weak int board_prep_linux(bootm_headers_t *images) { return 0; }
+
+
 /* Main Entry point for csky bootm implementation
 *
 * Modeled after the powerpc implementation
@@ -57,6 +61,7 @@ int do_bootm_linux(int flag, int argc, char * const argv[],
         : "r4"
     );
 #endif
+    board_prep_linux(images);
     theKernel(0x20150401, (void *)dtb_load_addr);
     return 1;
 }

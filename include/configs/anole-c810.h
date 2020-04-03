@@ -66,7 +66,7 @@
 #define ERAGON_MMC0_BASE            0xbffb0000
 #endif
 
-#define UBOOT_INTERNAL_VERSION "0.1"
+#define UBOOT_INTERNAL_VERSION "0.3"
 #define CONFIG_C810_CSKY
 #define CONFIG_BOARD_PRINTF_SUPPORT
 #define CONFIG_BOARD_CONSOLE_SUPPORT
@@ -115,10 +115,6 @@
 /* Environment options */
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-    "dtb_start_sector=0x21000\0"   /* dtb start sector */ \
-    "dtb_size_sectors=0x1000\0"   /* dtb size in sectors */ \
-    "linux_start_sector=0x22000\0" /* linux start sector */  \
-    "linux_size_sectors=0xa000\0" /* linux size in sectors */ \
     "dtb_load_addr_virt=0x8f000000\0" \
     "dtb_load_addr_phys=0x4f000000\0"  \
     "linux_load_addr_virt=0x90000000\0"  \
@@ -126,8 +122,6 @@
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
-    "mmc read ${dtb_load_addr_phys} ${dtb_start_sector} ${dtb_size_sectors} ; " \
-    "mmc read ${linux_load_addr_phys} ${linux_start_sector} ${linux_size_sectors} ; " \
     "bootm ${linux_load_addr_virt} "
 
 

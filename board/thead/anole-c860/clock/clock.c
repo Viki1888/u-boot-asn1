@@ -10,6 +10,10 @@
 
 void gmac_clk_config(u32 interface)
 {
+	// release phy by gpio0_0
+	*(volatile unsigned int*)(0xbff71000) = 0x1;
+	udelay(10000);
+
 #ifdef CONFIG_IS_ASIC
 	if (interface == PHY_INTERFACE_MODE_MII) {
 		*(volatile unsigned int *)(0xbe83025c) = 0x0; //MII MODE
@@ -73,14 +77,170 @@ void gmac_clk_config(u32 interface)
 #endif
 }
 
+static void usb_clk_config(void)
+{
+	// # Setup USB_CLK_CFG(0xFFF770F0)
+	// set $USB_CLK_CFG=*0xFFF770F0
+	unsigned int usb_clk_cfg = *(volatile unsigned int *)0xbff770f0;
+	// # Set ahb_clk_usb_en=1 to enable USB AHB clock
+	// set $USB_CLK_CFG |= (1<<17)
+	usb_clk_cfg |= (1 << 17);
+	// # Set cfg_apb_clk_usb_phy_en=1 to enable APB clock
+	// set $USB_CLK_CFG |= (1<<16)
+	usb_clk_cfg|= (1 << 16);
+	// # Set usb_phy_ref_clk_div_en=1 to enable PHY ref clock
+	// set $USB_CLK_CFG |= (1<<7)
+	usb_clk_cfg |= (1 << 7);
+	// # Set usb_suspend_clk_div_en=1 to enable suspend clock
+	// set $USB_CLK_CFG |= (1<<15)
+	usb_clk_cfg |= (1 << 15);
+	// set *0xFFF770F0=$USB_CLK_CFG
+	*(volatile unsigned int *)0xbff770f0 = usb_clk_cfg;
+	// # delay 10us at least
+	// shell sleep 0.1
+	udelay(10);
+	// # echo USB_CLK_CFG(0xFFF770F0, should be 0x39899) is:\n
+	// # x/wx 0xFFF770F0
+
+	// # Setup PHY internal ref clock (USB_CLK_CFG)
+	// set *0xFE83009C=0x1
+	*(volatile unsigned int *)0xbe83009c = 0x1;
+	// # delay 10us at least
+	// shell sleep 0.1
+	udelay(10);
+	// # echo USB_CLK_CFG(0xFE83009C) is:\n
+	// # x/wx 0xFE83009C
+
+	// # Release PHY (USB_PHY_USW_RST_CFG)
+	// set *0xFFF78048=0x1
+	*(volatile unsigned int *)0xbff78048 = 0x1;
+	// # delay 10us at least
+	// shell sleep 0.1
+	udelay(10);
+	// # echo USB_CLK_CFG(0xFFF78048) is:\n
+	// # x/wx 0xFFF78048
+}
+
+// #################################
+// # Define DelayTick function
+// #################################
+// define DelayTicks
+//     set $total = $arg0
+//     set $i = 0
+//     set $temp = 0
+//     while ($i < $total)
+//         # Read SRAM which always can be read
+//         set $temp = *(0xFE400000 + $i * 4)
+//         set $i = $i + 1
+//     end
+// end
+// static void delay_tick(int ticks)
+// {
+// 	unsigned int temp = 0;
+// 	while (ticks--) {
+// 		temp = *(volatile unsigned int *)0xbe400000;
+// 	}
+// }
+
+static void npu_config(void)
+{
+	// set *0xfff78044=0xff
+	*(volatile unsigned int *)0xbff78044 = 0xff;
+	// DelayTicks 32
+	// delay_tick(32);
+	// # x/wx 0xFFF20028 should get 0x20190514
+	// # echo NPU ChipDate is:\n
+	// # x/wx 0xFFF20028
+}
+
+static void vpu_clk_config(void)
+{
+	// # enable video clock
+	// set *0xFFF77074 |= 0xf
+	*(volatile unsigned int *)0xbff77074 |= 0xf;
+	// # release video reset
+	// set *0xFFF78064 |= (1 << 0)
+	*(volatile unsigned int *)0xbff78064 |= (1 << 0);
+}
+
+// static void pcie_clk_config(void)
+// {
+// 	// # enable PCIe clock (apb, axi, aux)
+// 	// set *0xFFF770E0 |= (1 << 9) | (1 << 8) | (1 << 7)
+// 	*(volatile unsigned int *)0xbff770e0 |= (1 << 9) | (1 << 8) | (1 << 7);
+// }
+
+static void dmac_clk_config(void)
+{
+	// # enable DMAC clock
+	// set *0xFFF77094 |= (1 << 11)
+	*(volatile unsigned int *)0xbff77094 |= (1 << 11);
+	// # enable SCE-dmac clock
+	// set *0xFFF77104 |= 0x7
+	*(volatile unsigned int *)0xbff77104 |= 0x7;
+
+	// # de-assert DMAC reset
+	// set *0xFFF78050 |= (1 << 0)
+	*(volatile unsigned int *)0xbff78050 |= (1 << 0);
+	// # de-assert SCE reset
+	// set *0xFFF78054 |= 0x11010
+	*(volatile unsigned int *)0xbff78054 |= 0x11010;
+}
+
+static void sd_clk_config(void)
+{
+	// #################################
+	// # Enable SD
+	// #################################
+
+	// # set SD1_CWPR/GPIO1-15 to GPIO
+	// set *0xFE83033C |= (1 << 22)
+	*(volatile unsigned int *)0xbe83033c |= (1 << 22);
+	// # set SD1_CWPR/GPIO1-15 to output
+	// set *0xFFF72004 |= (1 << 15)
+	*(volatile unsigned int *)0xbff72004 |= (1 << 15);
+	// # set SD1_CWPR/GPIO1-15 to Low(enable power)
+	// set *0xFFF72000 &= ~(1 << 15)
+	*(volatile unsigned int *)0xbff72000 &= ~(1 << 15);
+
+	// # enable SD clock
+	// set *0xFFF77078 = 0x0c800c80
+	*(volatile unsigned int *)0xbff77078 = 0x0c800c80;
+
+	// # de-assert SD reset
+	// set *0xFFF78058 |= (1 << 16)
+	*(volatile unsigned int *)0xbff78058 |= (1 << 16);
+}
+
+static void spi_config(void)
+{
+	// #################################
+	// # Set padmux for SPI CS
+	// #################################
+	// # SPI0: config CS0/CS1 as GPIO
+	// set *0xFE830334 |= (1 << 2) | (1 << 4)
+	*(volatile unsigned int *)0xbe830334 |= (1 << 2) | (1 << 4);
+	// # SPI1: config CS0/CS1 as GPIO
+	// set *0xFE830334 |= (1 << 12) | (1 << 14)
+	*(volatile unsigned int *)0xbe830334 |= (1 << 12) | (1 << 14);
+	// # SFC: config SFC_CSN as GPIO
+	// set *0xFE830330 |= (1 << 22)
+	*(volatile unsigned int *)0xbe830330 |= (1 << 22);
+}
+
 void clock_init(void)
 {
-	// release phy by gpio0_0
-	*(volatile unsigned int*)(0xbff71000) = 0x1;
-
 #ifdef CONFIG_RGMII
 	gmac_clk_config(PHY_INTERFACE_MODE_RGMII);
 #else
 	gmac_clk_config(PHY_INTERFACE_MODE_MII);
 #endif
+
+	usb_clk_config();
+	npu_config();
+	vpu_clk_config();
+	// pcie_clk_config();
+	dmac_clk_config();
+	sd_clk_config();
+	spi_config();
 }

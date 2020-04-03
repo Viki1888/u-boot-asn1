@@ -17,7 +17,7 @@
 #include "../hardware.h"
 
 
-extern void sys_clk_config(void);
+extern void sys_clk_config(int ddr_freq);
 extern s32 uart_open(u32 uart_addrbase);
 extern void sdram_init(void);
 
@@ -31,14 +31,17 @@ extern int load_from_multi_bin(phys_addr_t img_baseaddr, phys_addr_t fdt_baseadd
 
 void board_init_f(ulong dummy)
 {
+    int ddr_freq = 2000;
+
     /* initialize clocks */
-    sys_clk_config();
+    sys_clk_config(ddr_freq);
 
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
     mini_printf("Wellcome to SPL!\n");
 
     sdram_init();
+    mini_printf("DDR freq %dMT\n", ddr_freq);
 }
 
 static void emmc_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
