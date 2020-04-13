@@ -126,7 +126,7 @@
     "dtb_start_sector=0x1000\0"    /* dtb start sector -> 2MB */ \
     "dtb_size_sectors=0x1000\0"    /* dtb size in sectors -> 2MB */ \
     "linux_start_sector=0x2000\0"  /* linux start sector -> 4MB */  \
-    "linux_size_sectors=0x10000\0" /* linux size in sectors -> 32MB */ \
+    "linux_size_sectors=0x1e000\0" /* linux size in sectors -> 60MB */ \
     "slave_spl_start_sector=0x800\0" /* uboot spl slave start sector */ \
     "slave_fdt_start_sector=0x980\0"   /* slave fdt start sector */ \
     "slave_uboot_start_sector=0xa00\0" /* slave uboot start sector */ \
