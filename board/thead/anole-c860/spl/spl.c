@@ -31,7 +31,7 @@ extern int load_from_multi_bin(phys_addr_t img_baseaddr, phys_addr_t fdt_baseadd
 
 void board_init_f(ulong dummy)
 {
-    int ddr_freq = 2000;
+    int ddr_freq = 1800;
 
     /* initialize clocks */
     sys_clk_config(ddr_freq);
