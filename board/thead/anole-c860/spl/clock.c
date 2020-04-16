@@ -143,17 +143,16 @@ void sys_clk_config(int ddr_freq)
         *(volatile unsigned int *)(0xfff77020) = 0x01304e01; //624MHz, 2496MT
         break;
     case 2400:
-        *(volatile unsigned int *)(0xfff77020) = 0x01607d01; //500MHz, 2400MT
+        *(volatile unsigned int *)(0xfff77020) = 0x01406401; //600MHz, 2400MT
         break;
     case 2184:
         *(volatile unsigned int *)(0xfff77020) = 0x01405b01; //546MHz, 2184MT
         break;
     case 2000:
-        *(volatile unsigned int *)(0xfff77020) = 0x01405301; //498MHz, 2000MT
+        *(volatile unsigned int *)(0xfff77020) = 0x01607d01; //500MHz, 2000MT
         break;
     case 1800:
-        *(volatile unsigned int *)(0xfff77020) = 0x01607001; //448MHz, 1800MT(actually 1792MT)
-        // *(volatile unsigned int *)(0xfff77020) = 0x01404b01; //450MHz, 1800MT
+        *(volatile unsigned int *)(0xfff77020) = 0x01404b01; //450MHz, 1800MT
         break;
     case 1600:
         *(volatile unsigned int *)(0xfff77020) = 0x01303201; //400MHz, 1600MT

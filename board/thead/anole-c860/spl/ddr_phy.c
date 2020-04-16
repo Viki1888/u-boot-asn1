@@ -16396,7 +16396,7 @@ unsigned short train1d_dmem[834] = {
 0x0,
 0x0,
 0x0,
-0xa6a,
+0xc80,
 0x2,
 0x0,
 0x14,
@@ -16418,15 +16418,15 @@ unsigned short train1d_dmem[834] = {
 0x0,
 0x0,
 0x0,
-0x2444,
-0xf1,
-0x4d63,
+0x2d54,
+0x33,
+0x4d65,
 0x4f00,
 0x0,
 0x4,
-0x2444,
-0xf1,
-0x4d63,
+0x2d54,
+0x33,
+0x4d65,
 0x4f00,
 0x0,
 0x4,
@@ -16443,15 +16443,15 @@ unsigned short train1d_dmem[834] = {
 0x0,
 0x0,
 0x0,
-0x4400,
-0xf124,
-0x6300,
+0x5400,
+0x332d,
+0x6500,
 0x4d,
 0x4f,
 0x400,
-0x4400,
-0xf124,
-0x6300,
+0x5400,
+0x332d,
+0x6500,
 0x4d,
 0x4f,
 0x400,
@@ -33618,7 +33618,7 @@ unsigned short train2d_dmem[690] = {
 0x0,
 0x0,
 0x0,
-0xa6a,
+0xc80,
 0x2,
 0x0,
 0x14,
@@ -33640,15 +33640,15 @@ unsigned short train2d_dmem[690] = {
 0x0,
 0x0,
 0x0,
-0x2444,
-0xf1,
-0x4d63,
+0x2d54,
+0x33,
+0x4d65,
 0x4f00,
 0x0,
 0x4,
-0x2444,
-0xf1,
-0x4d63,
+0x2d54,
+0x33,
+0x4d65,
 0x4f00,
 0x0,
 0x4,
@@ -33665,15 +33665,15 @@ unsigned short train2d_dmem[690] = {
 0x0,
 0x0,
 0x0,
-0x4400,
-0xf124,
-0x6300,
+0x5400,
+0x332d,
+0x6500,
 0x4d,
 0x4f,
 0x400,
-0x4400,
-0xf124,
-0x6300,
+0x5400,
+0x332d,
+0x6500,
 0x4d,
 0x4f,
 0x400,
@@ -35288,12 +35288,13 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
     
     #ifdef DDR_FW_STAGE_MSG
     msg_display(train_result);
-    #else
+    #else 
     if((train_result&0xffff)==0x7){
-       mini_printf("DDR_INIT_OK\n");
+      mini_printf("DDR_INIT_OK\n");
     }
     else{
-       mini_printf("DDR_INIT_ERR\n");
+      mini_printf("DDR_INIT_ERR\n");
+      while(1);
     }
     #endif
     
@@ -35411,7 +35412,7 @@ unsigned int i;
 *(volatile unsigned short*)(0xfe64018a) = (unsigned short)(0x19);
 *(volatile unsigned short*)(0xfe64005c) = (unsigned short)(0x2);
 *(volatile unsigned short*)(0xfe720408) = (unsigned short)(0x0);
-*(volatile unsigned short*)(0xfe640048) = (unsigned short)(0xa3);
+*(volatile unsigned short*)(0xfe640048) = (unsigned short)(0xe3);
 *(volatile unsigned short*)(0xfe640074) = (unsigned short)(0x2);
 *(volatile unsigned short*)(0xfe6400fa) = (unsigned short)(0x212);
 *(volatile unsigned short*)(0xfe6400f8) = (unsigned short)(0x61);
@@ -35461,7 +35462,7 @@ unsigned int i;
 *(volatile unsigned short*)(0xfe640030) = (unsigned short)(0x3);
 *(volatile unsigned short*)(0xfe6400ea) = (unsigned short)(0x4);
 *(volatile unsigned short*)(0xfe6400a0) = (unsigned short)(0x0);
-*(volatile unsigned short*)(0xfe640010) = (unsigned short)(0x29b);
+*(volatile unsigned short*)(0xfe640010) = (unsigned short)(0x320);
 *(volatile unsigned short*)(0xfe640110) = (unsigned short)(0x9);
 *(volatile unsigned short*)(0xfe640164) = (unsigned short)(0x104);
 *(volatile unsigned short*)(0xfe620086) = (unsigned short)(0x5a1);
@@ -35490,8 +35491,16 @@ unsigned int i;
 *(volatile unsigned short*)(0xfe6401ea) = (unsigned short)(0x0);
 *(volatile unsigned short*)(0xfe6401ec) = (unsigned short)(0x0);
 *(volatile unsigned short*)(0xfe6401ee) = (unsigned short)(0xf000);
+*(volatile unsigned short*)(0xfe620094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe622094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe624094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe626094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe628094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe62a094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe62c094) = (unsigned short)(0x500);
+*(volatile unsigned short*)(0xfe62e094) = (unsigned short)(0x500);
 *(volatile unsigned short*)(0xfe64004a) = (unsigned short)(0x0);
-*(volatile unsigned short*)(0xfe64005a) = (unsigned short)(0x1);
+*(volatile unsigned short*)(0xfe64005a) = (unsigned short)(0x0);
 *(volatile unsigned short*)(0xfe640058) = (unsigned short)(0x0);
 *(volatile unsigned short*)(0xfe6400c0) = (unsigned short)(0x2);
 *(volatile unsigned short*)(0xfe7a0000) = (unsigned short)(0x0);
@@ -36027,9 +36036,9 @@ firmware_waitFwDone(0x1);
 *(volatile unsigned short*)(0xfe6801ac) = (unsigned short)(0x20a);
 *(volatile unsigned short*)(0xfe6801ae) = (unsigned short)(0x20b);
 *(volatile unsigned short*)(0xfe640074) = (unsigned short)(0x2);
-*(volatile unsigned short*)(0xfe640016) = (unsigned short)(0x53);
-*(volatile unsigned short*)(0xfe640018) = (unsigned short)(0xa6);
-*(volatile unsigned short*)(0xfe64001a) = (unsigned short)(0x682);
+*(volatile unsigned short*)(0xfe640016) = (unsigned short)(0x64);
+*(volatile unsigned short*)(0xfe640018) = (unsigned short)(0xc8);
+*(volatile unsigned short*)(0xfe64001a) = (unsigned short)(0x7d0);
 *(volatile unsigned short*)(0xfe64001c) = (unsigned short)(0x2c);
 *(volatile unsigned short*)(0xfe720018) = (unsigned short)(0x0);
 *(volatile unsigned short*)(0xfe72001a) = (unsigned short)(0x173);
