@@ -5,8 +5,18 @@
  */
 
 #include <asm/asm.h>
+#include <asm/io.h>
 #include <asm/types.h>
 #include "hardware.h"
+
+#define CSR_MCOR         0x7c2
+#define CSR_MHCR         0x7c1
+#define CSR_MCCR2        0x7c3
+#define CSR_MHINT        0x7c5
+#define CSR_MXSTATUS     0x7c0
+#define CSR_PLIC_BASE    0xfc1
+#define CSR_MRMR         0x7c6
+#define CSR_MRVBR        0x7c7
 
 
 #define csr_write(csr, val)                                        \
@@ -77,21 +87,21 @@ int spl_enable_cache(void)
 {
     // Invalidate & Clear IBP BTB BHT ICache & DCache
     // set $mcor = 0x70013
-    csr_write(mcor, 0x70013);
+    csr_write(CSR_MCOR, 0x70013);
 
     // Enable L2 Cache
     // set $mccr2 = 0xe0010009
-    csr_write(mccr2, 0xe0010009);
+    csr_write(CSR_MCCR2, 0xe0010009);
 
     // Enable L1 Cache
     // set $mhcr = 0x11ff
-    csr_write(mhcr, 0x11ff);
+    csr_write(CSR_MHCR, 0x11ff);
 
     // Enable CPU Features
     // set $mxstatus = 0x638000
     // set $mhint = 0x16e30c
-    csr_write(mxstatus, 0x638000);
-    csr_write(mhint, 0x16e30c);
+    csr_write(CSR_MXSTATUS, 0x638000);
+    csr_write(CSR_MHINT, 0x16e30c);
 }
 #endif
 

@@ -8,6 +8,7 @@
 #include <mmc.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include <asm/io.h>
 #include "gpio/gpio.h"
 #include "../common/mini_printf.h"
 #include "spl/ddr.h"
