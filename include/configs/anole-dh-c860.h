@@ -65,7 +65,7 @@
 #define ERAGON_MMC0_BASE            0xbffb0000
 #endif
 
-#define UBOOT_INTERNAL_VERSION "0.2"
+#define UBOOT_INTERNAL_VERSION "0.3"
 #define CONFIG_BOARD_PRINTF_SUPPORT
 #define CONFIG_BOARD_CONSOLE_SUPPORT
 #define CONFIG_BOARD_MMC_SUPPORT
@@ -79,6 +79,7 @@
 #define TIMEOUT_VALUE               500
 #define CONFIG_SYS_CBSIZE           256   /* This is Console Buffer size */
 #define CONFIG_SYS_MAXARGS          16
+#define DDRINIT_CLOCK_FREQ_MT       2400
 
 /* NAND configuration */
 #ifdef CONFIG_CMD_NAND
@@ -92,6 +93,7 @@
 #define CONFIG_DW_ALTDESCRIPTOR
 #define CONFIG_MII              1
 #define CONFIG_PHY_MARVELL      1
+#define CONFIG_PHY_REALTEK      1
 #define CONFIG_NET_RETRY_COUNT  20
 
 
@@ -125,12 +127,14 @@
     "dtb_start_sector=0x1000\0"    /* dtb start sector -> 2MB */ \
     "dtb_size_sectors=0x1000\0"    /* dtb size in sectors -> 2MB */ \
     "linux_start_sector=0x2000\0"  /* linux start sector -> 4MB */  \
-    "linux_size_sectors=0x10000\0" /* linux size in sectors -> 32MB */ \
+    "linux_size_sectors=0x1e000\0" /* linux size in sectors -> 60MB */ \
     "slave_spl_start_sector=0x800\0" /* uboot spl slave start sector */ \
     "slave_fdt_start_sector=0x980\0"   /* slave fdt start sector */ \
     "slave_uboot_start_sector=0xa00\0" /* slave uboot start sector */ \
     "slave_dtb_start_sector=0x21000\0" \
+    "slave_dtb_size_sectors=0x1000\0" \
     "slave_linux_start_sector=0x22000\0" \
+    "slave_linux_size_sectors=0xa000\0" \
     "sram_addr_virt=0xbe400000\0"  /* PHYS_SRAM_1 */ \
     "slave_spl_load_addr_virt=0x8e000000\0" \
     "slave_spl_load_addr_phys=0x0e000000\0" \
@@ -140,6 +144,8 @@
     "dtb_load_addr_phys=0x0f000000\0"  \
     "linux_load_addr_virt=0x90000000\0"  \
     "linux_load_addr_phys=0x10000000\0" \
+    "slave_dtb_load_addr_phys=0x4f000000\0" \
+    "slave_linux_load_addr_phys=0x50000000\0" \
     "update_spl=" \
         "tftpboot ${dtb_load_addr_virt} c860/mboot.fimg ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -222,6 +228,8 @@
         "mmc read ${slave_fdt_load_addr_phys} ${slave_fdt_start_sector} 0x80;" \
         "mmc read ${slave_uboot_load_addr_phys} ${slave_uboot_start_sector} 0x400;" \
         "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
+        "mmc read ${slave_dtb_load_addr_phys} ${slave_dtb_start_sector} ${slave_dtb_size_sectors} ; " \
+        "mmc read ${slave_linux_load_addr_phys} ${slave_linux_start_sector} ${slave_linux_size_sectors} ; " \
         "cp ${slave_spl_load_addr_virt} ${sram_addr_virt} 0x8000;" \
         "bootslave ${sram_addr_virt}; " \
         "\0"
