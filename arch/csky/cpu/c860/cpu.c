@@ -13,14 +13,19 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+__weak void board_reset(void)
+{
+	/* true empty function for defining weak symbol */
+}
+
 int do_reset(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
-    /* TODO: cpu soft-reset */
-    return 0;
+	board_reset();
+	return 0;
 }
 
 void relocate_code(ulong start_addr_sp, gd_t *new_gd, ulong relocaaddr)
 {
-    /* TODO: Implement this */
-    while (1);
+	/* TODO: Implement this */
+	while (1);
 }

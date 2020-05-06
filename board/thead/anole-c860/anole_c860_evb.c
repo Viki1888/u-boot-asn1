@@ -11,6 +11,16 @@
 #include "hardware.h"
 
 
+#define WDT_BASEADDR        (u32)(0xbff78000)
+
+#define WDT_LOCK            0x00
+#define WDT_OT_LOAD_H       0x04
+#define WDT_OT_LOAD_L       0x08
+#define WDT_EN              0x10
+
+#define WDG_ENABLE          (0x5ada7200)
+#define WDG_DISABLE         (0x1)
+
 #define SLAVE_ENTRY_BASEADDR    (u32)(0xbfff0000)
 #define SLAVE_RESET_CONTROL     (u32)(0xbff48068)
 #define SLAVE_ENABLE_CONTROL    (u32)(0xbe830068)
@@ -100,4 +110,20 @@ int board_prep_linux(bootm_headers_t *images)
 	asm volatile("mtcr %0, cr<23, 0>\n" : : "r"(0xe0010009));
 
 	return 0;
+}
+
+void board_reset(void)
+{
+	/* Reset the cpu by setting up the watchdog timer */
+	writel(WDG_ENABLE, WDT_BASEADDR + WDT_LOCK);
+	writel(0, WDT_BASEADDR + WDT_EN);
+	writel(WDG_DISABLE, WDT_BASEADDR + WDT_LOCK);
+
+	writel(WDG_ENABLE, WDT_BASEADDR + WDT_LOCK);
+	writel(0, WDT_BASEADDR + WDT_OT_LOAD_H);
+	writel(1000, WDT_BASEADDR + WDT_OT_LOAD_L);
+	writel(1, WDT_BASEADDR + WDT_EN);
+	writel(WDG_DISABLE, WDT_BASEADDR + WDT_LOCK);
+
+	mdelay(500);
 }
