@@ -9,6 +9,20 @@
 #include "emmc_interface.h"
 #include "emmc_callback.h"
 
+
+#ifndef DWMMC_MAX_FREQ
+#define DWMMC_MAX_FREQ      3000000     // default: 3MHz
+#endif
+
+#define MMC_FOD_DIVIDER_VALUE   ((HSP_DEFAULT_FREQ % 400000)? \
+                                 (HSP_DEFAULT_FREQ / 2 / 400000 + 1): \
+                                 (HSP_DEFAULT_FREQ / 2 / 400000))  /* 400KHz */
+
+#define ONE_BIT_BUS_FREQ    (HSP_DEFAULT_FREQ % DWMMC_MAX_FREQ? \
+                            (HSP_DEFAULT_FREQ / 2 / DWMMC_MAX_FREQ + 1): \
+                            (HSP_DEFAULT_FREQ / 2 / DWMMC_MAX_FREQ)) /* Switching to high-speed mode */
+
+
 emmc_status_info_t emmc_status_info;
 card_info_t card_info;
 extern current_task_status_t current_task;

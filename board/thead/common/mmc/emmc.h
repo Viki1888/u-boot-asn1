@@ -11,14 +11,6 @@
 
 #define MMC_DEBUG 0
 #define PDEBUG(fmt, ...)
-// #define MMC_FOD_DIVIDER_VALUE  ((HSP_DEFAULT_FREQ / 400000) >> 1)         /* 400KHz */
-// #define ONE_BIT_BUS_FREQ ((HSP_DEFAULT_FREQ / 3000000) >> 1)         /* Switching to high-speed mode 3MHz */
-#define MMC_FOD_DIVIDER_VALUE   ((HSP_DEFAULT_FREQ % 400000)? \
-                                 (HSP_DEFAULT_FREQ / 2 / 400000 + 1): \
-                                 (HSP_DEFAULT_FREQ / 2 / 400000))  /* 400KHz */
-#define ONE_BIT_BUS_FREQ    (HSP_DEFAULT_FREQ % 3000000? \
-                            (HSP_DEFAULT_FREQ / 2 / 3000000 + 1): \
-                            (HSP_DEFAULT_FREQ / 2 / 3000000)) /* Switching to high-speed mode 3MHz */
 
 /* Judge the version of emmc */
 #define SD_VERSION_SD   (1 << 31)

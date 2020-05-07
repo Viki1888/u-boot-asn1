@@ -30,6 +30,7 @@
 #define CPU_DEFAULT_FREQ        1000000000
 #define HSP_DEFAULT_FREQ        250000000
 #define LSP_DEFAULT_FREQ        62500000
+#define DWMMC_MAX_FREQ          50000000
 #else
 #define CPU_DEFAULT_FREQ        50000000
 #define HSP_DEFAULT_FREQ        50000000
