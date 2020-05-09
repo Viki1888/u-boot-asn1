@@ -51,7 +51,7 @@ static void ram_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
 {
     u8* src = (u8*)offset;
     u8* dst = (u8*)baseaddr;
-    mini_printf("load image(0x%x,0x%x) to addr(0x%x)\n", offset, size, baseaddr);
+    mini_printf("load image(0x%x,0x%x) to addr(0x%lx)\n", offset, size, baseaddr);
     memcpy(dst, src, size);
 }
 

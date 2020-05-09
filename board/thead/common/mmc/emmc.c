@@ -39,6 +39,8 @@ static void emmc_delay(uint32_t value)
     for (counter = 0; counter < (value * 5); counter++)
         for (i = 0; i < 100; i++)
             j = i;
+
+    (void)j; // avoid compile warning
 }
 
 
@@ -334,6 +336,7 @@ u32 emmc_wait_cmd(emmc_postproc_callback the_callback)
     }
 
     //mini_printf("int_status:%x, status:%x\n", int_status, status);
+    (void)status; // avoid compile warning
 
     the_callback(&current_task, &int_status);
     emmc_set_register(RINTSTS, 0xFFFFFFFF);
@@ -615,6 +618,7 @@ u32 emmc_get_cid(u32 slot)
         return ERRCARDNOTCONN;
     }
 #endif
+    (void)buffer_reg; // avoid compile warning
 
     if (CARD_STATE_READY != card_info.card_state) {
         return ERRFSMSTATE;
@@ -690,6 +694,7 @@ u32 emmc_set_rca(u32 slot)
         return ERRCARDNOTCONN;
     }
 #endif
+    (void)buffer_reg; // avoid compile warning
 
     // PDEBUG("Setting the rca for card %x to %x\n", slot, slot + 1);
     the_rca = (slot + 1) << 16;
@@ -727,6 +732,7 @@ u32 emmc_process_MMC_csd(u32 slot)
         return ERRCARDNOTCONN;
     }
 #endif
+    (void)buffer_reg; // avoid compile warning
 
     if ((retval = emmc_send_serial_command(slot, CMD9, 0x00010000, card_info.the_csd, NULL, 0))) {
         return retval;
@@ -1353,7 +1359,7 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
         - Shut-down the card/device once wait for some time
         - Enable the power to the card/Device. wait for some time
     */
-    buffer_reg = (1 << num_of_cards) - 1;
+    buffer_reg = 1;
     emmc_clear_bits(PWREN, buffer_reg);
     emmc_delay(100);    /*some SDIO cards need more time to power up so changed from 10 to 1000*/
     emmc_set_register(PWREN, buffer_reg);
@@ -1368,26 +1374,22 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
     }
 
     /* Now make CTYPE to default i.e, all the cards connected will work in 1 bit mode initially*/
-    buffer_reg = 0xffffffff;//0x0;
-    // buffer_reg = 0x0;
+    buffer_reg = 0xffffffff;
     emmc_clear_bits(CTYPE, buffer_reg);
 
     /* No. of cards supported by the IP */
     buffer_reg = emmc_read_register(HCON);
     num_of_cards = HCON_NUM_CARDS(buffer_reg);
     emmc_status_info.num_of_cards = num_of_cards;
+    mini_printf("num_of_cards: %d\n", num_of_cards);
 
     /* disable interrupt */
 
     emmc_set_register(RINTSTS, 0xffffffff);
-    // emmc_set_register(INTMSK, 0);
     emmc_clear_bits(CTRL, INT_ENABLE);
 
     /* Set Data and Response timeout to Maximum Value */
     emmc_set_register(TMOUT, 0xffffffff);
-
-    // emmc_set_register(CLKENA, 0);
-    // emmc_set_register(CLKSRC, 0);
 
     /* Enable the clocks to the all connected cards/drives
     - Note this command is to CIU of host controller ip
@@ -1405,7 +1407,6 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
     - Setup Tx Watermark
     - Setup Rx Watermark */
     emmc_set_bits(FIFOTH,  0x20060007);
-    // emmc_set_bits(FIFOTH,  0x203f0040);
     emmc_status_info.fifo_depth = 7 * 2;
 
     slot_num = num_of_cards - 1;
@@ -1430,7 +1431,7 @@ u32 emmc_host_init(card_info_t *emmc_card_info)
         retval = emmc_reset_mmc_card(slot_num);
 
         if (retval) {
-            mini_printf("MMC reset returned the error %d\n", retval);
+            mini_printf("MMC reset returned the error %d, slot_num: %d\n", retval, slot_num);
             break;
         }
         //emmc_set_bus_width(slot_num);

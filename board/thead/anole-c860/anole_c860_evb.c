@@ -6,9 +6,13 @@
 
 #include <common.h>
 #include <asm/io.h>
+#include <cpu_func.h>
 #include "../common/mini_printf.h"
 #include "spl/ddr.h"
 #include "hardware.h"
+
+
+extern void clock_init(void);
 
 
 #define WDT_BASEADDR        (u32)(0xbff78000)
@@ -87,6 +91,7 @@ int enable_slave_cpu(void)
 	printf("reset slave cpu\n");
 	writel(2, SLAVE_ENABLE_CONTROL);
 	writel(1, SLAVE_RESET_CONTROL);
+	return 0;
 }
 
 int board_prep_linux(bootm_headers_t *images)

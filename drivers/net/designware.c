@@ -745,7 +745,7 @@ int designware_eth_probe(struct udevice *dev)
 	}
 #endif
 
-	debug("%s, iobase=%x, priv=%p\n", __func__, iobase, priv);
+	debug("%s, iobase=%lx, priv=%p\n", __func__, iobase, priv);
 	ioaddr = iobase;
 	priv->mac_regs_p = (struct eth_mac_regs *)ioaddr;
 	priv->dma_regs_p = (struct eth_dma_regs *)(ioaddr + DW_DMA_BASE_OFFSET);

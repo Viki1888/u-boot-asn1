@@ -100,7 +100,7 @@ void board_init_r(gd_t *gd, ulong dummy)
         }
         mini_printf("eMMC init ready.\n");
 
-        mini_printf("load image to, uboot_baseaddr: %x, fdt_baseaddr: %x\n", uboot_baseaddr, fdt_baseaddr);
+        mini_printf("load image, uboot_baseaddr: %x, fdt_baseaddr: %x\n", (u32)uboot_baseaddr, (u32)fdt_baseaddr);
         emmc_load_image(FLASH_UBOOT_READ_ADDR, FLASH_UBOOT_SIZE, uboot_baseaddr);
         emmc_load_image(FLASH_FDT_READ_ADDR, FLASH_FDT_SIZE, fdt_baseaddr);
         image_loaded = 1;
@@ -109,7 +109,7 @@ void board_init_r(gd_t *gd, ulong dummy)
 
     if (image_loaded) {
         image_entry = (void (*)(u32, phys_addr_t))(*((u32*)uboot_baseaddr));
-        mini_printf("Jump to image_entry: %x\n", image_entry);
+        mini_printf("Jump to image_entry: %x\n", (u32)image_entry);
         image_entry(0, fdt_baseaddr);
     }
 

@@ -66,7 +66,7 @@
 #define ERAGON_MMC0_BASE            0xbffb0000
 #endif
 
-#define UBOOT_INTERNAL_VERSION "0.3"
+#define UBOOT_INTERNAL_VERSION "0.4"
 #define CONFIG_BOARD_PRINTF_SUPPORT
 #define CONFIG_BOARD_CONSOLE_SUPPORT
 #define CONFIG_BOARD_MMC_SUPPORT
@@ -170,6 +170,9 @@
         "mmc write ${dtb_load_addr_phys} ${uboot_start_sector} ${fw_sz} ; " \
         "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
         "\0" \
+    "update_uboot_all=" \
+        "run update_spl;run update_fdt;run update_uboot" \
+        "\0" \
     "update_dtb=" \
         TFTP_LOAD_DTB \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -185,6 +188,9 @@
         "mmc write ${linux_load_addr_phys} ${linux_start_sector} ${fw_sz} ; " \
         "setenv linux_size_sectors ${fw_sz} ; " \
         "saveenv ; " \
+        "\0" \
+    "update_linux_all=" \
+        "run update_dtb;run update_linux" \
         "\0" \
     "update_slave_spl=" \
         "tftpboot ${dtb_load_addr_virt} c810/u-boot-spl.bin ; " \
@@ -210,6 +216,9 @@
         "mmc write ${dtb_load_addr_phys} ${slave_uboot_start_sector} ${fw_sz} ; " \
         "mmc dev 0 0 ; "  /* restore to USER PARTITION */ \
         "\0" \
+    "update_slave_uboot_all=" \
+        "run update_slave_spl;run update_slave_fdt;run update_slave_uboot" \
+        "\0" \
     "update_slave_dtb=" \
         TFTP_LOAD_SLAVE_DTB \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -221,6 +230,9 @@
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${linux_load_addr_phys} ${slave_linux_start_sector} ${fw_sz} ; " \
+        "\0" \
+    "update_slave_linux_all=" \
+        "run update_slave_dtb;run update_slave_linux" \
         "\0" \
     "boot_slave=" \
         "mmc dev 0 1 ; "  /* uboot -> eMMC BOOT PARTITION #1 */ \
