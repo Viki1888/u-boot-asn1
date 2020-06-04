@@ -155,7 +155,7 @@ void sys_clk_config(int ddr_freq)
         *(volatile unsigned int *)(0xfff77020) = 0x01404b01; //450MHz, 1800MT
         break;
     case 1600:
-        *(volatile unsigned int *)(0xfff77020) = 0x01303201; //400MHz, 1600MT
+        *(volatile unsigned int *)(0xfff77020) = 0x01606401; //400MHz, 1600MT
         break;
     case 1392:
         *(volatile unsigned int *)(0xfff77020) = 0x01605701; //348MHz, 1392MT

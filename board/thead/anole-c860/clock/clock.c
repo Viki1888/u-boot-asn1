@@ -37,42 +37,42 @@ void gmac_clk_config(u32 interface)
 		*(volatile unsigned int *)(0xbff770c0) = 0xd68;
 	} else if (interface == PHY_INTERFACE_MODE_RGMII) {
 
-		// PAD CFG
-		*(volatile unsigned int *)0xbe8302cc = 0x20202020;
-		*(volatile unsigned int *)0xbe8302d0 = 0x07072020;
-		*(volatile unsigned int *)0xbe8302d4 = 0x07070707;
+		//RGMII  mode
+		*(volatile  unsigned  int*)(0xbe8302cc)  =  0x20202020;
+		*(volatile  unsigned  int*)(0xbe8302cf)  =  0x07072020;
+		*(volatile  unsigned  int*)(0xbe8302d4)  =  0x07070707;
 
-		// RX delay
-		*(volatile unsigned int *)0xbff770c4 = 0x1f;
-		// TX delay
-		*(volatile unsigned int *)0xbff770c8 = 0;
+		//PHY  Mode  Sel
+		*(volatile  unsigned  int*)(0xbe83025c)  =  0x1;  //0:MII/GMII,  1:RGMII,  4:RMII
+		//Enable  TX_CLK  PAD  
+		*(volatile  unsigned  int*)(0xbe83031c)  =  0x0;  //oen
 
-		// set GMAC PHY interface, 0:MII/GMII, 1:RGMII, 4:RMII
-		*(volatile unsigned int *)0xbe83025c = 1;
+		//enable  pll_div,  1000/4=250MHz
+		*(volatile  unsigned  int*)(0xbff770cc)  =  0x4;
+		*(volatile  unsigned  int*)(0xbff770cc)  =  0x4;
+		*(volatile  unsigned  int*)(0xbff770cc)  =  0x80000004;
+		*(volatile  unsigned  int*)(0xbff770cc)  =  0x80000004;
 
-		// set GMAC TXCLK direction, 1:input, 0:output
-		//     MII        : TXCLK is input
-		//     GMII/RGMII : TXCLK is output
-		*(volatile unsigned int *)0xbe83031c = 0;
-
-		// enable pll_div, 1000/4=250MHz
-		*(volatile unsigned int *)0xbff770cc = 0x4;
-		*(volatile unsigned int *)0xbff770cc = 0x80000004;
 #if 0
-		//
-		// enable gtx_clk_div, 250/2=125MHz for 1Gbps speed
-		//
-		*(volatile unsigned int *)0xbff770d0 = 0x2
-		*(volatile unsigned int *)0xbff770d0 = 0x80000002
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0x2;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0x2;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0x80000002;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0x80000002;
 #else
-		//
-		// enable gtx_clk_div, 250/10=25MHz for 100Mbps speed
-		//
-		*(volatile unsigned int *)0xbff770d0 = 0xa;
-		*(volatile unsigned int *)0xbff770d0 = 0x8000000a;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0xa;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0xa;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0x8000000a;
+		*(volatile  unsigned  int*)(0xbff770d0)  =  0x8000000a;
 #endif
-		// enable gmac clocks
-		*(volatile unsigned int *)0xbff770c0 = 0x13dc;
+		*(volatile  unsigned  int*)(0xbff770d8)  =  0x28;
+		*(volatile  unsigned  int*)(0xbff770d8)  =  0x28;
+		*(volatile  unsigned  int*)(0xbff770d8)  =  0x80000028;
+		*(volatile  unsigned  int*)(0xbff770d8)  =  0x80000028;
+
+		*(volatile  unsigned  int*)(0xbff770c4)  =  0x1f;//rx
+		*(volatile  unsigned  int*)(0xbff770c8)  =  0x00;//tx
+
+		*(volatile  unsigned  int*)(0xbff770c0)  =  0x13dc;
 	}
 #endif
 }

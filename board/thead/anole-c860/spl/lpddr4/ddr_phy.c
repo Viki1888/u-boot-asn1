@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#include "../../common/mini_printf.h"
+#include "../../../common/mini_printf.h"
 
 unsigned short train1d_imem[16384] = {
 0xf8,

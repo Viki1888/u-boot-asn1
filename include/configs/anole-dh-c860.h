@@ -30,6 +30,7 @@
 #define CPU_DEFAULT_FREQ        1000000000
 #define HSP_DEFAULT_FREQ        250000000
 #define LSP_DEFAULT_FREQ        62500000
+#define DWMMC_MAX_FREQ          25000000
 #else
 #define CPU_DEFAULT_FREQ        50000000
 #define HSP_DEFAULT_FREQ        50000000
@@ -65,7 +66,7 @@
 #define ERAGON_MMC0_BASE            0xbffb0000
 #endif
 
-#define UBOOT_INTERNAL_VERSION "0.3"
+#define UBOOT_INTERNAL_VERSION "0.4"
 #define CONFIG_BOARD_PRINTF_SUPPORT
 #define CONFIG_BOARD_CONSOLE_SUPPORT
 #define CONFIG_BOARD_MMC_SUPPORT
@@ -79,7 +80,7 @@
 #define TIMEOUT_VALUE               500
 #define CONFIG_SYS_CBSIZE           256   /* This is Console Buffer size */
 #define CONFIG_SYS_MAXARGS          16
-#define DDRINIT_CLOCK_FREQ_MT       2400
+#define DDRINIT_CLOCK_FREQ_MT       2000
 
 /* NAND configuration */
 #ifdef CONFIG_CMD_NAND
@@ -114,10 +115,10 @@
 
 
 #ifdef CONFIG_IS_ASIC
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c860/anole_evb.dtb ; "
+#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c860/anole_dh_evb.dtb ; "
 #define TFTP_LOAD_SLAVE_DTB "tftpboot ${dtb_load_addr_virt} c810/anole_evb_ck810.dtb ; "
 #else
-#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c860/anole.dtb ; "
+#define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c860/anole_dh.dtb ; "
 #define TFTP_LOAD_SLAVE_DTB "tftpboot ${dtb_load_addr_virt} c810/anole_ck810.dtb ; "
 #endif
 

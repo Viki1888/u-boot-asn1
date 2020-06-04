@@ -6,7 +6,8 @@ dtb-$(CONFIG_TARGET_TIANHUO_C860) += tianhuo-c860.dtb
 dtb-$(CONFIG_TARGET_TIANHUO_C810) += tianhuo-c810.dtb
 dtb-$(CONFIG_TARGET_ANOLE_C860) += anole-c860.dtb
 dtb-$(CONFIG_TARGET_ANOLE_C810) += anole-c810.dtb
-dtb-$(CONFIG_TARGET_ANOLE_C860) += anole-dh-c860.dtb
+dtb-$(CONFIG_TARGET_ANOLE_C860) += anole-mii-c860.dtb
+dtb-$(CONFIG_TARGET_ANOLE_C860) += anole-rgmii-c860.dtb
 
 targets += $(dtb-y)
 
