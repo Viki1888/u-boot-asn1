@@ -25,20 +25,19 @@ GATED CLOCK:
 
 void sys_clk_config(int ddr_freq)
 {
-    unsigned int read;
+    unsigned int read,i;
 
-    *(volatile unsigned int*)(0xfff78040) = 0x0; //reset ddr
-    *(volatile unsigned int*)(0xfff78040) = 0x0; //reset ddr
-    *(volatile unsigned int*)(0xfff78040) = 0x0; //reset ddr
-    *(volatile unsigned int*)(0xfff78040) = 0x0; //reset ddr
-    //*(volatile unsigned int *)(0xfff77000) = 0x0102fa03;
-    //*(volatile unsigned int *)(0xfff77008) = 0x3;
+    for(i=0;i<0x40;i++){
+         *(volatile unsigned int*)(0xfff78040) = 0x0; //reset ddr
+    }
+    
     
     //Wait ALL PLLs lock
     read = *(volatile unsigned int *)(0xfff77060);
     while ((read & 0x1f) != 0x1f) {
         read = *(volatile unsigned int *)(0xfff77060);
     }
+
 
     //***********************
     //CPU DIV
@@ -109,7 +108,10 @@ void sys_clk_config(int ddr_freq)
     //enable all hclk(250MHz)
     *(volatile unsigned int *)(0xfff77094) = 0xffffffff;
 
+
     //enable all ias_clk(700MHz)
+    //*(volatile unsigned int *)(0xfff77030) = 0x0160af02; //plld, 350MHz
+        //*(volatile unsigned int *)(0xfff77038) = 0x2; //re-config
     *(volatile unsigned int *)(0xfff770a0) = 0xfff;
     *(volatile unsigned int *)(0xfff78044) = 0xff;
 
@@ -148,6 +150,9 @@ void sys_clk_config(int ddr_freq)
     case 2184:
         *(volatile unsigned int *)(0xfff77020) = 0x01405b01; //546MHz, 2184MT
         break;
+    case 2133:
+        *(volatile unsigned int *)(0xfff77020) = 0x01405801; //528MHz, 2112MT
+        break;
     case 2000:
         *(volatile unsigned int *)(0xfff77020) = 0x01607d01; //500MHz, 2000MT
         break;
@@ -164,6 +169,7 @@ void sys_clk_config(int ddr_freq)
         *(volatile unsigned int *)(0xfff77020) = 0x01604b01; //300MHz, 1200MT
         break;
     }
+
     *(volatile unsigned int *)(0xfff77024) = 0x03000000;
     *(volatile unsigned int *)(0xfff77028) = 0x3;	//reconfig
     read = *(volatile unsigned int *)(0xfff77020);	//readback
@@ -180,9 +186,9 @@ void sys_clk_config(int ddr_freq)
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
-    *(volatile unsigned int*)(0xfff77108) = 0xff;
-    *(volatile unsigned int*)(0xfff77108) = 0xff;
-    *(volatile unsigned int*)(0xfff77108) = 0xff;
+    *(volatile unsigned int*)(0xfff77108) = 0xe4;
+    *(volatile unsigned int*)(0xfff77108) = 0xe4;
+    *(volatile unsigned int*)(0xfff77108) = 0xe4;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
@@ -193,26 +199,97 @@ void sys_clk_config(int ddr_freq)
     //disable wdg
     *(volatile unsigned int*)(0xfff78000) = 0x5ada7200;
     *(volatile unsigned int*)(0xfff78010) = 0x0;
+    
 
     ////RMII, External 100Mbps Mode
-    //*(volatile unsigned int*)(0xfe83031c) = 0x0; //CLK_OUT pad enable
-    //
-    ////50MHz
-    //*(volatile unsigned int*)(0xfff770cc) = 0x14;
-    //*(volatile unsigned int*)(0xfff770cc) = 0x80000014;
-    //read = *(volatile unsigned int*)(0xfff770cc);
-    //
-    ////25MHz
-    //*(volatile unsigned int*)(0xfff770d4) = 0x2;
-    //*(volatile unsigned int*)(0xfff770d4) = 0x80000002;
-    //read = *(volatile unsigned int*)(0xfff770d4);
-    //
-    ////enable rmii clocks
-    //*(volatile unsigned int*)(0xfff770c0) = 0xd68;
+        //*(volatile unsigned int*)(0xfe83031c) = 0x0; //CLK_OUT pad enable
+        //
+        ////50MHz
+        //*(volatile unsigned int*)(0xfff770cc) = 0x14;
+        //*(volatile unsigned int*)(0xfff770cc) = 0x80000014;
+        //read = *(volatile unsigned int*)(0xfff770cc);
+        //
+        ////25MHz
+        //*(volatile unsigned int*)(0xfff770d4) = 0x2;
+        //*(volatile unsigned int*)(0xfff770d4) = 0x80000002;
+        //read = *(volatile unsigned int*)(0xfff770d4);
+        //
+        ////enable rmii clocks
+        //*(volatile unsigned int*)(0xfff770c0) = 0xd68;
+    
+
+
 
     //MII Mode
-    // *(volatile unsigned int*)(0xfff71000) = 0x1; //gpio0, reset phy
-    // *(volatile unsigned int*)(0xfe83025c) = 0x0; //MII MODE, 0:MII/GMII, 1:RGMII, 4:RMII
-    // *(volatile unsigned int*)(0xfe83031c) = 0x1; //CLK_OUT pad enable
-    // *(volatile unsigned int*)(0xfff770c0) = 0x18a;
+        //*(volatile unsigned int*)(0xfe83025c) = 0x0; //MII MODE
+        //*(volatile unsigned int*)(0xfe83031c) = 0x1; //CLK_OUT pad enable
+        //*(volatile unsigned int*)(0xfff770c0) = 0x18a;
+
+
+    //RGMII mode
+    //     //PAD DS
+    //     *(volatile unsigned int*)(0xfe8302cc) = 0x20202020;
+    //     *(volatile unsigned int*)(0xfe8302cf) = 0x07072020;
+    //     *(volatile unsigned int*)(0xfe8302d4) = 0x07070707;
+
+    //     //PHY Mode Sel
+    //     *(volatile unsigned int*)(0xfe83025c) = 0x1; //0:MII/GMII, 1:RGMII, 4:RMII
+    //     //Enable TX_CLK PAD 
+    //     *(volatile unsigned int*)(0xfe83031c) = 0x0; //oen
+
+    //     //enable pll_div, 1000/4=250MHz
+    //     *(volatile unsigned int*)(0xfff770cc) = 0x4;
+    //     *(volatile unsigned int*)(0xfff770cc) = 0x4;
+    //     *(volatile unsigned int*)(0xfff770cc) = 0x80000004;
+    //     *(volatile unsigned int*)(0xfff770cc) = 0x80000004;
+
+    // //enable gtx_clk_div, 250/2=125MHz
+    //     *(volatile unsigned int*)(0xfff770d0) = 0x2;
+    //     *(volatile unsigned int*)(0xfff770d0) = 0x2;
+    //     *(volatile unsigned int*)(0xfff770d0) = 0x80000002;
+    //     *(volatile unsigned int*)(0xfff770d0) = 0x80000002;
+
+    //     //enable ephy_ref_clk , 1000/40=25MHz
+    //     *(volatile unsigned int*)(0xfff770d8) = 0x28;
+    //     *(volatile unsigned int*)(0xfff770d8) = 0x28;
+    //     *(volatile unsigned int*)(0xfff770d8) = 0x80000028;
+    //     *(volatile unsigned int*)(0xfff770d8) = 0x80000028;
+
+    //     //tx/rx inv/dly
+    //     *(volatile unsigned int*)(0xfff770c4) = 0x1f;//rx
+    //     *(volatile unsigned int*)(0xfff770c8) = 0x00;//tx
+
+    //     //enable ephy_ref_clk, bit12
+    //     //enable rx_clk/rx_clk_n(125MHz) from PAD, bit8/9,7
+    //     //enable tx_clk/tx_clk_n(125MHz) from PLL, bit3/4,2
+    //     //tx_clk_out sel RGMII, bit5=0
+    //     //enable tx_clk_out, bit6
+    //     *(volatile unsigned int*)(0xfff770c0) = 0x13dc;
+
+
+
+    //**************************************
+    //For 4core NPU low-power at 20200601
+    //**************************************
+    //1) disable NPU core4~7 clock and reset
+        *(volatile unsigned int *)(0xfff770a0) = 0x3f;
+        *(volatile unsigned int *)(0xfff78044) = 0x0f;
+
+    //2) disable video clock
+        *(volatile unsigned int *)(0xfff77074) = 0x0;
+    
+    //3) disable mipi clock
+        *(volatile unsigned int *)(0xfff77100) = 0x2;
+
+    //4) disable sce clock
+        *(volatile unsigned int *)(0xfff77104) = 0x0;
+    
+    //5) power-off NPU4~7 and VDEC
+        *(volatile unsigned int *)(0xfe830368) = 0x1f0; //iso_en
+        *(volatile unsigned int *)(0xfe830360) = 0x3ff00; //pd_sw_en
+    
+    //read = *(volatile unsigned int *)(0xfe830368);
+    //read = *(volatile unsigned int *)(0xfe830368);
+    //read = *(volatile unsigned int *)(0xfe830368);
+    //mini_printf("ACK=%x",read);
 }

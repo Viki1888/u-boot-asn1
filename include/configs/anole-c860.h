@@ -80,6 +80,7 @@
 #define TIMEOUT_VALUE               500
 #define CONFIG_SYS_CBSIZE           256   /* This is Console Buffer size */
 #define CONFIG_SYS_MAXARGS          16
+#define DDRINIT_CLOCK_FREQ_MT       2133
 
 /* NAND configuration */
 #ifdef CONFIG_CMD_NAND
