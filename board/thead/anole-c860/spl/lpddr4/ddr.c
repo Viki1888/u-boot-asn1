@@ -218,11 +218,11 @@ apb_rd_4byte(0xfe820030, temp_reg);
 apb_wr_4byte(0xfe820030, 0x000000a2);
 
 //Release Resetn
-apb_wr_4byte(0xfff78040, 0x2df);
-apb_wr_4byte(0xfff78040, 0x2df);
-apb_wr_4byte(0xfff78040, 0x2df);
-apb_wr_4byte(0xfff78040, 0x2df);
-apb_wr_4byte(0xfff78040, 0x2df);
+apb_wr_4byte(0xfff78040, 0x3ff);
+apb_wr_4byte(0xfff78040, 0x3ff);
+apb_wr_4byte(0xfff78040, 0x3ff);
+apb_wr_4byte(0xfff78040, 0x3ff);
+apb_wr_4byte(0xfff78040, 0x3ff);
 
 apb_wr_4byte(0xfe820304, 0x00000000);
 apb_rd_4byte(0xfe820030, temp_reg);
@@ -343,10 +343,10 @@ apb_wr_4byte(0xfe820304, 0x00000000);//enable CAM
 //apb_wr_4byte(0xfe820030, 0x00000000);
 apb_wr_4byte(0xfe820030, 0x0000000a); //auto-dis-clk/pwr_down
 apb_wr_4byte(0xfe820490, 0x00000001); //port0,cpu
-apb_wr_4byte(0xfe820540, 0x00000000); //port1,sce
+apb_wr_4byte(0xfe820540, 0x00000001); //port1,sce
 apb_wr_4byte(0xfe8205f0, 0x00000001); //port2,npu
 apb_wr_4byte(0xfe8206a0, 0x00000001); //port3,npu
-apb_wr_4byte(0xfe820750, 0x00000000); //port4,video
+apb_wr_4byte(0xfe820750, 0x00000001); //port4,video
 apb_wr_4byte(0xfe820800, 0x00000001); //port5,peri
 
 }
