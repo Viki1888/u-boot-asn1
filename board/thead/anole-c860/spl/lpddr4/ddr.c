@@ -66,7 +66,7 @@ apb_wr_4byte(0xfe8200d4, 0x00010008);
 apb_wr_4byte(0xfe8200d8, 0x00009105);
 
 apb_wr_4byte(0xfe8200dc, 0x0034001b);//MR1 =0x34, MR2 =0x1b
-apb_wr_4byte(0xfe8200e0, 0x00f10028);//MR3 =0xf1, MR13=0x28
+apb_wr_4byte(0xfe8200e0, 0x00f10008);//MR3 =0xf1, MR13=0x08
 apb_wr_4byte(0xfe8200e8, 0x0000004d);//MR11=0x00, MR12=0x4d
 apb_wr_4byte(0xfe8200ec, 0x0000004d);//MR22=0x00, MR14=0x4d
 
@@ -102,7 +102,7 @@ apb_wr_4byte(0xfe8201a8, 0x80000000);
 apb_wr_4byte(0xfe8201b0, 0x00000051);
 apb_wr_4byte(0xfe8201b4, 0x00001106);
 apb_wr_4byte(0xfe8201b8, 0x0000001e);
-apb_wr_4byte(0xfe8201c0, 0x00000006);
+apb_wr_4byte(0xfe8201c0, 0x00000007);
 apb_wr_4byte(0xfe8201c4, 0x00000000);
 
 
@@ -124,97 +124,81 @@ apb_wr_4byte(0xfe82022c, 0x001f1f00);
 
 apb_wr_4byte(0xfe820240, 0x050c0560);
 apb_wr_4byte(0xfe820244, 0x00000000);
-apb_wr_4byte(0xfe820250, 0x03988c02);
-apb_wr_4byte(0xfe820254, 0x0000000b);
-apb_wr_4byte(0xfe82025c, 0x7300111d);
-apb_wr_4byte(0xfe820264, 0x9a00f98f);
-apb_wr_4byte(0xfe82026c, 0xdf001656);
-apb_wr_4byte(0xfe820300, 0x00000001);
+
+apb_wr_4byte(0xfe820250, 0x00c21f00);
+apb_wr_4byte(0xfe820254, 0x00000000);
+apb_wr_4byte(0xfe82025c, 0x0f000001);
+apb_wr_4byte(0xfe820264, 0x0f00007f);
+apb_wr_4byte(0xfe82026c, 0x0f00007f);
+apb_wr_4byte(0xfe820300, 0x00000000);
 apb_wr_4byte(0xfe820304, 0x00000000);
 apb_wr_4byte(0xfe82030c, 0x00000000);
 apb_wr_4byte(0xfe820320, 0x00000001);
 apb_wr_4byte(0xfe820328, 0x00000000);
-apb_wr_4byte(0xfe820330, 0x00901020);
-apb_wr_4byte(0xfe820334, 0x001309e4);
-apb_wr_4byte(0xfe82036c, 0x00100010);
-apb_wr_4byte(0xfe820400, 0x00000000);
-apb_wr_4byte(0xfe820404, 0x00003152);
-apb_wr_4byte(0xfe820408, 0x00003063);
+apb_wr_4byte(0xfe82036c, 0x00110001);
+apb_wr_4byte(0xfe820374, 0x0000014f);
+apb_wr_4byte(0xfe82037c, 0x00000000);
+apb_wr_4byte(0xfe820380, 0x00000000);
+apb_wr_4byte(0xfe820384, 0x00000000);
 apb_wr_4byte(0xfe820490, 0x00000001);
-apb_wr_4byte(0xfe820494, 0x00110002);
-apb_wr_4byte(0xfe820498, 0x009d00dd);
-apb_wr_4byte(0xfe82049c, 0x01010e0a);
-apb_wr_4byte(0xfe8204a0, 0x0596049a);
-apb_wr_4byte(0xfe8204b4, 0x000020b6);
-apb_wr_4byte(0xfe8204b8, 0x0000538f);
 apb_wr_4byte(0xfe820540, 0x00000001);
-apb_wr_4byte(0xfe820544, 0x00110008);
-apb_wr_4byte(0xfe820548, 0x075401c4);
-apb_wr_4byte(0xfe82054c, 0x01100e02);
-apb_wr_4byte(0xfe820550, 0x05ea05c1);
-apb_wr_4byte(0xfe820564, 0x0000024c);
-apb_wr_4byte(0xfe820568, 0x000060a8);
 apb_wr_4byte(0xfe8205f0, 0x00000001);
-apb_wr_4byte(0xfe8205f4, 0x00220000);
-apb_wr_4byte(0xfe8205f8, 0x046607f1);
-apb_wr_4byte(0xfe8205fc, 0x01000a09);
-apb_wr_4byte(0xfe820600, 0x039f0561);
-apb_wr_4byte(0xfe820614, 0x000020f5);
-apb_wr_4byte(0xfe820618, 0x00000065);
 apb_wr_4byte(0xfe8206a0, 0x00000001);
-apb_wr_4byte(0xfe8206a4, 0x00110002);
-apb_wr_4byte(0xfe8206a8, 0x0021050b);
-apb_wr_4byte(0xfe8206ac, 0x01010908);
-apb_wr_4byte(0xfe8206b0, 0x04c30099);
-apb_wr_4byte(0xfe8206c4, 0x0000207d);
-apb_wr_4byte(0xfe8206c8, 0x0000004d);
 apb_wr_4byte(0xfe820750, 0x00000001);
-apb_wr_4byte(0xfe820754, 0x00220000);
-apb_wr_4byte(0xfe820758, 0x006f0011);
-apb_wr_4byte(0xfe82075c, 0x01100b07);
-apb_wr_4byte(0xfe820760, 0x062b00c8);
-apb_wr_4byte(0xfe820774, 0x00000353);
-apb_wr_4byte(0xfe820778, 0x000070c8);
 apb_wr_4byte(0xfe820800, 0x00000001);
-apb_wr_4byte(0xfe820804, 0x0011000b);
-apb_wr_4byte(0xfe820808, 0x01100581);
-apb_wr_4byte(0xfe82080c, 0x01100a03);
-apb_wr_4byte(0xfe820810, 0x014e0449);
-apb_wr_4byte(0xfe822020, 0x00000100);
-apb_wr_4byte(0xfe822024, 0xf75a1151);
-apb_wr_4byte(0xfe822034, 0x000a3502);
-apb_wr_4byte(0xfe822050, 0x00a1f070);
-apb_wr_4byte(0xfe822064, 0x00418096);
-apb_wr_4byte(0xfe822068, 0x00300000);
-apb_wr_4byte(0xfe8220dc, 0x0034001b);
-apb_wr_4byte(0xfe8220e0, 0x00f10028);
-apb_wr_4byte(0xfe8220e8, 0x0000004d);
-apb_wr_4byte(0xfe8220ec, 0x0000004d);
-apb_wr_4byte(0xfe8220f4, 0x0000f33d);
-apb_wr_4byte(0xfe822100, 0x14162417);
-apb_wr_4byte(0xfe822104, 0x00040420);
-apb_wr_4byte(0xfe822108, 0x050b1012);
-apb_wr_4byte(0xfe82210c, 0x00708006);
-apb_wr_4byte(0xfe822110, 0x0a04060a);
-apb_wr_4byte(0xfe822114, 0x05080808);
-apb_wr_4byte(0xfe822118, 0x0b09000e);
-apb_wr_4byte(0xfe82211c, 0x00000306);
-apb_wr_4byte(0xfe822120, 0x01011a01);
-apb_wr_4byte(0xfe822124, 0x00000011);
-apb_wr_4byte(0xfe822128, 0x00040909);
-apb_wr_4byte(0xfe82212c, 0x2701000c);
-apb_wr_4byte(0xfe822130, 0x00020000);
-apb_wr_4byte(0xfe822134, 0x0a100002);
-apb_wr_4byte(0xfe822138, 0x000001e7);
-apb_wr_4byte(0xfe82213c, 0x80000000);
-apb_wr_4byte(0xfe822180, 0x02160010);
-apb_wr_4byte(0xfe822190, 0x03918206);
-apb_wr_4byte(0xfe822194, 0x00090202);
-apb_wr_4byte(0xfe8221b4, 0x00001106);
-apb_wr_4byte(0xfe8221b8, 0x0000001e);
-apb_wr_4byte(0xfe822240, 0x050c0560);
-apb_rd_4byte(0xfe820060, temp_reg);
-apb_rd_4byte(0xfe820030, temp_reg);
+
+
+//3200mt
+apb_wr_4byte(0xfe820400, 0x00000000);
+apb_wr_4byte(0xfe820404, 0x0000000f);
+apb_wr_4byte(0xfe8204b4, 0x0000000f);
+apb_wr_4byte(0xfe820564, 0x0000000f);
+apb_wr_4byte(0xfe820614, 0x0000000f);
+apb_wr_4byte(0xfe8206c4, 0x0000000f);
+apb_wr_4byte(0xfe820774, 0x0000000f);
+apb_wr_4byte(0xfe820404, 0x0000100f);
+apb_wr_4byte(0xfe8204b4, 0x0000100f);
+apb_wr_4byte(0xfe820564, 0x0000100f);
+apb_wr_4byte(0xfe820614, 0x0000100f);
+apb_wr_4byte(0xfe8206c4, 0x0000100f);
+apb_wr_4byte(0xfe820774, 0x0000100f);
+apb_wr_4byte(0xfe820404, 0x0000100f);
+apb_wr_4byte(0xfe8204b4, 0x0000100f);
+apb_wr_4byte(0xfe820564, 0x0000100f);
+apb_wr_4byte(0xfe820614, 0x0000100f);
+apb_wr_4byte(0xfe8206c4, 0x0000100f);
+apb_wr_4byte(0xfe820774, 0x0000100f);
+apb_wr_4byte(0xfe820404, 0x0000100f);
+apb_wr_4byte(0xfe8204b4, 0x0000100f);
+apb_wr_4byte(0xfe820564, 0x0000100f);
+apb_wr_4byte(0xfe820614, 0x0000100f);
+apb_wr_4byte(0xfe8206c4, 0x0000100f);
+apb_wr_4byte(0xfe820774, 0x0000100f);
+apb_wr_4byte(0xfe820408, 0x0000400f);
+apb_wr_4byte(0xfe8204b8, 0x0000400f);
+apb_wr_4byte(0xfe820568, 0x0000400f);
+apb_wr_4byte(0xfe820618, 0x0000400f);
+apb_wr_4byte(0xfe8206c8, 0x0000400f);
+apb_wr_4byte(0xfe820778, 0x0000400f);
+apb_wr_4byte(0xfe820408, 0x0000500f);
+apb_wr_4byte(0xfe8204b8, 0x0000500f);
+apb_wr_4byte(0xfe820568, 0x0000500f);
+apb_wr_4byte(0xfe820618, 0x0000500f);
+apb_wr_4byte(0xfe8206c8, 0x0000500f);
+apb_wr_4byte(0xfe820778, 0x0000500f);
+apb_wr_4byte(0xfe820408, 0x0000500f);
+apb_wr_4byte(0xfe8204b8, 0x0000500f);
+apb_wr_4byte(0xfe820568, 0x0000500f);
+apb_wr_4byte(0xfe820618, 0x0000500f);
+apb_wr_4byte(0xfe8206c8, 0x0000500f);
+apb_wr_4byte(0xfe820778, 0x0000500f);
+apb_wr_4byte(0xfe820408, 0x0000100f);
+apb_wr_4byte(0xfe8204b8, 0x0000100f);
+apb_wr_4byte(0xfe820568, 0x0000100f);
+apb_wr_4byte(0xfe820618, 0x0000100f);
+apb_wr_4byte(0xfe8206c8, 0x0000100f);
+apb_wr_4byte(0xfe820778, 0x0000100f);
+
 apb_wr_4byte(0xfe820030, 0x000000a2);
 
 //Release Resetn
@@ -223,32 +207,6 @@ apb_wr_4byte(0xfff78040, 0x3ff);
 apb_wr_4byte(0xfff78040, 0x3ff);
 apb_wr_4byte(0xfff78040, 0x3ff);
 apb_wr_4byte(0xfff78040, 0x3ff);
-
-apb_wr_4byte(0xfe820304, 0x00000000);
-apb_rd_4byte(0xfe820030, temp_reg);
-apb_wr_4byte(0xfe820030, 0x000000a2);
-apb_rd_4byte(0xfe820030, temp_reg);
-apb_wr_4byte(0xfe820030, 0x000000a0);
-apb_rd_4byte(0xfe820020, temp_reg);
-apb_wr_4byte(0xfe820020, 0x00000100);
-apb_wr_4byte(0xfe822020, 0x00000100);
-apb_wr_4byte(0xfe820320, 0x00000000);
-apb_wr_4byte(0xfe8201b0, 0x00000050);
-apb_wr_4byte(0xfe8201b0, 0x00000050);
-apb_wr_4byte(0xfe8201b0, 0x00001050);
-apb_rd_4byte(0xfe8200d0, temp_reg);
-apb_rd_4byte(0xfe8201c0, temp_reg);
-apb_rd_4byte(0xfe820000, temp_reg);
-apb_rd_4byte(0xfe820000, temp_reg);
-apb_rd_4byte(0xfe8200dc, temp_reg);
-apb_rd_4byte(0xfe8200dc, temp_reg);
-apb_rd_4byte(0xfe8200e0, temp_reg);
-apb_rd_4byte(0xfe8200e8, temp_reg);
-apb_rd_4byte(0xfe8200e8, temp_reg);
-apb_rd_4byte(0xfe8200e0, temp_reg);
-apb_rd_4byte(0xfe8200ec, temp_reg);
-apb_rd_4byte(0xfe8200ec, temp_reg);
-apb_rd_4byte(0xfe8200d0, temp_reg);
 
 
 //***********************
