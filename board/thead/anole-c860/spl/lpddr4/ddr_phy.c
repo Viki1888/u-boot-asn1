@@ -16393,7 +16393,7 @@ unsigned short train1d_imem[16384] = {
 0x0};
 
 unsigned short train1d_dmem[834] = {
-0x0,
+0xe0,
 0x0,
 0x0,
 0x854,
@@ -33615,7 +33615,7 @@ unsigned short train2d_imem[16384] = {
 0x0};
 
 unsigned short train2d_dmem[690] = {
-0x0,
+0xe0,
 0x0,
 0x0,
 0x854,
@@ -35244,7 +35244,7 @@ unsigned int get_mails(void)
     unsigned int read;
     unsigned int msg0;
     unsigned int msg1;
-	
+
 	//wait ack
 	read = 0x1;
 	do{
@@ -35254,19 +35254,19 @@ unsigned int get_mails(void)
 	//read msg
     msg0 = (unsigned int)(*(volatile unsigned short*)(0xfe7a0064));
 	msg1 = (unsigned int)(*(volatile unsigned short*)(0xfe7a0068));
-	
+
    //write-back
    *(volatile unsigned short*)(0xfe7a0062) = 0;
-   
+
    //wait ack end
    read = 0x0;
 	do{
         read = (unsigned int)(*(volatile unsigned short*)(0xfe7a0008));
     }while((read&0x1) == 0);
-	
+
 	//re-enable
 	*(volatile unsigned short*)(0xfe7a0062) = 1;
-	
+
 	return (msg0 + (msg1<<16));
 }
 
@@ -35287,7 +35287,7 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
     #ifdef DDR_FW_DETAIL_MSG
     //mini_printf("\n");
     #endif
-    
+
     //#ifdef DDR_FW_DETAIL_MSG
     #ifdef DDR_FW_STAGE_MSG
     msg_display(train_result);
@@ -35297,9 +35297,10 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
     }
     else{
        mini_printf("DDR_INIT_ERR\n");
+       while(1);
     }
     #endif
-    
+
     #ifdef DDR_FW_STAGE_MSG
     //Steam MSG
     if((train_result & 0xffff) == 0x8){
