@@ -34669,11 +34669,11 @@ unsigned short ddrconfig5[228] = {
 };
 
 
-void ddr_config()
+void ddr_config(void)
 {
     unsigned int i;
     unsigned int read;
-    unsigned int phy_sts, st_msg, j, cnt;
+    //unsigned int phy_sts, st_msg, j, cnt;
     //*(volatile unsigned int*)(0xfff78040) &=~(0x7<<1);
     //*(volatile unsigned int*)(0xfff78040) &=~(1<<0);
     //*(volatile unsigned int*)(0xfff78040) &=~(0x3f<<4);
@@ -35006,12 +35006,12 @@ void ddr_config()
     *(volatile unsigned short*)(0xfe6400c0) = 0x2;
     *(volatile unsigned short*)(0xfe7a0000) = 0;
     for (i = 0; i < 16384; i = i + 1) {
-        *(volatile unsigned short*)(0xfe6a0000 + (i << 1)) = ddrconfig0[i];
+        *(volatile unsigned short*)(long)(0xfe6a0000 + (i << 1)) = ddrconfig0[i];
     }
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
     *(volatile unsigned short*)(0xfe7a0000) = 0;
     for (i = 0; i < 834; i = i + 1) {
-        *(volatile unsigned short*)(0xfe6a8000 + (i << 1)) = ddrconfig1[i];
+        *(volatile unsigned short*)(long)(0xfe6a8000 + (i << 1)) = ddrconfig1[i];
     }
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
@@ -35070,12 +35070,12 @@ void ddr_config()
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
     *(volatile unsigned short*)(0xfe7a0000) = 0;
     for (i = 0; i < 16384; i = i + 1) {
-        *(volatile unsigned short*)(0xfe6a0000 + (i << 1)) = ddrconfig2[i];
+        *(volatile unsigned short*)(long)(0xfe6a0000 + (i << 1)) = ddrconfig2[i];
     }
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
     *(volatile unsigned short*)(0xfe7a0000) = 0;
     for (i = 0; i < 690; i = i + 1) {
-        *(volatile unsigned short*)(0xfe6a8000 + (i << 1)) = ddrconfig3[i];
+        *(volatile unsigned short*)(long)(0xfe6a8000 + (i << 1)) = ddrconfig3[i];
     }
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
     *(volatile unsigned short*)(0xfe7a0000) = 0x1;
@@ -35110,7 +35110,7 @@ void ddr_config()
     *(volatile unsigned short*)(0xfe720008) = 0;
     *(volatile unsigned short*)(0xfe72000a) = 0x8;
     for (i = 0; i < 123; i = i + 1) {
-        *(volatile unsigned short*)(0xfe720052 + (i << 1)) = ddrconfig4[i];
+        *(volatile unsigned short*)(long)(0xfe720052 + (i << 1)) = ddrconfig4[i];
     }
     *(volatile unsigned short*)(0xfe680000) = 0x811;
     *(volatile unsigned short*)(0xfe680040) = 0x880;
@@ -35221,7 +35221,7 @@ void ddr_config()
     *(volatile unsigned short*)(0xfe6800b4) = 0;
     *(volatile unsigned short*)(0xfe6800f4) = 0;
     for (i = 0; i < 228; i = i + 1) {
-        *(volatile unsigned short*)(0xfe720148 + (i << 1)) = ddrconfig5[i];
+        *(volatile unsigned short*)(long)(0xfe720148 + (i << 1)) = ddrconfig5[i];
     }
     *(volatile unsigned short*)(0xfe72000c) = 0;
     *(volatile unsigned short*)(0xfe72000e) = 0;

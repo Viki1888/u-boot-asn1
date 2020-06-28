@@ -83,17 +83,17 @@ static void ram_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
 static void spiflash_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
 {
     int i, retlen;
-    for (i = 0; i < (size + 255) / 256; i++) {
-        spiflash_read(0, offset + (i * 256), baseaddr + (i * 256) , 256, &retlen);
-    }
+
+    for (i = 0; i < (size + 255) / 256; i++)
+        spiflash_read(0, offset + (i * 256), (u8 *)(baseaddr + (i * 256)), 256, (u32 *)&retlen);
 }
 
 static void emmc_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
 {
     int i;
-    for (i = 0; i < (size + 511) / 512; i++) {
+
+    for (i = 0; i < (size + 511) / 512; i++)
         emmc_emmc_read(0, (offset + (i * 512)) / 0x200, 512, (u8 *)(baseaddr + (i * 512)));
-    }
 }
 
 void board_init_r(gd_t *gd, ulong dummy)
@@ -143,7 +143,7 @@ void board_init_r(gd_t *gd, ulong dummy)
     if (load_image) {
         load_image(FLASH_SPL_READ_ADDR, FLASH_SPL_SIZE, spl_baseaddr);
         image_entry = (void (*)(void))(spl_baseaddr);
-        mini_printf("Jump to image_entry: %x\n", image_entry);
+        mini_printf("Jump to image_entry: %llx\n", (u64)image_entry);
         image_entry();
     }
 

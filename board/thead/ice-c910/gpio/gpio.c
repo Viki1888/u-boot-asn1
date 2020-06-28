@@ -16,8 +16,8 @@
 */
 bool gpio_set_reuse(enum_gpio_device_t gpio_addrbase, u32 pins, enum_gpio_mode bhardware)
 {
-    pckstruct_gpio_t reg;
 #if 0
+    pckstruct_gpio_t reg;
     reg = (pckstruct_gpio_t)gpio_addrbase;
     if (bhardware) {
         reg->PORT_CTL |= pins;

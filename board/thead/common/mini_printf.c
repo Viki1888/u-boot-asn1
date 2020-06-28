@@ -48,7 +48,7 @@ static void div_out(unsigned int *num, unsigned int div)
     if (zs || dgt > 0)
         out_dgt(dgt);
 }
-static char *numtostring(unsigned int uq, int base, char *buf)
+static char *numtostring(unsigned long uq, int base, char *buf)
 {
     register char *p, *p0;
     int n = 0, i;
@@ -128,7 +128,7 @@ int mini_printf(const char *fmt, ...)
 {
     const char *s;
     int        value;
-    u32        ptr;
+    void*        ptr;
     char       ch, buf[64], *pbuf;
     va_list    ap;
 
@@ -151,12 +151,12 @@ int mini_printf(const char *fmt, ...)
                 mini_putc('-');
                 value = 0 - value;
             }
-            pbuf = numtostring((unsigned int)value, 10, buf);
+            pbuf = numtostring((unsigned long)value, 10, buf);
             puts_without_n(pbuf);
             break;
         case 'x':
             value = va_arg(ap, int);
-            pbuf = numtostring((unsigned int)value, 16, buf);
+            pbuf = numtostring((unsigned long)value, 16, buf);
             puts_without_n(pbuf);
             break;
         case 'c':
@@ -165,8 +165,8 @@ int mini_printf(const char *fmt, ...)
             mini_putc(*pbuf);
             break;
         case 'p':
-            ptr = (unsigned) va_arg(ap, void *);
-            pbuf = numtostring(ptr, 16, buf);
+            ptr = va_arg(ap, void *);
+            pbuf = numtostring((unsigned long)ptr, 16, buf);
             puts_without_n(pbuf);
             break;
         default:

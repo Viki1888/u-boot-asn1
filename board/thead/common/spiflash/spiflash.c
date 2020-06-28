@@ -243,7 +243,7 @@ s32 spiflash_read_id(u8 *id)
     return SUCCESS;
 }
 
-s32 spiflash_read(u8 id, u32 offset, u8 *buf, u32 length, u32 * retlen)
+s32 spiflash_read(u8 id, u32 offset, u8* buf, u32 length, u32* retlen)
 {
     u8 command[4] = {0x3, 0x0, 0x0, 0x00};
 

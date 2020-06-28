@@ -7,6 +7,9 @@
 #include <asm/asm.h>
 #include <asm/io.h>
 #include <asm/types.h>
+#include <lmb.h>
+#include <cpu_func.h>
+#include <stdio.h>
 #include "hardware.h"
 
 #define CSR_MCOR         0x7c2
@@ -102,6 +105,8 @@ int spl_enable_cache(void)
     // set $mhint = 0x16e30c
     csr_write(CSR_MXSTATUS, 0x638000);
     csr_write(CSR_MHINT, 0x16e30c);
+
+	return 0;
 }
 #endif
 
@@ -119,20 +124,24 @@ int board_init(void)
 
 int disable_slave_cpu(void)
 {
-    writel(0, SLAVE_RESET_CONTROL);
+    writel(0, (void *)SLAVE_RESET_CONTROL);
+
     return 0;
 }
 
 int set_slave_cpu_entry(phys_addr_t entry)
 {
     // set slave jump addr
-    writel(entry, SYSREG_BASEADDR);
+    writel(entry, (void *)SYSREG_BASEADDR);
     flush_cache(SYSREG_BASEADDR, 0x1000);
+
     return 0;
 }
 
 int enable_slave_cpu(void)
 {
     printf("reset slave cpu\n");
-    writel(1, SLAVE_RESET_CONTROL);
+    writel(1, (void *)SLAVE_RESET_CONTROL);
+
+	return 0;
 }
