@@ -62,13 +62,9 @@ int vm_init(void)
     return 0;
 }
 
-int sdram_init(void) {
-    // release ddr
-    // set *0x3fff78040 = 0xffff
-    u32* ddr_reg = (u32*)0x3fff78040;
-    *ddr_reg = 0xffff;
-    // udelay(100000);
-    // ddr_init();
+int sdram_init(void)
+{
+	writel(0xffff, (void *)0x3fff78040);
 
     return 0;
 }
