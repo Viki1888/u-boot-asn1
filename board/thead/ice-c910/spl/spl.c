@@ -88,13 +88,15 @@ void board_init_r(gd_t *gd, ulong dummy)
     Different DDR address and size will create different uboot address. */
     phys_addr_t opensbi_baseaddr = CONFIG_SPL_OPENSBI_LOAD_ADDR;
     phys_addr_t uboot_baseaddr = CONFIG_SYS_TEXT_BASE;
-    phys_addr_t fdt_baseaddr = uboot_baseaddr - 0x10000;
+	/* Let's follow gdbinit here */
+    phys_addr_t fdt_baseaddr = opensbi_baseaddr + 0x0200000 - 0x00100000;
 
     mini_printf("The U-Boot-spl start.\n");
     mini_printf("U-Boot version is 2020.03, internal version is %s\n", UBOOT_INTERNAL_VERSION);
 
     load_image = NULL;
     om_judge = get_boot_select();
+	om_judge = 2;
     switch (om_judge) {
 #ifdef DEBUG_RAM_IMAGE
     case 0x0:
@@ -129,7 +131,7 @@ void board_init_r(gd_t *gd, ulong dummy)
         load_image(FLASH_FDT_READ_ADDR, FLASH_FDT_SIZE, fdt_baseaddr);
 
         image_entry = (void (*)(u32, phys_addr_t))(opensbi_baseaddr);
-        mini_printf("Jump to image_entry: %llx, fdt_baseaddr: %lx\n", (u64)image_entry, fdt_baseaddr);
+        mini_printf("Jump to image_entry: %x, fdt_baseaddr: %x\n", (long)image_entry, fdt_baseaddr);
         spl_enable_cache();
         image_entry(CSR_MHARTID, fdt_baseaddr);
     }
