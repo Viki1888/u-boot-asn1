@@ -105,9 +105,9 @@
     "slave_linux_start_sector=0x42000\0" \
     "slave_spl_load_addr_virt=0x20f00000\0" \
     "sram_addr_virt=0x3fe400000\0"   /* PHYS_SRAM_1 */ \
-    "dtb_load_addr_virt=0x00f00000\0" \
-    "linux_load_addr_virt=0x20000000\0" \
-    "ramdisk_load_addr_virt=0x21000000\0" \
+    "dtb_load_addr_virt=0x01f00000\0" \
+    "linux_load_addr_virt=0x00200000\0" \
+    "ramdisk_load_addr_virt=0x02000000\0" \
     "update_dtb=" \
         TFTP_LOAD_DTB \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -182,7 +182,7 @@
         "mmc read ${linux_load_addr_virt} ${linux_start_sector} ${linux_size_sectors} ; " \
         "mmc read ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${ramdisk_size_sectors} ; " \
         "run boot_slave; " \
-        "bootm ${linux_load_addr_virt} ${ramdisk_load_addr_virt} ${dtb_load_addr_virt}"
+        "bootm ${linux_load_addr_virt} - ${dtb_load_addr_virt}"
 
 
 #endif /* __CONFIG_H */
