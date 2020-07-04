@@ -26,7 +26,7 @@ void board_init_f(ulong dummy)
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
     sdram_init();
-    mini_printf("Wellcome to SPL!\n");
+    mini_printf("Welcome to SPL!\n");
 }
 
 #ifdef DEBUG_RAM_IMAGE

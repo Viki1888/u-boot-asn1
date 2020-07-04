@@ -70,7 +70,7 @@ void board_init_f(ulong dummy)
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
     vm_init();
-    mini_printf("\nWellcome to PPL!\n");
+    mini_printf("\nWelcome to PPL!\n");
 }
 
 #ifdef DEBUG_RAM_IMAGE

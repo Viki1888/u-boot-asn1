@@ -41,7 +41,7 @@ void board_init_f(ulong dummy)
     vm_init();
     sdram_init();
     io_init();
-    mini_printf("Wellcome to SPL!\n");
+    mini_printf("Welcome to SPL!\n");
 }
 
 ulong spl_relocate_stack_gd(void)

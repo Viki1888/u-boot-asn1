@@ -42,7 +42,7 @@ void board_init_f(ulong dummy)
 
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
-    mini_printf("Wellcome to SPL!\n");
+    mini_printf("Welcome to SPL!\n");
 
     mini_printf("DDR freq %dMT\n", ddr_freq);
     sdram_init();
