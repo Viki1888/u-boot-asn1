@@ -96,7 +96,6 @@ void board_init_r(gd_t *gd, ulong dummy)
 
     load_image = NULL;
     om_judge = get_boot_select();
-	om_judge = 2;
     switch (om_judge) {
 #ifdef DEBUG_RAM_IMAGE
     case 0x0:
