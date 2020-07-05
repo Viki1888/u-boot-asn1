@@ -130,7 +130,6 @@ void board_init_r(gd_t *gd, ulong dummy)
         load_image(FLASH_FDT_READ_ADDR, FLASH_FDT_SIZE, fdt_baseaddr);
 
         image_entry = (void (*)(u32, phys_addr_t))(opensbi_baseaddr);
-        mini_printf("Jump to image_entry: %llx\n", (u64)image_entry);
         spl_enable_cache();
         image_entry(CSR_MHARTID, fdt_baseaddr);
     }

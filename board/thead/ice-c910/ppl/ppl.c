@@ -143,7 +143,6 @@ void board_init_r(gd_t *gd, ulong dummy)
     if (load_image) {
         load_image(FLASH_SPL_READ_ADDR, FLASH_SPL_SIZE, spl_baseaddr);
         image_entry = (void (*)(void))(spl_baseaddr);
-        mini_printf("Jump to image_entry: %llx\n", (u64)image_entry);
         image_entry();
     }
 
