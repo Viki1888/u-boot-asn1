@@ -20,7 +20,7 @@
             reg = <0>;
             status = "okay";
             compatible = "csky";
-            csky,isa = "Unknown";
+            csky,isa = "Xuantie 860";
         };
     };
 
