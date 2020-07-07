@@ -118,7 +118,9 @@
     "dtb_start_sector=0x21000\0"   /* dtb start sector */ \
     "dtb_size_sectors=0x1000\0"    /* dtb size in sectors -> 2MB */ \
     "linux_start_sector=0x22000\0" /* linux start sector */  \
-    "linux_size_sectors=0x14000\0" /* linux size in sectors -> 40MB */ \
+    "linux_size_sectors=0xa000\0" /* linux size in sectors -> 20MB */ \
+    "ramdisk_start_sector=0x2c000\0" /* ramdisk start sector */ \
+    "ramdisk_size_sectors=0x10000\0" /* ramdisk size in sectors -> 32MB */ \
     "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
     "slave_fdt_start_sector=0x1180\0"   /* slave fdt start sector */ \
     "slave_uboot_start_sector=0x1200\0"  /* slave uboot start sector */ \
@@ -127,10 +129,12 @@
     "sram_addr_virt=0xbe400000\0"  /* PHYS_SRAM_1 */ \
     "slave_spl_load_addr_virt=0x8e000000\0" \
     "slave_spl_load_addr_phys=0x0e000000\0" \
-    "dtb_load_addr_virt=0x8f000000\0" \
-    "dtb_load_addr_phys=0x0f000000\0"  \
-    "linux_load_addr_virt=0x90000000\0"  \
-    "linux_load_addr_phys=0x10000000\0" \
+    "dtb_load_addr_virt=0x81f00000\0" \
+    "dtb_load_addr_phys=0x01f00000\0"  \
+    "linux_load_addr_virt=0x80000000\0"  \
+    "linux_load_addr_phys=0x00000000\0" \
+    "ramdisk_load_addr_virt=0x82000000\0" \
+    "ramdisk_load_addr_phys=0x02000000\0" \
     "update_fdt=" \
         "tftpboot ${dtb_load_addr_virt} c860/dt.dtb ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -211,8 +215,9 @@
 #define CONFIG_BOOTCOMMAND \
         "mmc read ${dtb_load_addr_phys} ${dtb_start_sector} ${dtb_size_sectors} ; " \
         "mmc read ${linux_load_addr_phys} ${linux_start_sector} ${linux_size_sectors} ; " \
+        "mmc read ${ramdisk_load_addr_phys} ${ramdisk_start_sector} ${ramdisk_size_sectors} ; " \
         "run boot_slave; " \
-        "bootm ${linux_load_addr_virt} "
+        "bootm ${linux_load_addr_virt} - ${dtb_load_addr_virt}"
 
 
 #endif /* __CONFIG_H */
