@@ -1,0 +1,170 @@
+set confirm off
+
+set $CK810=0
+set $NPU=0
+set $GPU=0
+set $DPU=0
+set $VPU=0
+
+# Physical Memory Protection(PMP) configurations
+# refer to <C960MP用户手册.docx>, chapter:"物理内存保护"
+# ddr:         0x0 00000000 ~ 0x2 00000000, TOR rwx        (0x0f)
+set $pmpaddr0 = 0x200000000 >> 2
+
+# peripherals: 0x3 f0000000 ~ 0x4 00000000, NAPOT rw       (0x1b)
+set $pmpaddr1 = 0x3f0000000 >> 2 | ((0x10000000 - 1) >> 3)
+
+# 0x00000000 ~ 0x10000000 NAPOT no access                  (0x98)
+set $pmpaddr6 = 0x00000000 >> 2 | ((0x10000000 - 1) >> 3)
+
+# default:     0x0 10000000 ~ 0x100 00000000 TOR no access (0x88)
+set $pmpaddr7 = 0xffffffffff >> 2
+
+# Be care! we must put background deny entries in the end of
+# pmpaddrx with lowest priority and set lock bit for m state deny.
+# Access needn't lock bit for the m state.
+set $pmpcfg0 = 0x8898000000001b0f
+
+#################################
+# Define DelayTick function
+#################################
+define DelayTicks
+    set $total = $arg0
+    set $i = 0
+    set $temp = 0
+    while ($i < $total)
+        # Read SRAM which always can be read
+        set $temp = *(0x3fe400000 + $i * 4)
+        set $i = $i + 1
+    end
+end
+
+#################################
+# GMAC config
+#################################
+# Set GMAC0 PHY interface, 0: MII/GMII, 1: RGMII
+#set *0x3fe83025c |= (1 << 0)
+
+# Set padmux for GMAC1(MAC)
+set *0x3fe830344 |= (1 << 22) | (1 << 24) | (1 << 26) | (1 << 28) | (1 << 30)
+set *0x3fe830348 |= (1 << 0) | (1 << 2) | (1 << 4) | (1 << 6)
+# Release GMAC1(MAC) reset
+set *0x3fff780c8 |= (1 << 0)
+set *0x3fff78098 |= (1 << 0)
+
+#################################
+# Release CK810 reset
+#################################
+if ($CK810 == 1)
+    set *0x3fe830068=0x1
+    printf "CK810 is released (0x3fe830068:0x%x)\n", *0x3fe830068
+end
+
+#################################
+# Release NPU reset
+#################################
+if ($NPU == 1)
+    set *0x3fff78044=0x1
+    DelayTicks 32
+    # x/wx 0x3fff20028 should get 0x20190514
+    set $npu_chipdate=*0x3fff20028
+    printf "NPU ChipDate is:0x%08x\n", $npu_chipdate
+end
+
+#################################
+# Release GPU reset
+#################################
+if ($GPU == 1)
+    # GPU Reset Sequence (ref: Vivante.GC8000UL.Hardware.Integration-v1.07-620-20171206.pdf, $3.4)
+    # Reset registers defined in RST_MGR (ref: regcode_regdoc_gen_rst_mgr(sltds).xlsm)
+    set $GPU_USW_RST_HRESETn_RegAddr=0x3fff78094
+    set $GPU_USW_ARST_ARESETn_RegAddr=0x3fff780a4
+    set $GPU_USW_CRST_resetPin_RegAddr=0x3fff780c0
+    set *$GPU_USW_ARST_ARESETn_RegAddr=0
+    set *$GPU_USW_CRST_resetPin_RegAddr=0
+    set *$GPU_USW_RST_HRESETn_RegAddr=0
+    DelayTicks 32
+    set *$GPU_USW_RST_HRESETn_RegAddr=1
+    set *$GPU_USW_CRST_resetPin_RegAddr=1
+    set *$GPU_USW_ARST_ARESETn_RegAddr=1
+    # x/wx 0x3fff27028 should get 0x20151217
+    set $gpu_chipdate=*0x3fff27028
+    printf "GPU ChipDate is:0x%08x\n", $gpu_chipdate
+end
+
+#################################
+# Release DPU reset
+#################################
+if ($DPU == 1)
+    set *0x3fff78090 |= (1 << 0)
+    set *0x3fff7809c |= (1 << 0)
+    set *0x3fff780a0 |= (1 << 0)
+    # set DPU_DISPLAY_BUF as GPIO
+    set *0x3fe830700 |= (1 << 2)
+end
+
+#################################
+# Release Video reset
+#################################
+if ($VPU == 1)
+    # VDEC
+    set *0x3fff78064 |= (1 << 0)
+    # VO
+    set *0x3fff78064 |= (1 << 1)
+end
+
+#################################
+# Release DMAC reset
+#################################
+set *0x3fff78050 |= (1 << 0)
+
+#################################
+# Release SD reset
+#################################
+#set *0x3fff78058 |= (1 << 16)
+
+#################################
+# Set padmux for SPI CS
+#################################
+# SPI0: config CS0/CS1 as GPIO
+set *0x3fe830334 |= (1 << 2) | (1 << 4)
+# SPI1: config CS0/CS1 as GPIO
+set *0x3fe830334 |= (1 << 12) | (1 << 14)
+# SFC: config SFC_CSN as GPIO
+set *0x3fe830330 |= (1 << 22)
+
+#################################
+# Set padmux for LED & KEY
+#################################
+# set 'GPIO0[8]-UART1_RXD' and 'GPIO0[9]-UART1_TXD' to GPIO mode
+#set *0x3fe830330 |= (1 << 0) | (1 << 2)
+
+
+# Invalidate & Clear IBP BTB BHT ICache & DCache
+set $mcor = 0x70013
+
+# Enable L2 Cache
+set $mccr2 = 0xe0010009
+
+# Enable L1 Cache
+set $mhcr = 0x11ff
+
+# Enable CPU Features
+set $mxstatus = 0x638000
+set $mhint = 0x16e30c
+
+set $sbi_addr = 0x40000000
+set $uboot_addr = $sbi_addr + 0x00200000
+set $fdt_addr = $uboot_addr - 0x00010000
+
+# Load dtb
+restore uboot_c910.dtb binary $fdt_addr
+set $a1 = $fdt_addr
+
+# Load uboot
+restore uboot_c910.bin binary $uboot_addr
+
+# Load sbi
+restore opensbi_c910.bin binary $sbi_addr
+set $pc = $sbi_addr
+
