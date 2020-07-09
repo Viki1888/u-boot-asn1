@@ -6,6 +6,10 @@
 
 obj-y += c910_ice.o
 
+ifdef CONFIG_IS_ASICF
+obj-y += clock/clock.o
+endif
+
 ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_PPL_BUILD),)
 obj-y += c910_cache.o
 else
@@ -13,8 +17,16 @@ obj-y += gpio/gpio.o
 obj-y += om/om.o
 endif
 
-obj-$(CONFIG_SPL_BUILD) += spl/spl.o
-obj-$(CONFIG_SPL_BUILD) += spl/ddr.o
+ifdef CONFIG_SPL_BUILD
+ifdef CONFIG_IS_ASICF
+obj-y += spl/clock.o
+obj-y += spl/lpddr4/ddr.o
+obj-y += spl/lpddr4/ddr_phy.o
+else
+obj-y += spl/ddr.o
+endif
+obj-y += spl/spl.o
+endif
 
 obj-$(CONFIG_PPL_BUILD) += ppl/ppl.o
 obj-$(CONFIG_PPL_BUILD) += om/om.o

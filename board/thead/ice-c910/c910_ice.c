@@ -62,13 +62,6 @@ int vm_init(void)
     return 0;
 }
 
-int sdram_init(void)
-{
-	writel(0xffff, (void *)0x3fff78040);
-
-    return 0;
-}
-
 int io_init(void)
 {
     // #################################

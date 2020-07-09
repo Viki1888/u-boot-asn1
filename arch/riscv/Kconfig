@@ -27,6 +27,12 @@ config TARGET_ICE_C910
 
 endchoice
 
+config IS_ASICF
+	bool "Is it evb board"
+	default n
+	help
+	  It is asic
+
 config SYS_ICACHE_OFF
 	bool "Do not enable icache"
 	default n

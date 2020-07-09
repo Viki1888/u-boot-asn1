@@ -18,13 +18,14 @@
 #include "../hardware.h"
 #include "../gpio/gpio.h"
 #include "../om/om.h"
+#include "ddr.h"
 
 
 // #define DEBUG_RAM_IMAGE
 
 
 extern int vm_init(void);
-extern int sdram_init(void);
+extern int ddr_init(void);
 extern int io_init(void);
 extern int spl_enable_cache(void);
 
@@ -39,7 +40,7 @@ void board_init_f(ulong dummy)
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
     vm_init();
-    sdram_init();
+    init_ddr();
     io_init();
     mini_printf("Welcome to SPL!\n");
 }
