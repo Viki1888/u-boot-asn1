@@ -7,7 +7,14 @@
 obj-y := ice_fpga.o
 obj-y += gpio/gpio.o
 
+ifdef CONFIG_IS_ASIC
+obj-y += clock/clock.o
+endif
+
 ifdef CONFIG_SPL_BUILD
+ifdef CONFIG_IS_ASIC
+obj-y += spl/clock.o
+endif
 obj-y += spl/lpddr4/ddr.o
 obj-y += spl/lpddr4/ddr_phy.o
 obj-y += spl/spl.o
