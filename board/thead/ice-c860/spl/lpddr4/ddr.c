@@ -9,7 +9,6 @@
 
 extern void ddr_fw_run(void);
 
-#ifdef CONFIG_IS_ASIC
 void init_ddr(void)
 {
 unsigned int temp_reg;
@@ -309,10 +308,3 @@ apb_wr_4byte(0xfe820750, 0x00000001); //port4,video
 apb_wr_4byte(0xfe820800, 0x00000001); //port5,peri
 
 }
-#else
-void init_ddr(void)
-{
-    u32* ddr_reg = (u32*)0xfff78040;
-    *ddr_reg = 0xffff;
-}
-#endif

@@ -14,9 +14,11 @@ endif
 ifdef CONFIG_SPL_BUILD
 ifdef CONFIG_IS_ASIC
 obj-y += spl/clock.o
-endif
 obj-y += spl/lpddr4/ddr.o
 obj-y += spl/lpddr4/ddr_phy.o
+else
+obj-y += spl/ddr.o
+endif
 obj-y += spl/spl.o
 obj-y += om/om.o
 endif
