@@ -64,7 +64,6 @@ static void print_some_freq(void)
 
 void board_init_f(ulong dummy)
 {
-    /* Clear global data */
 	int ddr_freq = 1600;
 
     vm_init_early();
