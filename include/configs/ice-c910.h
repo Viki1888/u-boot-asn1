@@ -16,12 +16,18 @@
  * LSP : Timer UART
  * HSP : SPI0 EMMC
  */
+#ifdef CONFIG_IS_ASICF
+#define CPU_DEFAULT_FREQ      1000000000
+#define HSP_DEFAULT_FREQ      25000000
+#define PPL_LSP_DEFAULT_FREQ  24000000
+#define LSP_DEFAULT_FREQ      62500000
+#define DWMMC_MAX_FREQ        25000000
+#else
 #define CPU_DEFAULT_FREQ  50000000
 #define LSP_DEFAULT_FREQ  50000000
-#define HSP_DEFAULT_FREQ  25000000 // 50000000
-
-#define DWMMC_MAX_FREQ  24000000
-
+#define HSP_DEFAULT_FREQ  25000000
+#define DWMMC_MAX_FREQ    24000000
+#endif
 
 /*-----------------------------------------------------------------------
  * Physical Memory Map
@@ -33,8 +39,8 @@
 #define CONFIG_PPL_STACK  (CONFIG_PPL_BSS_START_ADDR - 0x10)
 
 // SPL base: 0x3_fe41_0000, size: 0x2f000(188KB)
-#define CONFIG_SPL_BSS_START_ADDR       0x3fe428000  // base+160KB
-#define CONFIG_SPL_BSS_MAX_SIZE              0x8000  // 32KB
+#define CONFIG_SPL_BSS_START_ADDR       0x3fe436000  // base+160KB
+#define CONFIG_SPL_BSS_MAX_SIZE              0x6000  // 32KB
 #define CONFIG_SYS_SPL_MALLOC_START     0x3fe430000
 #define CONFIG_SYS_SPL_MALLOC_SIZE       0x0000f000
 #define CONFIG_SPL_STACK  (CONFIG_SPL_BSS_START_ADDR - 0x10)
