@@ -7,7 +7,7 @@
 /*************************************************
 ENABLED CLOCKs
 OSC_CLK = 24MHz
-CK860 core_clock = 1GHz
+CK810 core_clock = 1GHz
 AXI Bus clock = 500MHz
 AHB clock = 250MHz(middle-speed peripherals, SFC/SDIO/GMAC/I2S/RDMA..)
 CFG_APB clock = 125MHz (CAN, DDR/USB/PCIe PHY...)
@@ -15,6 +15,9 @@ PERI_APB clock = 62.5MHz (most of low-speed peripherals, timer/uart/i2c...)
 IAS(8core) core_clock = 700MHz
 DDR core_clock = 664MHz, 2666MT mode
 SDIO0/1 cclk = 100MHz (software should drived cclk_out=25/50MHz in sd_ctrl)
+
+//C910/C860 = 1GHz
+//BUS
 
 GATED CLOCK:
 1)CK810 core_clock: enable in software driver when needed
@@ -40,11 +43,11 @@ void sys_clk_config(int ddr_freq)
 
 
     //***********************
-    //CPU DIV
+    //C810 DIV
     //BUS DIV
     //CPU_CNT DIV
     //***********************
-    //CPU_CLK=OSC_CLK, BUS_CLK=OSC_CLK/2, CNT_CLK=OSC_CLK/8
+    //C810_CLK=OSC_CLK, BUS_CLK=OSC_CLK/2, CNT_CLK=OSC_CLK/8
     *(volatile unsigned int*)(0x3fff77070) = 0x871;	//AXI BUS 2:1
     read = *(volatile unsigned int*)(0x3fff77070);	//wait
     *(volatile unsigned int*)(0x3fff77070) = 0x879;	//sync
@@ -80,7 +83,7 @@ void sys_clk_config(int ddr_freq)
     asm("nop");
 
     //***********************
-    //CPU_CLK=1GHz, BUS_CLK=500MHz, CNT_CLK=125MHz
+    //C810_CLK=1GHz, BUS_CLK=500MHz, CNT_CLK=125MHz
     //HCLK=250MHz, peri_clk=62.5MHz, cfg_clk=125MHz
     //***********************
     *(volatile unsigned int*)(0x3fff77070) = 0x809;
@@ -105,13 +108,16 @@ void sys_clk_config(int ddr_freq)
     asm("nop");
     asm("nop");
 
+
+
+
     //enable all hclk(250MHz)
     *(volatile unsigned int*)(0x3fff77094) = 0xffffffff;
 
 
     //enable all ias_clk(700MHz)
     //*(volatile unsigned int*)(0x3fff77030) = 0x0160af02; //plld, 350MHz
-        //*(volatile unsigned int*)(0x3fff77038) = 0x2; //re-config
+    //*(volatile unsigned int*)(0x3fff77038) = 0x2; //re-config
     *(volatile unsigned int*)(0x3fff770a0) = 0xfff;
     *(volatile unsigned int*)(0x3fff78044) = 0xff;
 
@@ -199,4 +205,31 @@ void sys_clk_config(int ddr_freq)
     //disable wdg
     *(volatile unsigned int*)(0x3fff78000) = 0x5ada7200;
     *(volatile unsigned int*)(0x3fff78010) = 0x0;
+
+	/* Added for 500MHz */
+    *(volatile unsigned int*)(0x3fe830470) = 0x11;	//AXI BUS 2:1
+    read = *(volatile unsigned int*)(0x3fe830470);	//wait
+    *(volatile unsigned int*)(0x3fe830470) = 0x19;	//sync
+    asm("nop"); //MUST NOT REVISE
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+
+    //C910 clock switch from OSC to PLLF(1GHz)
+    *(volatile unsigned int*)(0x3fe830470) = 0x9;	//switch
+    asm("nop"); //MUST NOT REVISE
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
 }

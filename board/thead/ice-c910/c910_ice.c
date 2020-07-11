@@ -33,6 +33,14 @@
 
 
 
+int vm_init_early(void)
+{
+    csr_write(pmpaddr5, 0x3f0000000 >> 2 | ((0x10000000 - 1) >> 3));
+    csr_write(pmpcfg0, 0x88981b1b1b1b1f1d);
+
+    return 0;
+}
+
 int vm_init(void)
 {
     // # Physical Memory Protection(PMP) configurations
