@@ -19,7 +19,6 @@ endif
 
 ifdef CONFIG_SPL_BUILD
 ifdef CONFIG_IS_ASICF
-obj-y += spl/clock.o
 obj-y += spl/lpddr4/ddr.o
 obj-y += spl/lpddr4/ddr_phy.o
 else
@@ -28,6 +27,9 @@ endif
 obj-y += spl/spl.o
 endif
 
-obj-$(CONFIG_PPL_BUILD) += ppl/ppl.o
-obj-$(CONFIG_PPL_BUILD) += om/om.o
-
+ifdef CONFIG_PPL_BUILD
+obj-y += ppl/ppl.o
+ifdef CONFIG_IS_ASICF
+obj-y += spl/clock.o
+endif
+endif

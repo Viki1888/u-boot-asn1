@@ -24,7 +24,6 @@
 // #define DEBUG_RAM_IMAGE
 
 
-extern void sys_clk_config(int ddr_freq);
 extern int vm_init(void);
 extern int ddr_init(void);
 extern int io_init(void);
@@ -35,42 +34,12 @@ ulong get_tbclk (void)
     return CPU_DEFAULT_FREQ;
 }
 
-static void print_some_freq(void)
-{
-	u32 read = 0;
-
-	*(volatile unsigned int *)(0x3fff7704c) = 0x140fa03;
-	*(volatile unsigned int *)(0x3fff77054) = 0x2;
-	read = *(volatile unsigned int *)(0x3fff77060);
-	read = *(volatile unsigned int *)(0x3fff77060);
-	mini_printf("\n\n---- Welcome to ICE EVB_BOARD T-HEAD ----\n\n");
-        read = *(volatile unsigned int*)(0x3fff77120);
-	mini_printf("CPU_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff77124);
-	mini_printf("AXI_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff77130);
-	mini_printf("AHB_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff77140);
-	mini_printf("NPU_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff7712c);
-        read = *(volatile unsigned int*)(0x3fff7712c);
-	mini_printf("DDR_CK = %d MT\n",read/1000*4);
-	mini_printf("GMAC = RGMII MODE\n");
-
-	read = *(volatile unsigned int *)(0x3fe830368);
-        mini_printf("ACK=%x\n",read);
-}
-
 void board_init_f(ulong dummy)
 {
-    int ddr_freq = 1600;
-
-    sys_clk_config(ddr_freq);
     uart_open(CONSOLE_UART_BASE);
     init_ddr();
     io_init();
     mini_printf("Welcome to SPL!\n");
-    print_some_freq();
     vm_init();
 }
 
@@ -164,7 +133,6 @@ void board_init_r(gd_t *gd, ulong dummy)
         image_entry(CSR_MHARTID, fdt_baseaddr);
     }
 
-    // always loop
 	asm volatile ("ebreak\n");
     while (1);
 }

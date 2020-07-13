@@ -43,7 +43,7 @@ _start:
 	csrr	a0, CSR_MHARTID
 #endif
 
-#ifdef CONFIG_SPL_BUILD
+#ifdef CONFIG_PPL_BUILD
 	/* peripherals: 0x3 f000 0000 ~ 0x4 0000 0000 napot rw */
 	li		t0, 0xfdffffff
 	csrw	pmpaddr2, t0
