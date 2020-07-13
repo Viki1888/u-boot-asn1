@@ -33,39 +33,12 @@
 
 
 
-int vm_init_early(void)
-{
-    csr_write(pmpaddr5, 0x3f0000000 >> 2 | ((0x10000000 - 1) >> 3));
-    csr_write(pmpcfg0, 0x88981b1b1b1b1f1d);
-
-    return 0;
-}
-
 int vm_init(void)
 {
-    // # Physical Memory Protection(PMP) configurations
-    // # refer to <C960MP用户手册.docx>, chapter:"物理内存保护"
-    // # ddr:         0x0 00000000 ~ 0x2 00000000, TOR rwx        (0x0f)
-    // set $pmpaddr0 = 0x200000000 >> 2
-    csr_write(pmpaddr0, 0x200000000 >> 2);
+    // # ddr:         0x0 00000000 ~ 0x1 00000000
+    csr_write(pmpaddr3, 0x0 >> 2 | ((0x100000000 - 1) >> 3));
 
-    // # peripherals: 0x3 f0000000 ~ 0x4 00000000, NAPOT rw       (0x1b)
-    // set $pmpaddr1 = 0x3f0000000 >> 2 | ((0x10000000 - 1) >> 3)
-    csr_write(pmpaddr1, 0x3f0000000 >> 2 | ((0x10000000 - 1) >> 3));
-
-    // # 0x00000000 ~ 0x10000000 NAPOT no access                  (0x98)
-    // set $pmpaddr6 = 0x00000000 >> 2 | ((0x10000000 - 1) >> 3)
-    csr_write(pmpaddr6, 0x00000000 >> 2 | ((0x10000000 - 1) >> 3));
-
-    // # default:     0x0 10000000 ~ 0x100 00000000 TOR no access (0x88)
-    // set $pmpaddr7 = 0xffffffffff >> 2
-    csr_write(pmpaddr7, 0xffffffffff >> 2);
-
-    // # Be care! we must put background deny entries in the end of
-    // # pmpaddrx with lowest priority and set lock bit for m state deny.
-    // # Access needn't lock bit for the m state.
-    // set $pmpcfg0 = 0x8898000000001b0f
-    csr_write(pmpcfg0, 0x8898000000001b0f);
+    csr_write(pmpcfg0, 0x889800001f1b1f1d);
 
     return 0;
 }

@@ -26,7 +26,6 @@
 
 extern void sys_clk_config(int ddr_freq);
 extern int vm_init(void);
-extern int vm_init_early(void);
 extern int ddr_init(void);
 extern int io_init(void);
 extern int spl_enable_cache(void);
@@ -64,15 +63,14 @@ static void print_some_freq(void)
 
 void board_init_f(ulong dummy)
 {
-	int ddr_freq = 1600;
+    int ddr_freq = 1600;
 
-    vm_init_early();
-	sys_clk_config(ddr_freq);
+    sys_clk_config(ddr_freq);
     uart_open(CONSOLE_UART_BASE);
     init_ddr();
     io_init();
     mini_printf("Welcome to SPL!\n");
-	print_some_freq();
+    print_some_freq();
     vm_init();
 }
 
