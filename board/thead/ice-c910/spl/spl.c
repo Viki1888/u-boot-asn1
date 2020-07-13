@@ -43,7 +43,7 @@ static void print_some_freq(void)
 	*(volatile unsigned int *)(0x3fff77054) = 0x2;
 	read = *(volatile unsigned int *)(0x3fff77060);
 	read = *(volatile unsigned int *)(0x3fff77060);
-	mini_printf("\n\n---- Welcome to ANOLE EVB_BOARD T-HEAD ----\n\n");
+	mini_printf("\n\n---- Welcome to ICE EVB_BOARD T-HEAD ----\n\n");
         read = *(volatile unsigned int*)(0x3fff77120);
 	mini_printf("CPU_CLK = %dMHz\n",read/1000);
         read = *(volatile unsigned int*)(0x3fff77124);
