@@ -43,6 +43,7 @@ _start:
 	csrr	a0, CSR_MHARTID
 #endif
 
+#ifdef CONFIG_SPL_BUILD
 	/* peripherals: 0x3 f000 0000 ~ 0x4 0000 0000 napot rw */
 	li		t0, 0xfdffffff
 	csrw	pmpaddr2, t0
@@ -53,6 +54,7 @@ _start:
 
 	li		t0, 0x88980000001b1f1d
 	csrw	pmpcfg0, t0
+#endif
 
 	/* save hart id and dtb pointer */
 	mv	tp, a0
