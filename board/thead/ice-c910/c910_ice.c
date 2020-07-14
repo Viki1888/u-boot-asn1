@@ -64,7 +64,7 @@ int spl_enable_cache(void)
 
     // Enable L2 Cache
     // set $mccr2 = 0xe0010009
-    csr_write(CSR_MCCR2, 0xe0010009);
+    csr_write(CSR_MCCR2, 0xe0410009);
 
     // Enable L1 Cache
     // set $mhcr = 0x11ff

@@ -26,7 +26,7 @@ GATED CLOCK:
 4)I2S/PCIE/USB/GMAC: enable in software driver when needed
 *************************************************/
 
-void sys_clk_config(int ddr_freq)
+void sys_clk_config(int cpu_freq, int ddr_freq)
 {
     unsigned int read,i;
 
@@ -110,10 +110,140 @@ void sys_clk_config(int ddr_freq)
 
 
 
+    //PLLF, C910/C860 clock
+    switch (cpu_freq) {
+    case 2000:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x0110fa03; //2000MHz, 2000MHz
+        break;
+    case 1900:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01104f01; //1896MHz, 1896MHz
+        break;
+    case 1800:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01104b01; //1800MHz, 1800MHz
+        break;
+    case 1700:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01104701; //1704MHz, 1704MHz
+        break;
+    case 1600:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x0110c803; //1600MHz, 1600MHz
+        break;
+    case 1500:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01107d02; //1500MHz, 1500MHz
+        break;
+    case 1400:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01103a01; //1392MHz, 1392MHz
+        break;
+    case 1300:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01103601; //1296MHz, 1296MHz
+        break;
+    case 1200: //max legal freq for the ICE
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01103201; //1200MHz, 1200MHz
+        break;
+    case 1100:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01205b01; //2184MHz, 1092MHz
+        break;
+    case 1000:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x0120fa03; //2000MHz, 1000MHz
+        break;
+    case 900:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01204b01; //1800MHz, 900MHz
+        break;
+    case 800:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x0120c803; //1600MHz, 800MHz
+        break;
+    case 700:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01203a01; //1392MHz, 696MHz
+        break;
+    case 600:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x01203201; //1200MHz, 600MHz
+        break;
+    case 500:
+        *(volatile unsigned int*)(0x3fff7704c) = 0x0140fa03; //2000MHz, 500MHz
+        break;
+    }
+    *(volatile unsigned int*)(0x3fff77050) = 0x03000000;
+    *(volatile unsigned int*)(0x3fff77054) = 0x3;	//reconfig
+    read = *(volatile unsigned int*)(0x3fff7704c);	//readback
+    //Wait ALL PLLs Lock
+    read = *(volatile unsigned int*)(0x3fff77060);
+    read = *(volatile unsigned int*)(0x3fff77060);
+    read = *(volatile unsigned int*)(0x3fff77060);
+    while ((read & 0x3f) != 0x3f) {
+        read = *(volatile unsigned int*)(0x3fff77060);
+    }
+
+
+
+
+    //***********************
+    //C910 core_clk=24MHz, bus_clk=12MHz
+    //***********************
+    //C910_CLK=OSC_CLK, BUS_CLK=OSC_CLK/2
+    *(volatile unsigned int*)(0x3fe830470) = 0x11;	//AXI BUS 2:1
+    read = *(volatile unsigned int*)(0x3fe830470);	//wait
+    *(volatile unsigned int*)(0x3fe830470) = 0x19;	//sync
+    asm("nop"); //MUST NOT REVISE
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+
+    //C910 clock switch from OSC to PLLF
+    *(volatile unsigned int*)(0x3fe830470) = 0x9;	//switch
+    asm("nop"); //MUST NOT REVISE
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+
+
+
+    ////***********************
+    ////C860 core_clk=24MHz, bus_clk=12MHz
+    ////***********************
+    ////C860_CLK=OSC_CLK, BUS_CLK=OSC_CLK/2
+    //*(volatile unsigned int*)(0x3fe83046c) = 0x11;	//AXI BUS 2:1
+    //read = *(volatile unsigned int*)(0x3fe83046c);	//wait
+    //*(volatile unsigned int*)(0x3fe83046c) = 0x19;	//sync
+    //asm("nop"); //MUST NOT REVISE
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+
+    ////C860 clock switch from OSC to PLLF(1GHz)
+    //*(volatile unsigned int*)(0x3fe83046c) = 0x9;	//switch
+    //asm("nop"); //MUST NOT REVISE
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+    //asm("nop");
+
+    //////enable C860
+    //////*(volatile unsigned int*)(0x3fe830470) = 0x29;	//switch
+
+
 
     //enable all hclk(250MHz)
     *(volatile unsigned int*)(0x3fff77094) = 0xffffffff;
-
 
     //enable all ias_clk(700MHz)
     //*(volatile unsigned int*)(0x3fff77030) = 0x0160af02; //plld, 350MHz
@@ -205,31 +335,4 @@ void sys_clk_config(int ddr_freq)
     //disable wdg
     *(volatile unsigned int*)(0x3fff78000) = 0x5ada7200;
     *(volatile unsigned int*)(0x3fff78010) = 0x0;
-
-	/* Added for 500MHz */
-    *(volatile unsigned int*)(0x3fe830470) = 0x11;	//AXI BUS 2:1
-    read = *(volatile unsigned int*)(0x3fe830470);	//wait
-    *(volatile unsigned int*)(0x3fe830470) = 0x19;	//sync
-    asm("nop"); //MUST NOT REVISE
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-
-    //C910 clock switch from OSC to PLLF(1GHz)
-    *(volatile unsigned int*)(0x3fe830470) = 0x9;	//switch
-    asm("nop"); //MUST NOT REVISE
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
-    asm("nop");
 }
