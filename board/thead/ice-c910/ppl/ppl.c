@@ -66,6 +66,7 @@ void * memcpy(void *dest, const void *src, size_t count)
     return dest;
 }
 
+#ifdef CONFIG_IS_ASICF
 static void print_some_freq(void)
 {
 	u32 read = 0;
@@ -91,15 +92,20 @@ static void print_some_freq(void)
 	read = *(volatile unsigned int *)(0x3fe830368);
         mini_printf("ACK=%x\n",read);
 }
+#endif
 
 void board_init_f(ulong dummy)
 {
+#ifdef CONFIG_IS_ASICF
     int ddr_freq = 1600;
 
     sys_clk_config(ddr_freq);
+#endif
     uart_open(CONSOLE_UART_BASE);
     mini_printf("\nWelcome to PPL!\n");
+#ifdef CONFIG_IS_ASICF
     print_some_freq();
+#endif
 }
 
 #ifdef DEBUG_RAM_IMAGE
