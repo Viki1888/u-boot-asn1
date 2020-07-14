@@ -30,6 +30,6 @@ endif
 ifdef CONFIG_PPL_BUILD
 obj-y += ppl/ppl.o
 ifdef CONFIG_IS_ASICF
-obj-y += spl/clock.o
+obj-y += ppl/clock.o
 endif
 endif
