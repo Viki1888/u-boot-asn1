@@ -38,7 +38,7 @@
 
         dummy_apb: apb-clock {
             compatible = "fixed-clock";
-            clock-frequency = <50000000>;
+            clock-frequency = <62500000>;
             clock-output-names = "dummy_apb";
             #clock-cells = <0>;
         };
@@ -49,7 +49,7 @@
             interrupt-parent = <&intc>;
             interrupts = <39>;
             clocks = <&dummy_apb>;
-            clock-frequency = <50000000>;
+            clock-frequency = <62500000>;
             clock-names = "baudclk";
             reg-shift = <2>;
             reg-io-width = <4>;
