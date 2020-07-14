@@ -31,16 +31,16 @@ static void print_some_freq(void)
 	u32 read = 0;
 
 	mini_printf("\n\n---- Welcome to ICE EVB_BOARD T-HEAD ----\n\n");
-        read = *(volatile unsigned int*)(0x3fff77120);
+        read = *(volatile unsigned int*)(0xfff77120);
 	mini_printf("CPU_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff77124);
+        read = *(volatile unsigned int*)(0xfff77124);
 	mini_printf("AXI_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff77130);
+        read = *(volatile unsigned int*)(0xfff77130);
 	mini_printf("AHB_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff77140);
+        read = *(volatile unsigned int*)(0xfff77140);
 	mini_printf("NPU_CLK = %dMHz\n",read/1000);
-        read = *(volatile unsigned int*)(0x3fff7712c);
-        read = *(volatile unsigned int*)(0x3fff7712c);
+        read = *(volatile unsigned int*)(0xfff7712c);
+        read = *(volatile unsigned int*)(0xfff7712c);
 	mini_printf("DDR_CK = %d MT\n",read/1000*4);
 	mini_printf("GMAC = RGMII MODE\n");
 }
@@ -139,5 +139,6 @@ void board_init_r(gd_t *gd, ulong dummy)
         image_entry(0, fdt_baseaddr);
     }
 
+	asm volatile ("bkpt\n");
     while (1);
 }
