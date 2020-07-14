@@ -138,7 +138,7 @@ int board_prep_linux(bootm_headers_t *images)
 	asm volatile (".long 0x9820c100");
 
 	// # Enable L2 cache
-	// set $cr23 = 0xe0010009
+	// set $cr23 = 0xe0410009
 	asm volatile("mtcr %0, cr<23, 0>\n" : : "r"(0xe0410009));
 
 	return 0;
