@@ -14,7 +14,7 @@ void gmac_clk_config(u32 interface)
 	*(volatile unsigned int*)(0xbff71000) = 0x1;
 	udelay(10000);
 
-#ifdef CONFIG_IS_ASIC
+#ifdef CONFIG_IS_ASICF
 	if (interface == PHY_INTERFACE_MODE_MII) {
 		*(volatile unsigned int *)(0xbe83025c) = 0x0; //MII MODE
 		*(volatile unsigned int *)(0xbe83031c) = 0x1; //CLK_OUT pad disable
