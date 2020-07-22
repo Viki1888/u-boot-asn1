@@ -100,6 +100,9 @@ void board_init_f(ulong dummy)
 #ifdef CONFIG_IS_ASICF
     print_some_freq();
 #endif
+    mini_printf("Compile Time: %s\n", COMPILE_TIME);
+    mini_printf("Git Revision: %s\n", GIT_REVISION);
+    mini_printf("Git Branch: %s\n", GIT_BRANCH);
 }
 
 #ifdef DEBUG_RAM_IMAGE
@@ -135,9 +138,6 @@ void board_init_r(gd_t *gd, ulong dummy)
     So we prepare the uboot at the address which is calculated by uboot itself.
     Different DDR address and size will create different uboot address. */
     phys_addr_t spl_baseaddr = CONFIG_SPL_TEXT_BASE;
-
-    mini_printf("The U-Boot-ppl start.\n");
-    mini_printf("U-Boot version is 2020.03, internal version is %s\n", UBOOT_INTERNAL_VERSION);
 
     load_image = NULL;
     om_judge = get_boot_select();

@@ -412,9 +412,29 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 
 KBUILD_CPPFLAGS := -D__KERNEL__ -D__UBOOT__
 
+
+COMPILE_TIME = $(shell date +%F-%T)
+GIT_REVISION = $(shell git rev-parse --verify --short HEAD 2>/dev/null)
+GIT_BRANCH = $(shell git symbolic-ref --short -q HEAD 2>/dev/null)
+GIT_DIRTY    = $(shell git diff . 2>/dev/null)
+
+ifneq "$(GIT_DIRTY)" ""
+GIT_DIRTY_FLAG = "$(GIT_REVISION)-very-very-dirty!!!"
+else
+GIT_DIRTY_FLAG = "$(GIT_REVISION)"
+endif
+
+LYB_CFLAGS  := $(addprefix -I, $(IDIR))
+LYB_CFLAGS  += -Wall
+LYB_CFLAGS  += -DCOMPILE_TIME="\"$(COMPILE_TIME)\""
+LYB_CFLAGS  += -DGIT_REVISION="\"$(GIT_DIRTY_FLAG)\""
+LYB_CFLAGS  += -DGIT_BRANCH="\"$(GIT_BRANCH)\""
+
+
 KBUILD_CFLAGS   := -Wall -Wstrict-prototypes \
 		   -Wno-format-security \
-		   -fno-builtin -ffreestanding $(CSTD_FLAG)
+		   -fno-builtin -ffreestanding $(CSTD_FLAG) \
+		   $(LYB_CFLAGS)
 KBUILD_CFLAGS	+= -fshort-wchar -fno-strict-aliasing
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 

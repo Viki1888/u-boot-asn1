@@ -40,6 +40,9 @@ void board_init_f(ulong dummy)
     init_ddr();
     io_init();
     mini_printf("Welcome to SPL!\n");
+    mini_printf("Compile Time: %s\n", COMPILE_TIME);
+    mini_printf("Git Revision: %s\n", GIT_REVISION);
+    mini_printf("Git Branch: %s\n", GIT_BRANCH);
     vm_init();
 }
 
@@ -89,9 +92,6 @@ void board_init_r(gd_t *gd, ulong dummy)
     phys_addr_t uboot_baseaddr = CONFIG_SYS_TEXT_BASE;
 	/* Let's follow gdbinit here */
     phys_addr_t fdt_baseaddr = opensbi_baseaddr + 0x0200000 - 0x00100000;
-
-    mini_printf("The U-Boot-spl start.\n");
-    mini_printf("U-Boot version is 2020.03, internal version is %s\n", UBOOT_INTERNAL_VERSION);
 
     load_image = NULL;
     om_judge = get_boot_select();
