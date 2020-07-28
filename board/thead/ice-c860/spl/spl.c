@@ -139,6 +139,6 @@ void board_init_r(gd_t *gd, ulong dummy)
         image_entry(0, fdt_baseaddr);
     }
 
-	asm volatile ("bkpt\n");
+	//asm volatile ("bkpt\n");
     while (1);
 }
