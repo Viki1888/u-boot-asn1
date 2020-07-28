@@ -16,6 +16,8 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+extern void clock_init(void);
+
 #ifdef CONFIG_MMC_DW
 extern int eragon_dwmci_add_port(int index, u32 regbase, int bus_width);
 #endif
@@ -70,6 +72,7 @@ int board_early_init_f(void)
     gpio_set_reuse(GPIOB, 0x3, GPIO_BEHARDWARE);
     gpio_set_reuse(GPIOB, 0x30, GPIO_BEHARDWARE);
 #endif
+	clock_init();
     return 0;
 }
 

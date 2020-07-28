@@ -230,11 +230,7 @@ static void spi_config(void)
 
 void clock_init(void)
 {
-#ifdef CONFIG_RGMII
 	gmac_clk_config(PHY_INTERFACE_MODE_RGMII);
-#else
-	gmac_clk_config(PHY_INTERFACE_MODE_MII);
-#endif
 
 	usb_clk_config();
 	npu_config();

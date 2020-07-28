@@ -75,7 +75,9 @@
             snps,pbl = <32>;
             snps,fixed-burst;
 
-            phy-mode = "mii";
+            phy-mode = "rgmii-txid";
+            rx-clk-delay = <0x1f>; /* for RGMII */
+            tx-clk-delay = <0>;    /* for RGMII */
             phy-handle = <&phy_88E1111>;
             max-speed = <100>;
             mdio0 {
