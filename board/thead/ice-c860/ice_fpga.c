@@ -67,6 +67,7 @@ void show_boot_progress(int val) {}
 
 int board_early_init_f(void)
 {
+    timer_init();
 #if 0
     /* Use the UART 2 */
     gpio_set_reuse(GPIOB, 0x3, GPIO_BEHARDWARE);
@@ -100,7 +101,6 @@ int board_eth_init(bd_t *bis)
 
 int board_early_init_r(void)
 {
-    timer_init();
     return 0;
 }
 
