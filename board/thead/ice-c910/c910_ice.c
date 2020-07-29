@@ -85,10 +85,11 @@ void board_lmb_reserve(struct lmb *lmb)
     lmb_add(lmb, (u64)(0x80000000), (u64)(0x20000000));
 }
 
+extern int clock_init(void);
+
 int board_init(void)
 {
-	/* For now do nothing */
-
+	clock_init();
 	return 0;
 }
 

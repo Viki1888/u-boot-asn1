@@ -11,68 +11,68 @@
 void gmac_clk_config(u32 interface)
 {
 	// release phy by gpio0_0
-	*(volatile unsigned int*)(0xbff71000) = 0x1;
+	*(volatile unsigned int*)(0x3fff71000) = 0x1;
 	udelay(10000);
 
 #ifdef CONFIG_IS_ASICF
 	if (interface == PHY_INTERFACE_MODE_MII) {
-		*(volatile unsigned int *)(0xbe83025c) = 0x0; //MII MODE
-		*(volatile unsigned int *)(0xbe83031c) = 0x1; //CLK_OUT pad disable
-		*(volatile unsigned int *)(0xbff770c0) = 0x18a;
+		*(volatile unsigned int *)(0x3fe83025c) = 0x0; //MII MODE
+		*(volatile unsigned int *)(0x3fe83031c) = 0x1; //CLK_OUT pad disable
+		*(volatile unsigned int *)(0x3fff770c0) = 0x18a;
 	} else if (interface == PHY_INTERFACE_MODE_RMII) {
-		*(volatile unsigned int *)(0xbe83025c) = 0x4; //RMII MODE
+		*(volatile unsigned int *)(0x3fe83025c) = 0x4; //RMII MODE
 
 		//RMII, External 100Mbps Mode
-		*(volatile unsigned int *)(0xbe83031c) = 0x0; //CLK_OUT pad enable
+		*(volatile unsigned int *)(0x3fe83031c) = 0x0; //CLK_OUT pad enable
 
 		//50MHz
-		*(volatile unsigned int *)(0xbff770cc) = 0x14;
-		*(volatile unsigned int *)(0xbff770cc) = 0x80000014;
+		*(volatile unsigned int *)(0x3fff770cc) = 0x14;
+		*(volatile unsigned int *)(0x3fff770cc) = 0x80000014;
 
 		//25MHz
-		*(volatile unsigned int *)(0xbff770d4) = 0x2;
-		*(volatile unsigned int *)(0xbff770d4) = 0x80000002;
+		*(volatile unsigned int *)(0x3fff770d4) = 0x2;
+		*(volatile unsigned int *)(0x3fff770d4) = 0x80000002;
 
 		//enable rmii clocks
-		*(volatile unsigned int *)(0xbff770c0) = 0xd68;
+		*(volatile unsigned int *)(0x3fff770c0) = 0xd68;
 	} else if (interface == PHY_INTERFACE_MODE_RGMII) {
 
 		//RGMII  mode
-		*(volatile  unsigned  int*)(0xbe8302cc)  =  0x20202020;
-		*(volatile  unsigned  int*)(0xbe8302cf)  =  0x07072020;
-		*(volatile  unsigned  int*)(0xbe8302d4)  =  0x07070707;
+		*(volatile  unsigned  int*)(0x3fe8302cc)  =  0x20202020;
+		*(volatile  unsigned  int*)(0x3fe8302cf)  =  0x07072020;
+		*(volatile  unsigned  int*)(0x3fe8302d4)  =  0x07070707;
 
 		//PHY  Mode  Sel
-		*(volatile  unsigned  int*)(0xbe83025c)  =  0x1;  //0:MII/GMII,  1:RGMII,  4:RMII
+		*(volatile  unsigned  int*)(0x3fe83025c)  =  0x1;  //0:MII/GMII,  1:RGMII,  4:RMII
 		//Enable  TX_CLK  PAD  
-		*(volatile  unsigned  int*)(0xbe83031c)  =  0x0;  //oen
+		*(volatile  unsigned  int*)(0x3fe83031c)  =  0x0;  //oen
 
 		//enable  pll_div,  1000/4=250MHz
-		*(volatile  unsigned  int*)(0xbff770cc)  =  0x4;
-		*(volatile  unsigned  int*)(0xbff770cc)  =  0x4;
-		*(volatile  unsigned  int*)(0xbff770cc)  =  0x80000004;
-		*(volatile  unsigned  int*)(0xbff770cc)  =  0x80000004;
+		*(volatile  unsigned  int*)(0x3fff770cc)  =  0x4;
+		*(volatile  unsigned  int*)(0x3fff770cc)  =  0x4;
+		*(volatile  unsigned  int*)(0x3fff770cc)  =  0x80000004;
+		*(volatile  unsigned  int*)(0x3fff770cc)  =  0x80000004;
 
 #if 0
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0x2;
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0x2;
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0x80000002;
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0x80000002;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0x2;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0x2;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0x80000002;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0x80000002;
 #else
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0xa;
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0xa;
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0x8000000a;
-		*(volatile  unsigned  int*)(0xbff770d0)  =  0x8000000a;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0xa;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0xa;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0x8000000a;
+		*(volatile  unsigned  int*)(0x3fff770d0)  =  0x8000000a;
 #endif
-		*(volatile  unsigned  int*)(0xbff770d8)  =  0x28;
-		*(volatile  unsigned  int*)(0xbff770d8)  =  0x28;
-		*(volatile  unsigned  int*)(0xbff770d8)  =  0x80000028;
-		*(volatile  unsigned  int*)(0xbff770d8)  =  0x80000028;
+		*(volatile  unsigned  int*)(0x3fff770d8)  =  0x28;
+		*(volatile  unsigned  int*)(0x3fff770d8)  =  0x28;
+		*(volatile  unsigned  int*)(0x3fff770d8)  =  0x80000028;
+		*(volatile  unsigned  int*)(0x3fff770d8)  =  0x80000028;
 
-		*(volatile  unsigned  int*)(0xbff770c4)  =  0x1f;//rx
-		*(volatile  unsigned  int*)(0xbff770c8)  =  0x00;//tx
+		*(volatile  unsigned  int*)(0x3fff770c4)  =  0x1f;//rx
+		*(volatile  unsigned  int*)(0x3fff770c8)  =  0x00;//tx
 
-		*(volatile  unsigned  int*)(0xbff770c0)  =  0x13dc;
+		*(volatile  unsigned  int*)(0x3fff770c0)  =  0x13dc;
 	}
 #endif
 }
@@ -81,7 +81,7 @@ static void usb_clk_config(void)
 {
 	// # Setup USB_CLK_CFG(0xFFF770F0)
 	// set $USB_CLK_CFG=*0xFFF770F0
-	unsigned int usb_clk_cfg = *(volatile unsigned int *)0xbff770f0;
+	unsigned int usb_clk_cfg = *(volatile unsigned int *)0x3fff770f0;
 	// # Set ahb_clk_usb_en=1 to enable USB AHB clock
 	// set $USB_CLK_CFG |= (1<<17)
 	usb_clk_cfg |= (1 << 17);
@@ -95,7 +95,7 @@ static void usb_clk_config(void)
 	// set $USB_CLK_CFG |= (1<<15)
 	usb_clk_cfg |= (1 << 15);
 	// set *0xFFF770F0=$USB_CLK_CFG
-	*(volatile unsigned int *)0xbff770f0 = usb_clk_cfg;
+	*(volatile unsigned int *)0x3fff770f0 = usb_clk_cfg;
 	// # delay 10us at least
 	// shell sleep 0.1
 	udelay(10);
@@ -104,7 +104,7 @@ static void usb_clk_config(void)
 
 	// # Setup PHY internal ref clock (USB_CLK_CFG)
 	// set *0xFE83009C=0x1
-	*(volatile unsigned int *)0xbe83009c = 0x1;
+	*(volatile unsigned int *)0x3fe83009c = 0x1;
 	// # delay 10us at least
 	// shell sleep 0.1
 	udelay(10);
@@ -113,7 +113,7 @@ static void usb_clk_config(void)
 
 	// # Release PHY (USB_PHY_USW_RST_CFG)
 	// set *0xFFF78048=0x1
-	*(volatile unsigned int *)0xbff78048 = 0x1;
+	*(volatile unsigned int *)0x3fff78048 = 0x1;
 	// # delay 10us at least
 	// shell sleep 0.1
 	udelay(10);
@@ -145,7 +145,7 @@ static void usb_clk_config(void)
 static void npu_config(void)
 {
 	// set *0xfff78044=0xff
-	*(volatile unsigned int *)0xbff78044 = 0xff;
+	*(volatile unsigned int *)0x3fff78044 = 0xff;
 	// DelayTicks 32
 	// delay_tick(32);
 	// # x/wx 0xFFF20028 should get 0x20190514
@@ -157,10 +157,10 @@ static void vpu_clk_config(void)
 {
 	// # enable video clock
 	// set *0xFFF77074 |= 0xf
-	*(volatile unsigned int *)0xbff77074 |= 0xf;
+	*(volatile unsigned int *)0x3fff77074 |= 0xf;
 	// # release video reset
 	// set *0xFFF78064 |= (1 << 0)
-	*(volatile unsigned int *)0xbff78064 |= (1 << 0);
+	*(volatile unsigned int *)0x3fff78064 |= (1 << 0);
 }
 
 // static void pcie_clk_config(void)
@@ -174,17 +174,17 @@ static void dmac_clk_config(void)
 {
 	// # enable DMAC clock
 	// set *0xFFF77094 |= (1 << 11)
-	*(volatile unsigned int *)0xbff77094 |= (1 << 11);
+	*(volatile unsigned int *)0x3fff77094 |= (1 << 11);
 	// # enable SCE-dmac clock
 	// set *0xFFF77104 |= 0x7
-	*(volatile unsigned int *)0xbff77104 |= 0x7;
+	*(volatile unsigned int *)0x3fff77104 |= 0x7;
 
 	// # de-assert DMAC reset
 	// set *0xFFF78050 |= (1 << 0)
-	*(volatile unsigned int *)0xbff78050 |= (1 << 0);
+	*(volatile unsigned int *)0x3fff78050 |= (1 << 0);
 	// # de-assert SCE reset
 	// set *0xFFF78054 |= 0x11010
-	*(volatile unsigned int *)0xbff78054 |= 0x11010;
+	*(volatile unsigned int *)0x3fff78054 |= 0x11010;
 }
 
 static void sd_clk_config(void)
@@ -195,21 +195,21 @@ static void sd_clk_config(void)
 
 	// # set SD1_CWPR/GPIO1-15 to GPIO
 	// set *0xFE83033C |= (1 << 22)
-	*(volatile unsigned int *)0xbe83033c |= (1 << 22);
+	*(volatile unsigned int *)0x3fe83033c |= (1 << 22);
 	// # set SD1_CWPR/GPIO1-15 to output
 	// set *0xFFF72004 |= (1 << 15)
-	*(volatile unsigned int *)0xbff72004 |= (1 << 15);
+	*(volatile unsigned int *)0x3fff72004 |= (1 << 15);
 	// # set SD1_CWPR/GPIO1-15 to Low(enable power)
 	// set *0xFFF72000 &= ~(1 << 15)
-	*(volatile unsigned int *)0xbff72000 &= ~(1 << 15);
+	*(volatile unsigned int *)0x3fff72000 &= ~(1 << 15);
 
 	// # enable SD clock
 	// set *0xFFF77078 = 0x0c800c80
-	*(volatile unsigned int *)0xbff77078 = 0x0c800c80;
+	*(volatile unsigned int *)0x3fff77078 = 0x0c800c80;
 
 	// # de-assert SD reset
 	// set *0xFFF78058 |= (1 << 16)
-	*(volatile unsigned int *)0xbff78058 |= (1 << 16);
+	*(volatile unsigned int *)0x3fff78058 |= (1 << 16);
 }
 
 static void spi_config(void)
@@ -219,13 +219,13 @@ static void spi_config(void)
 	// #################################
 	// # SPI0: config CS0/CS1 as GPIO
 	// set *0xFE830334 |= (1 << 2) | (1 << 4)
-	*(volatile unsigned int *)0xbe830334 |= (1 << 2) | (1 << 4);
+	*(volatile unsigned int *)0x3fe830334 |= (1 << 2) | (1 << 4);
 	// # SPI1: config CS0/CS1 as GPIO
 	// set *0xFE830334 |= (1 << 12) | (1 << 14)
-	*(volatile unsigned int *)0xbe830334 |= (1 << 12) | (1 << 14);
+	*(volatile unsigned int *)0x3fe830334 |= (1 << 12) | (1 << 14);
 	// # SFC: config SFC_CSN as GPIO
 	// set *0xFE830330 |= (1 << 22)
-	*(volatile unsigned int *)0xbe830330 |= (1 << 22);
+	*(volatile unsigned int *)0x3fe830330 |= (1 << 22);
 }
 
 void clock_init(void)

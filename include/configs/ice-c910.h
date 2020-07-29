@@ -63,7 +63,7 @@
 
 /* Network Configuration */
 #define CONFIG_DW_ALTDESCRIPTOR
-#define CONFIG_MII              1
+#define CONFIG_RGMII            1
 #define CONFIG_PHY_MARVELL      1
 #define CONFIG_NET_RETRY_COUNT  20
 
