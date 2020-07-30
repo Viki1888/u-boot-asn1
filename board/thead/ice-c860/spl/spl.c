@@ -60,6 +60,7 @@ void board_init_f(ulong dummy)
     print_some_freq();
 #endif
     init_ddr();
+	asm volatile("mtcr %0, cr<21, 1>\n" : : "r"(0x100));
 }
 
 #ifdef DEBUG_RAM_IMAGE
