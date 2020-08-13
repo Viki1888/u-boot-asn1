@@ -44,6 +44,9 @@ _start:
 #endif
 
 #ifdef CONFIG_PPL_BUILD
+	li x3, 128
+	csrs 0x7cb, x3
+
 	/* peripherals: 0x3 f000 0000 ~ 0x4 0000 0000 napot rw */
 	li		t0, 0xfdffffff
 	csrw	pmpaddr2, t0
