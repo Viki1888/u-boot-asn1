@@ -153,6 +153,29 @@ static void npu_config(void)
 	// # x/wx 0xFFF20028
 }
 
+static void dpu_config(void)
+{
+	//set dpu_pixclk_div_en
+	*(volatile unsigned int *)0x3fff77098 |= (1 << 28);
+	//enable dpu_aclk and dpu_cclk
+	*(volatile unsigned int *)0x3fff77070 |= (1 << 23 | 1 << 22);
+	//set dpu_pixclk_div_en, dpu_pixclk_div_en, ahb_clk_dpu_en, dpu_aclk_div_en, dpu_cclk_div_en
+	*(volatile unsigned int *)0x3fff77098 |= (1 << 28 | 1 << 24 | 1 << 16 | 1 << 12 | 1 << 4);
+	//dpu rst
+	*(volatile unsigned int *)0x3fff78090 |= (1 << 0);
+	//dpu crst
+	*(volatile unsigned int *)0x3fff780a0 |= (1 << 0);
+	//dpu arst
+	*(volatile unsigned int *)0x3fff7809c |= (1 << 0);
+	//set DPU_DISPLAY_BUF as GPIO
+	*(volatile unsigned int *)0x3fe830700 |= (1 << 2);
+	//Enable LCD 5V output, it also control by "lcd-power" in dts
+	*(volatile unsigned int *)0x3fff72000 |= (1 << 2);
+	*(volatile unsigned int *)0x3fff72004 |= (1 << 2);
+
+	//printf "DPU ChipDate is:0x%08x\n", *0x3fff28028
+}
+
 static void vpu_clk_config(void)
 {
 	// # enable video clock
@@ -238,6 +261,7 @@ void clock_init(void)
 
 	usb_clk_config();
 	npu_config();
+	dpu_config();
 	vpu_clk_config();
 	// pcie_clk_config();
 	dmac_clk_config();
