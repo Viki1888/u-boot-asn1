@@ -144,13 +144,8 @@ static void usb_clk_config(void)
 
 static void npu_config(void)
 {
-	// set *0xfff78044=0xff
 	*(volatile unsigned int *)0x3fff78044 = 0xff;
-	// DelayTicks 32
-	// delay_tick(32);
-	// # x/wx 0xFFF20028 should get 0x20190514
-	// # echo NPU ChipDate is:\n
-	// # x/wx 0xFFF20028
+	udelay(100);
 }
 
 static void dpu_config(void)
