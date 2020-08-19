@@ -146,6 +146,8 @@ static void npu_config(void)
 {
 	*(volatile unsigned int *)0x3fff78044 = 0xff;
 	udelay(100);
+
+	printf("NPU ChipDate is:0x%08x\n", *(volatile unsigned int *)0x3fff20028);
 }
 
 static void dpu_config(void)
@@ -168,7 +170,7 @@ static void dpu_config(void)
 	*(volatile unsigned int *)0x3fff72000 |= (1 << 2);
 	*(volatile unsigned int *)0x3fff72004 |= (1 << 2);
 
-	//printf "DPU ChipDate is:0x%08x\n", *0x3fff28028
+	printf("DPU ChipDate is:0x%08x\n", *(volatile unsigned int *)0x3fff28028);
 }
 
 static void vpu_clk_config(void)
