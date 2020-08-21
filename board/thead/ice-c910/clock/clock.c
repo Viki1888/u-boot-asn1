@@ -153,11 +153,11 @@ static void npu_config(void)
 static void dpu_config(void)
 {
 	//set dpu_pixclk_div_en
-	*(volatile unsigned int *)0x3fff77098 |= (1 << 28);
+	*(volatile unsigned int *)0x3fff77098 |= 0x10811212;
 	//enable dpu_aclk and dpu_cclk
 	*(volatile unsigned int *)0x3fff77070 |= (1 << 23 | 1 << 22);
 	//set dpu_pixclk_div_en, dpu_pixclk_div_en, ahb_clk_dpu_en, dpu_aclk_div_en, dpu_cclk_div_en
-	*(volatile unsigned int *)0x3fff77098 |= (1 << 28 | 1 << 24 | 1 << 16 | 1 << 12 | 1 << 4);
+	*(volatile unsigned int *)0x3fff77098 |= 0x11811212;
 	//dpu rst
 	*(volatile unsigned int *)0x3fff78090 |= (1 << 0);
 	//dpu crst
