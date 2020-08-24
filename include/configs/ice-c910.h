@@ -113,6 +113,7 @@
     "dtb_load_addr_virt=0x01f00000\0" \
     "linux_load_addr_virt=0x00200000\0" \
     "ramdisk_load_addr_virt=0x02000000\0" \
+    "avail_addr=0x10000000\0" \
     "update_dtb=" \
         TFTP_LOAD_DTB \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
