@@ -130,7 +130,7 @@
         "saveenv ; " \
         "\0" \
     "update_ramdisk=" \
-        "tftpboot ${ramdisk_load_addr_virt} c910/rootfs.img ; " \
+        "tftpboot ${ramdisk_load_addr_virt} c910/rootfs.cpio.gz ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${fw_sz} ; " \
