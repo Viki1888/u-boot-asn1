@@ -98,11 +98,11 @@
     "spl_start_sector=0x18\0"   /* uboot ppl start sector = FLASH_SPL_READ_ADDR / 0x200 */ \
     "uboot_start_sector=0x480\0"   /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
     "dtb_start_sector=0x1000\0"    /* dtb start sector */ \
-    "dtb_size_sectors=0x100\0"     /* dtb size in sectors -> 128KB */ \
+    "dtb_size_sector=0x100\0"     /* dtb size in sector -> 128KB */ \
     "linux_start_sector=0x2000\0"  /* linux start sector */  \
-    "linux_size_sectors=0xa000\0"  /* linux size in sectors -> 20MB */ \
+    "linux_size_sector=0xa000\0"  /* linux size in sector -> 20MB */ \
     "ramdisk_start_sector=0xc000\0" /* ramdisk start sector */ \
-    "ramdisk_size_sectors=0x10000\0" /* ramdisk size in sectors -> 32MB */ \
+    "ramdisk_size_sector=0x10000\0" /* ramdisk size in sector -> 32MB */ \
     "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
     "slave_fdt_start_sector=0x1180\0"   /* slave fdt start sector */ \
     "slave_uboot_start_sector=0x1200\0"  /* slave uboot start sector */ \
@@ -118,7 +118,7 @@
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${dtb_load_addr_virt} ${dtb_start_sector} ${fw_sz} ; " \
-        "setenv dtb_size_sectors ${fw_sz} ; " \
+        "setenv dtb_size_sector ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
     "update_linux=" \
@@ -126,7 +126,7 @@
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${linux_load_addr_virt} ${linux_start_sector} ${fw_sz} ; " \
-        "setenv linux_size_sectors ${fw_sz} ; " \
+        "setenv linux_size_sector ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
     "update_ramdisk=" \
@@ -134,7 +134,7 @@
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${fw_sz} ; " \
-        "setenv ramdisk_size_sectors ${fw_sz} ; " \
+        "setenv ramdisk_size_sector ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
     "update_slave_spl=" \
@@ -183,9 +183,9 @@
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
-        "mmc read ${dtb_load_addr_virt} ${dtb_start_sector} ${dtb_size_sectors} ; " \
-        "mmc read ${linux_load_addr_virt} ${linux_start_sector} ${linux_size_sectors} ; " \
-        "mmc read ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${ramdisk_size_sectors} ; " \
+        "mmc read ${dtb_load_addr_virt} ${dtb_start_sector} ${dtb_size_sector} ; " \
+        "mmc read ${linux_load_addr_virt} ${linux_start_sector} ${linux_size_sector} ; " \
+        "mmc read ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${ramdisk_size_sector} ; " \
         "run boot_slave; " \
         "bootm ${linux_load_addr_virt} - ${dtb_load_addr_virt}"
 
