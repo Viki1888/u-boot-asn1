@@ -197,14 +197,14 @@ static void dmac_clk_config(void)
 	*(volatile unsigned int *)0x3fff77094 |= (1 << 11);
 	// # enable SCE-dmac clock
 	// set *0xFFF77104 |= 0x7
-	*(volatile unsigned int *)0x3fff77104 |= 0x7;
+	*(volatile unsigned int *)0x3fff77070 |= (1 << 13);
 
 	// # de-assert DMAC reset
 	// set *0xFFF78050 |= (1 << 0)
 	*(volatile unsigned int *)0x3fff78050 |= (1 << 0);
 	// # de-assert SCE reset
 	// set *0xFFF78054 |= 0x11010
-	*(volatile unsigned int *)0x3fff78054 |= 0x11010;
+	*(volatile unsigned int *)0x3fff780c4 |= (1 << 0);
 }
 
 static void sd_clk_config(void)
