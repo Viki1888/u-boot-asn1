@@ -95,8 +95,15 @@
     "fdt_high=0xffffffffffffffff\0" \
     "initrd_high=0xffffffffffffffff\0" \
     "ppl_start_sector=0\0"      /* uboot ppl start sector = FLASH_PPL_READ_ADDR / 0x200 */ \
-    "spl_start_sector=0x18\0"   /* uboot ppl start sector = FLASH_SPL_READ_ADDR / 0x200 */ \
+    "ppl_size_sector=0x18\0" \
+    "spl_start_sector=0x18\0" \
+    "spl_size_sector=0x140\0" \
+    "fdt_start_sector=0x1e0\0" \
+    "fdt_size_sector=0x20\0" \
+    "opensbi_start_sector=0x200\0" \
+    "opensbi_size_sector=0x280\0" \
     "uboot_start_sector=0x480\0"   /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
+    "uboot_size_sector=0x380\0" \
     "dtb_start_sector=0x1000\0"    /* dtb start sector */ \
     "dtb_size_sector=0x100\0"     /* dtb size in sector -> 128KB */ \
     "linux_start_sector=0x2000\0"  /* linux start sector */  \
