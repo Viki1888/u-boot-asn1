@@ -144,16 +144,21 @@ static void usb_clk_config(void)
 
 static void gpu_config(void)
 {
+	*(volatile unsigned int *)0x3fff77070 &= ~((1 << 21) | (1 << 20));
+	*(volatile unsigned int *)0x3fff7709c = 0x00011212;
+	*(volatile unsigned int *)0x3fff77070 |= (1 << 21) | (1 << 20);
+
 	*(volatile unsigned int *)0x3fff780a4=0;
-	*(volatile unsigned int *)0x3fff780c0=0;
 	*(volatile unsigned int *)0x3fff78094=0;
-	udelay(1000);
+	*(volatile unsigned int *)0x3fff780c0=0;
+
 	*(volatile unsigned int *)0x3fff78094=1;
 	*(volatile unsigned int *)0x3fff780c0=1;
 	*(volatile unsigned int *)0x3fff780a4=1;
 
 	//# x/wx 0x3fff27028 should get 0x20151217
 	printf("GPU ChipDate is:0x%08x\n", *(volatile unsigned int *)0x3fff27028);
+	printf("GPU Frequency is:%dKHz\n", *(volatile unsigned int *)0x3fff7713c);
 }
 
 static void npu_config(void)
