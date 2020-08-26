@@ -109,7 +109,7 @@
     "linux_start_sector=0x2000\0"  /* linux start sector */  \
     "linux_size_sector=0xa000\0"  /* linux size in sector -> 20MB */ \
     "ramdisk_start_sector=0xc000\0" /* ramdisk start sector */ \
-    "ramdisk_size_sector=0x10000\0" /* ramdisk size in sector -> 32MB */ \
+    "ramdisk_size_sector=0x1e000\0" /* ramdisk size in sector -> 60MB */ \
     "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
     "slave_fdt_start_sector=0x1180\0"   /* slave fdt start sector */ \
     "slave_uboot_start_sector=0x1200\0"  /* slave uboot start sector */ \
