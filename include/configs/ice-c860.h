@@ -119,14 +119,18 @@
 #endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
+	"spl_start_sector=0x0\0" \
+	"spl_size_sector=0x140\0" \
     "fdt_start_sector=0x980\0"     /* fdt start sector = FLASH_FDT_READ_ADDR / 0x200 */ \
+    "fdt_size_sector=0x20\0" \
     "uboot_start_sector=0xa00\0"   /* uboot start sector = FLASH_UBOOT_READ_ADDR / 0x200 */ \
+    "uboot_size_sector=0x400\0" \
     "dtb_start_sector=0x21000\0"   /* dtb start sector */ \
-    "dtb_size_sectors=0x1000\0"    /* dtb size in sectors -> 2MB */ \
+    "dtb_size_sector=0x1000\0"    /* dtb size in sector -> 2MB */ \
     "linux_start_sector=0x22000\0" /* linux start sector */  \
-    "linux_size_sectors=0xa000\0" /* linux size in sectors -> 20MB */ \
+    "linux_size_sector=0xa000\0" /* linux size in sector -> 20MB */ \
     "ramdisk_start_sector=0x2c000\0" /* ramdisk start sector */ \
-    "ramdisk_size_sectors=0x10000\0" /* ramdisk size in sectors -> 32MB */ \
+    "ramdisk_size_sector=0x10000\0" /* ramdisk size in sector -> 32MB */ \
     "slave_spl_start_sector=0x1000\0" /* uboot spl slave start sector */ \
     "slave_fdt_start_sector=0x1180\0"   /* slave fdt start sector */ \
     "slave_uboot_start_sector=0x1200\0"  /* slave uboot start sector */ \
@@ -141,6 +145,12 @@
     "linux_load_addr_phys=0x00000000\0" \
     "ramdisk_load_addr_virt=0x82000000\0" \
     "ramdisk_load_addr_phys=0x02000000\0" \
+    "avail_addr_virt=0x80000000\0" \
+    "avail_addr_phy=0x00000000\0" \
+	"abc=" \
+		"tftpboot ${avail_addr_virt} kernelimg;" \
+		"mmc write ${avail_addr_phy} 0x21000 0x1b000;" \
+		"\0" \
     "update_fdt=" \
         "tftpboot ${dtb_load_addr_virt} c860/dt.dtb ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -162,7 +172,7 @@
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${dtb_load_addr_phys} ${dtb_start_sector} ${fw_sz} ; " \
-        "setenv dtb_size_sectors ${fw_sz} ; " \
+        "setenv dtb_size_sector ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
     "update_linux=" \
@@ -170,7 +180,7 @@
         "setexpr fw_sz ${filesize} / 0x200 ; " \
         "setexpr fw_sz ${fw_sz} + 1 ; " \
         "mmc write ${linux_load_addr_phys} ${linux_start_sector} ${fw_sz} ; " \
-        "setenv linux_size_sectors ${fw_sz} ; " \
+        "setenv linux_size_sector ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
     "update_slave_spl=" \
@@ -219,9 +229,9 @@
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
-        "mmc read ${dtb_load_addr_phys} ${dtb_start_sector} ${dtb_size_sectors} ; " \
-        "mmc read ${linux_load_addr_phys} ${linux_start_sector} ${linux_size_sectors} ; " \
-        "mmc read ${ramdisk_load_addr_phys} ${ramdisk_start_sector} ${ramdisk_size_sectors} ; " \
+        "mmc read ${dtb_load_addr_phys} ${dtb_start_sector} ${dtb_size_sector} ; " \
+        "mmc read ${linux_load_addr_phys} ${linux_start_sector} ${linux_size_sector} ; " \
+        "mmc read ${ramdisk_load_addr_phys} ${ramdisk_start_sector} ${ramdisk_size_sector} ; " \
         "run boot_slave; " \
         "bootm ${linux_load_addr_virt} - ${dtb_load_addr_virt}"
 
