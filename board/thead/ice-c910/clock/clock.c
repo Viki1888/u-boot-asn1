@@ -70,7 +70,7 @@ void gmac_clk_config(u32 interface)
 		*(volatile  unsigned  int*)(0x3fff770d8)  =  0x80000028;
 
 		*(volatile  unsigned  int*)(0x3fff770c4)  =  0x1f;//rx
-		*(volatile  unsigned  int*)(0x3fff770c8)  =  0x00;//tx
+		*(volatile  unsigned  int*)(0x3fff770c8)  =  0x1f;//tx
 
 		*(volatile  unsigned  int*)(0x3fff770c0)  =  0x13dc;
 	}
