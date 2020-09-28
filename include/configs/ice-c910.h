@@ -121,6 +121,16 @@
     "linux_load_addr_virt=0x00200000\0" \
     "ramdisk_load_addr_virt=0x02000000\0" \
     "avail_addr=0x10000000\0" \
+    "good=" \
+        "setenv ipaddr 169.254.143.244;" \
+        "setenv netmask 255.255.255.0;" \
+        "setenv serverip 169.254.143.246;" \
+        "\0" \
+    "net=" \
+        "setenv ipaddr 172.16.150.10;" \
+        "setenv netmask 255.255.255.0;" \
+        "setenv serverip 172.16.150.11;" \
+        "\0" \
     "abc=" \
         "tftp ${avail_addr} kernelimg;"\
         "mmc write ${avail_addr} 0 0x2a000 ; " \
@@ -198,7 +208,6 @@
         "mmc read ${dtb_load_addr_virt} ${dtb_start_sector} ${dtb_size_sector} ; " \
         "mmc read ${linux_load_addr_virt} ${linux_start_sector} ${linux_size_sector} ; " \
         "mmc read ${ramdisk_load_addr_virt} ${ramdisk_start_sector} ${ramdisk_size_sector} ; " \
-        "run boot_slave; " \
         "bootm ${linux_load_addr_virt} - ${dtb_load_addr_virt}"
 
 

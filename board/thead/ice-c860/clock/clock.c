@@ -142,15 +142,58 @@ static void usb_clk_config(void)
 // 	}
 // }
 
+static void gpu_config(void)
+{
+	*(volatile unsigned int *)0xbff77070 &= ~((1 << 21) | (1 << 20));
+	udelay(100);
+	*(volatile unsigned int *)0xbff7709c = 0x00011212;
+	udelay(100);
+	*(volatile unsigned int *)0xbff77070 |= (1 << 21) | (1 << 20);
+
+	*(volatile unsigned int *)0xbff780a4=0;
+	*(volatile unsigned int *)0xbff78094=0;
+	*(volatile unsigned int *)0xbff780c0=0;
+	udelay(100);
+
+	*(volatile unsigned int *)0xbff78094=1;
+	*(volatile unsigned int *)0xbff780c0=1;
+	*(volatile unsigned int *)0xbff780a4=1;
+	udelay(1000);
+
+	//# x/wx 0x3fff27028 should get 0x20151217
+	printf("GPU ChipDate is:0x%08x\n", *(volatile unsigned int *)0xbff27028);
+	printf("GPU Frequency is:%dKHz\n", *(volatile unsigned int *)0xbff7713c);
+}
+
 static void npu_config(void)
 {
-	// set *0xfff78044=0xff
 	*(volatile unsigned int *)0xbff78044 = 0xff;
-	// DelayTicks 32
-	// delay_tick(32);
-	// # x/wx 0xFFF20028 should get 0x20190514
-	// # echo NPU ChipDate is:\n
-	// # x/wx 0xFFF20028
+	udelay(100);
+
+	printf("NPU ChipDate is:0x%08x\n", *(volatile unsigned int *)0xbff20028);
+}
+
+static void dpu_config(void)
+{
+	//set dpu_pixclk_div_en
+	*(volatile unsigned int *)0xbff77098 |= 0x10811212;
+	//enable dpu_aclk and dpu_cclk
+	*(volatile unsigned int *)0xbff77070 |= (1 << 23 | 1 << 22);
+	//set dpu_pixclk_div_en, dpu_pixclk_div_en, ahb_clk_dpu_en, dpu_aclk_div_en, dpu_cclk_div_en
+	*(volatile unsigned int *)0xbff77098 |= 0x11811212;
+	//dpu rst
+	*(volatile unsigned int *)0xbff78090 |= (1 << 0);
+	//dpu crst
+	*(volatile unsigned int *)0xbff780a0 |= (1 << 0);
+	//dpu arst
+	*(volatile unsigned int *)0xbff7809c |= (1 << 0);
+	//set DPU_DISPLAY_BUF as GPIO
+	*(volatile unsigned int *)0xbe830700 |= (1 << 2);
+	//Enable LCD 5V output, it also control by "lcd-power" in dts
+	*(volatile unsigned int *)0xbff72000 |= (1 << 2);
+	*(volatile unsigned int *)0xbff72004 |= (1 << 2);
+
+	printf("DPU ChipDate is:0x%08x\n", *(volatile unsigned int *)0xbff28028);
 }
 
 static void vpu_clk_config(void)
@@ -177,14 +220,14 @@ static void dmac_clk_config(void)
 	*(volatile unsigned int *)0xbff77094 |= (1 << 11);
 	// # enable SCE-dmac clock
 	// set *0xFFF77104 |= 0x7
-	*(volatile unsigned int *)0xbff77104 |= 0x7;
+	*(volatile unsigned int *)0xbff77070 |= (1 << 13);
 
 	// # de-assert DMAC reset
 	// set *0xFFF78050 |= (1 << 0)
 	*(volatile unsigned int *)0xbff78050 |= (1 << 0);
 	// # de-assert SCE reset
 	// set *0xFFF78054 |= 0x11010
-	*(volatile unsigned int *)0xbff78054 |= 0x11010;
+	*(volatile unsigned int *)0xbff780c4 |= 0x11010;
 }
 
 static void sd_clk_config(void)
@@ -233,7 +276,9 @@ void clock_init(void)
 	gmac_clk_config(PHY_INTERFACE_MODE_RGMII);
 
 	usb_clk_config();
+	gpu_config();
 	npu_config();
+	dpu_config();
 	vpu_clk_config();
 	// pcie_clk_config();
 	dmac_clk_config();

@@ -41,6 +41,12 @@ void sys_clk_config(int cpu_freq, int ddr_freq)
         read = *(volatile unsigned int*)(0xfff77060);
     }
 
+    //enable dpu_clk
+    *(volatile unsigned int*)(0xfff77098) = 0x01601212;//div en
+    *(volatile unsigned int*)(0xfff77098) = 0x11611212;//pixclk_en, hclk_en
+
+    //enable gpu_clk, 500MHz/500MHz
+    *(volatile unsigned int*)(0xfff7709c) = 0x11212; //gpu_hclk_en, gpu_aclk_div, gpu_cclk_div
 
     //***********************
     //C810 DIV
@@ -322,9 +328,9 @@ void sys_clk_config(int cpu_freq, int ddr_freq)
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
-    *(volatile unsigned int*)(0xfff77108) = 0xff;
-    *(volatile unsigned int*)(0xfff77108) = 0xff;
-    *(volatile unsigned int*)(0xfff77108) = 0xff;
+    *(volatile unsigned int*)(0xfff77108) = 0x1ff;
+    *(volatile unsigned int*)(0xfff77108) = 0x1ff;
+    *(volatile unsigned int*)(0xfff77108) = 0x1ff;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;
     *(volatile unsigned int*)(0xfff78040) = 0x0;

@@ -54,6 +54,7 @@ void show_boot_progress(int val) {}
 
 int board_early_init_f(void)
 {
+	timer_init();
 	clock_init();
 	return 0;
 }
@@ -68,7 +69,6 @@ int dram_init_banksize(void)
 
 int board_early_init_r(void)
 {
-	timer_init();
 	return 0;
 }
 

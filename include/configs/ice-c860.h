@@ -232,7 +232,6 @@
         "mmc read ${dtb_load_addr_phys} ${dtb_start_sector} ${dtb_size_sector} ; " \
         "mmc read ${linux_load_addr_phys} ${linux_start_sector} ${linux_size_sector} ; " \
         "mmc read ${ramdisk_load_addr_phys} ${ramdisk_start_sector} ${ramdisk_size_sector} ; " \
-        "run boot_slave; " \
         "bootm ${linux_load_addr_virt} - ${dtb_load_addr_virt}"
 
 
