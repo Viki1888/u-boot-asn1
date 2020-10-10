@@ -121,6 +121,12 @@
     "linux_load_addr_virt=0x00200000\0" \
     "ramdisk_load_addr_virt=0x02000000\0" \
     "avail_addr=0x10000000\0" \
+    "www=" \
+        "mmc write 0x10000000 0x0 0x1000;" \
+        "\0" \
+    "rrr=" \
+        "mmc read 0x10000000 0x0 0x1000;" \
+        "\0" \
     "good=" \
         "setenv ipaddr 169.254.143.244;" \
         "setenv netmask 255.255.255.0;" \
