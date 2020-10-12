@@ -37,15 +37,14 @@
 #define STATUS_ERR  1
 #define STATUS_OK   0
 
-typedef struct
-{
-    u16 year;
-    u8  month;
-    u8  day;
-    u8  weekday;
-    u8  hour;
-    u8  min;
-    u8  sec;
+typedef struct {
+	u16 year;
+	u8  month;
+	u8  day;
+	u8  weekday;
+	u8  hour;
+	u8  min;
+	u8  sec;
 } __attribute__((packed)) RTCTIME, *PRTCTIME;
 
 
@@ -60,4 +59,3 @@ typedef struct
 #define INOUT
 
 #endif  // __DATATYPE_H__
-

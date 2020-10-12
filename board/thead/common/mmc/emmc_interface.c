@@ -18,11 +18,11 @@ static phys_addr_t base_adr = EMMC_BASEADDR;
  */
 u32 emmc_set_bits(controller_reg_e reg, u32 val)
 {
-    u32 *reg_addr;
-    reg_addr = (u32 *)(base_adr + reg);
+	u32 *reg_addr;
+	reg_addr = (u32 *)(base_adr + reg);
 
-    *reg_addr |= val;
-    return *reg_addr;
+	*reg_addr |= val;
+	return *reg_addr;
 }
 
 /*
@@ -33,11 +33,11 @@ u32 emmc_set_bits(controller_reg_e reg, u32 val)
  */
 u32 emmc_clear_bits(controller_reg_e reg, u32 val)
 {
-    u32 *reg_addr;
-    reg_addr = (u32 *)(base_adr + reg);
+	u32 *reg_addr;
+	reg_addr = (u32 *)(base_adr + reg);
 
-    *reg_addr &= (~val);
-    return *reg_addr;
+	*reg_addr &= (~val);
+	return *reg_addr;
 }
 
 /*
@@ -48,11 +48,11 @@ u32 emmc_clear_bits(controller_reg_e reg, u32 val)
  */
 u32 emmc_set_register(controller_reg_e reg, u32 val)
 {
-    u32 *reg_addr;
-    reg_addr = (u32 *)(base_adr + reg);
+	u32 *reg_addr;
+	reg_addr = (u32 *)(base_adr + reg);
 
-    *reg_addr = val;
-    return *reg_addr;
+	*reg_addr = val;
+	return *reg_addr;
 }
 
 /*
@@ -62,18 +62,18 @@ u32 emmc_set_register(controller_reg_e reg, u32 val)
  */
 u32 emmc_read_register(controller_reg_e reg)
 {
-    u32 *reg_addr;
-    u32 retval;
+	u32 *reg_addr;
+	u32 retval;
 
-    reg_addr = (u32 *)(base_adr + reg);
-    retval = *reg_addr;
+	reg_addr = (u32 *)(base_adr + reg);
+	retval = *reg_addr;
 
-    /* if request is to read CDETECT, make sure you return
-       the hacked ;) CEATA_MAP bit */
-    if (CDETECT == reg) {
-        retval &= CEATA_MAP;
-    }
+	/* if request is to read CDETECT, make sure you return
+	   the hacked ;) CEATA_MAP bit */
+	if (CDETECT == reg) {
+		retval &= CEATA_MAP;
+	}
 
-    return retval;
+	return retval;
 }
 

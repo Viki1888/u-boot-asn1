@@ -66,30 +66,30 @@
 /*config the uart */
 
 typedef struct UART_Info_t {
-    volatile u32* addr;
+	volatile u32* addr;
 } CKStruct_UartInfo, *PCKStruct_UartInfo;
 
 /* Struct of Uart REG*/
 typedef struct UART_REG {
-    union {
-        volatile u32 uart_RBR;
-        volatile u32 uart_THR;
-        volatile u32 uart_DLL;
-    };
-    union {
-        volatile u32 uart_IER;
-        volatile u32 uart_DLH;
-    };
-    union {
-        volatile u32 uart_IIR;
-        volatile u32 uart_FCR;
-    };
-    volatile u32 uart_LCR;
-    volatile u32 uart_MCR;
-    volatile u32 uart_LSR;
-    volatile u32 uart_MSR;
-    volatile u32 uart_RSV[24];
-    volatile u32 uart_USR;
+	union {
+		volatile u32 uart_RBR;
+		volatile u32 uart_THR;
+		volatile u32 uart_DLL;
+	};
+	union {
+		volatile u32 uart_IER;
+		volatile u32 uart_DLH;
+	};
+	union {
+		volatile u32 uart_IIR;
+		volatile u32 uart_FCR;
+	};
+	volatile u32 uart_LCR;
+	volatile u32 uart_MCR;
+	volatile u32 uart_LSR;
+	volatile u32 uart_MSR;
+	volatile u32 uart_RSV[24];
+	volatile u32 uart_USR;
 } UART_REG;
 
 #endif /* __ASM_ARCH_UART_H__ */

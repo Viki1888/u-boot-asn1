@@ -9,11 +9,11 @@
 
 #include "../datatype.h"
 
-typedef enum ERASE_TYPE_e{
-    ERASE_BY_SECTOR,
-    ERASE_BY_BLOCK,
-    ERASE_BY_CHIP
-}ERASE_TYPE_t;
+typedef enum ERASE_TYPE_e {
+	ERASE_BY_SECTOR,
+	ERASE_BY_BLOCK,
+	ERASE_BY_CHIP
+} ERASE_TYPE_t;
 
 s32 spiflash_init(void);
 

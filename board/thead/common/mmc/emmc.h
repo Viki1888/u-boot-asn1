@@ -119,10 +119,10 @@
 
 static inline u32 CSD_C_SIZE_INLINE(u32 *csd_array)
 {
-    u32 bits_62_to_63, bits_64_to_73;
-    bits_62_to_63 = GET_BITS_BETWEEN(62, 63, csd_array);
-    bits_64_to_73 = GET_BITS_BETWEEN(64, 73, csd_array);
-    return (bits_62_to_63 | (bits_64_to_73 << 2));
+	u32 bits_62_to_63, bits_64_to_73;
+	bits_62_to_63 = GET_BITS_BETWEEN(62, 63, csd_array);
+	bits_64_to_73 = GET_BITS_BETWEEN(64, 73, csd_array);
+	return (bits_62_to_63 | (bits_64_to_73 << 2));
 }
 
 /*************** End  CSD Register Defines **************************/
@@ -187,9 +187,9 @@ typedef void (*emmc_postproc_callback)(void *, u32 *);
 typedef void (*emmc_preproc_callback)(u32, u32, u32 *, u32 *);
 
 typedef enum {
-    EMMC_BOOT_PARTITION_1    = 0,
-    EMMC_BOOT_PARTITION_2       ,
-    EMMC_BOOT_PARTITION_USER
+	EMMC_BOOT_PARTITION_1    = 0,
+	EMMC_BOOT_PARTITION_2,
+	EMMC_BOOT_PARTITION_USER
 } emmc_area_e;
 /*
 Card information structure. One structure is maintained for each and every
@@ -197,17 +197,17 @@ card supported by the ip. Since the MMC is the basic type, this structure is mai
 based on MMC card types and the extra fields are added as per the requirement
 */
 typedef enum {
-    CARD_STATE_EMPTY    = -1,
-    CARD_STATE_IDLE     = 0,
-    CARD_STATE_READY    = 1,
-    CARD_STATE_IDENT    = 2,
-    CARD_STATE_STBY     = 3,
-    CARD_STATE_TRAN     = 4,
-    CARD_STATE_DATA     = 5,
-    CARD_STATE_RCV      = 6,
-    CARD_STATE_PRG      = 7,
-    CARD_STATE_DIS      = 8,
-    CARD_STATE_INA      = 9
+	CARD_STATE_EMPTY    = -1,
+	CARD_STATE_IDLE     = 0,
+	CARD_STATE_READY    = 1,
+	CARD_STATE_IDENT    = 2,
+	CARD_STATE_STBY     = 3,
+	CARD_STATE_TRAN     = 4,
+	CARD_STATE_DATA     = 5,
+	CARD_STATE_RCV      = 6,
+	CARD_STATE_PRG      = 7,
+	CARD_STATE_DIS      = 8,
+	CARD_STATE_INA      = 9
 } card_state_e;
 
 /**
@@ -216,10 +216,10 @@ typedef enum {
   * values for the IP which will need to be referred at a later time.
   */
 typedef struct {
-    u32 total_cards;               /* The total cards on the system                */
-    u32 fifo_depth;                /* The fifo depth of the IP                      */
+	u32 total_cards;               /* The total cards on the system                */
+	u32 fifo_depth;                /* The fifo depth of the IP                      */
 
-    u32 num_of_cards;              /* Total number of cards the IP has been
+	u32 num_of_cards;              /* Total number of cards the IP has been
                                     * configured for                                */
 } emmc_status_info_t;
 
@@ -231,42 +231,42 @@ typedef struct {
   */
 typedef struct {
 
-    /** The error status of the command.
-      * 0 means that there is no error.
-      */
-    u32 error_status;
+	/** The error status of the command.
+	  * 0 means that there is no error.
+	  */
+	u32 error_status;
 
-    /** The array of dwords which stores the response for the  command.
-     *  If set to NULL, the response is discarded,
-     */
-    u32 *resp_buffer;
+	/** The array of dwords which stores the response for the  command.
+	 *  If set to NULL, the response is discarded,
+	 */
+	u32 *resp_buffer;
 
-    /** The data buffer for a data command. It is ignored for
-     *  non data commands. used in Slave mode of operation
-     */
-    u8 *data_buffer;
+	/** The data buffer for a data command. It is ignored for
+	 *  non data commands. used in Slave mode of operation
+	 */
+	u8 *data_buffer;
 
-    /** The state of the command in progress. */
-    u32 cmd_status;
+	/** The state of the command in progress. */
+	u32 cmd_status;
 
-    /** The number of blocks of to be read/written. */
-    u32 num_of_blocks;
+	/** The number of blocks of to be read/written. */
+	u32 num_of_blocks;
 
-    /** The number of bytes already read/written. */
-    u32 num_bytes_read;
+	/** The number of bytes already read/written. */
+	u32 num_bytes_read;
 
-    /** The slot in which the target card is inserted in. */
-    u32 slot_num;
+	/** The slot in which the target card is inserted in. */
+	u32 slot_num;
 
-    /** This flag is set if a data command got aborted. */
+	/** This flag is set if a data command got aborted. */
 
-    /** A bus corruption had occured during the data transfer. */
-    u32 bus_corruption_occured;
+	/** A bus corruption had occured during the data transfer. */
+	u32 bus_corruption_occured;
 
-    /** The block size for the current data exchange */
-    u32 blksize;
+	/** The block size for the current data exchange */
+	u32 blksize;
 
-    u32 command_index;
+	u32 command_index;
 } current_task_status_t;
 
 /*
@@ -275,49 +275,49 @@ Note that once the HSMMC ad HSSD cards come in to picture the enum elements may
 increase
 */
 typedef enum {
-    SD_TYPE         ,
-    MMC_TYPE        ,
-    MMC_4_3_TYPE    ,
-    NONE_TYPE       ,
-    ERRTYPE
+	SD_TYPE,
+	MMC_TYPE,
+	MMC_4_3_TYPE,
+	NONE_TYPE,
+	ERRTYPE
 } card_type_e;
 
 #define CCCR_LENGTH     0x14
 
 typedef struct {
-    card_type_e    card_type;
-    card_state_e card_state;
-    union {
-        u32 csd_dwords[4];
-        u8 csd_bytes[16];
-    } csd_union;
-    union {
-        u32 cid_dwords[4];
-        u8 cid_bytes[16];
-    } cid_union;
+	card_type_e    card_type;
+	card_state_e card_state;
+	union {
+		u32 csd_dwords[4];
+		u8 csd_bytes[16];
+	} csd_union;
+	union {
+		u32 cid_dwords[4];
+		u8 cid_bytes[16];
+	} cid_union;
 #ifdef CONDIF_SUPPORT_EMMC_EXTCSD
-    union {
-        u32 extcsd_dwords[128];
-        u8 extcsd_bytes[512];
-    } extcsd_union;
+	union {
+		u32 extcsd_dwords[128];
+		u8 extcsd_bytes[512];
+	} extcsd_union;
 #endif
-    union {
-        u32 scr_dwords[2];
-        u8 scr_bytes[8];
-    } scr_union;
+	union {
+		u32 scr_dwords[2];
+		u8 scr_bytes[8];
+	} scr_union;
 
-    u8 the_cccr_bytes[CCCR_LENGTH];
+	u8 the_cccr_bytes[CCCR_LENGTH];
 
-    u32 the_rca;
-    u32 card_write_blksize;
-    u32 card_read_blksize;
-    u32 orig_card_write_blksize;
-    u32 orig_card_read_blksize;
-    u32 card_size;
-    u32 card_boot_size;
-    u32 card_rpmb_size;
-    u32 divider_val;
-    u32 version;
+	u32 the_rca;
+	u32 card_write_blksize;
+	u32 card_read_blksize;
+	u32 orig_card_write_blksize;
+	u32 orig_card_read_blksize;
+	u32 card_size;
+	u32 card_boot_size;
+	u32 card_rpmb_size;
+	u32 divider_val;
+	u32 version;
 } card_info_t;
 
 #define the_cid	cid_union.cid_dwords

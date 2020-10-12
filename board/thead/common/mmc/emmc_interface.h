@@ -15,38 +15,38 @@
   * registers. The registers need to be updated according to IP release 2.10
   */
 typedef enum {
-    CTRL     = 0x0,     /** Control */
-    PWREN    = 0x4,     /** Power-enable */
-    CLKDIV   = 0x8,     /** Clock divider */
-    CLKSRC   = 0xC,     /** Clock source */
-    CLKENA   = 0x10,    /** Clock enable */
-    TMOUT    = 0x14,    /** Timeout */
-    CTYPE    = 0x18,    /** Card type */
-    BLKSIZ   = 0x1C,    /** Block Size */
-    BYTCNT   = 0x20,    /** Byte count */
-    INTMSK   = 0x24,    /** Interrupt Mask */
-    CMDARG   = 0x28,    /** Command Argument */
-    CMD      = 0x2C,    /** Command */
-    RESP0    = 0x30,    /** Response 0 */
-    RESP1    = 0x34,    /** Response 1 */
-    RESP2    = 0x38,    /** Response 2 */
-    RESP3    = 0x3C,    /** Response 3 */
-    MINTSTS  = 0x40,    /** Masked interrupt status */
-    RINTSTS  = 0x44,    /** Raw interrupt status */
-    STATUS   = 0x48,    /** Status */
-    FIFOTH   = 0x4C,    /** FIFO threshold */
-    CDETECT  = 0x50,    /** Card detect */
-    WRTPRT   = 0x54,    /** Write protect */
-    GPIO     = 0x58,    /** General Purpose IO */
-    TCBCNT   = 0x5C,    /** Transferred CIU byte count */
-    TBBCNT   = 0x60,    /** Transferred host/DMA to/from byte count */
-    DEBNCE   = 0x64,    /** Card detect debounce */
-    USRID    = 0x68,    /** User ID */
-    VERID    = 0x6C,    /** Version ID */
-    HCON     = 0x70,    /** Hardware Configuration */
-    UHSREG   = 0x74,    /** Reserved */
+	CTRL     = 0x0,     /** Control */
+	PWREN    = 0x4,     /** Power-enable */
+	CLKDIV   = 0x8,     /** Clock divider */
+	CLKSRC   = 0xC,     /** Clock source */
+	CLKENA   = 0x10,    /** Clock enable */
+	TMOUT    = 0x14,    /** Timeout */
+	CTYPE    = 0x18,    /** Card type */
+	BLKSIZ   = 0x1C,    /** Block Size */
+	BYTCNT   = 0x20,    /** Byte count */
+	INTMSK   = 0x24,    /** Interrupt Mask */
+	CMDARG   = 0x28,    /** Command Argument */
+	CMD      = 0x2C,    /** Command */
+	RESP0    = 0x30,    /** Response 0 */
+	RESP1    = 0x34,    /** Response 1 */
+	RESP2    = 0x38,    /** Response 2 */
+	RESP3    = 0x3C,    /** Response 3 */
+	MINTSTS  = 0x40,    /** Masked interrupt status */
+	RINTSTS  = 0x44,    /** Raw interrupt status */
+	STATUS   = 0x48,    /** Status */
+	FIFOTH   = 0x4C,    /** FIFO threshold */
+	CDETECT  = 0x50,    /** Card detect */
+	WRTPRT   = 0x54,    /** Write protect */
+	GPIO     = 0x58,    /** General Purpose IO */
+	TCBCNT   = 0x5C,    /** Transferred CIU byte count */
+	TBBCNT   = 0x60,    /** Transferred host/DMA to/from byte count */
+	DEBNCE   = 0x64,    /** Card detect debounce */
+	USRID    = 0x68,    /** User ID */
+	VERID    = 0x6C,    /** Version ID */
+	HCON     = 0x70,    /** Hardware Configuration */
+	UHSREG   = 0x74,    /** Reserved */
 
-    FIFODAT  = 0x200,   /** FIFO data read write */
+	FIFODAT  = 0x200,   /** FIFO data read write */
 } controller_reg_e ;
 
 /* Misc Defines */
