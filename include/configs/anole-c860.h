@@ -147,8 +147,8 @@
     "dtb_load_addr_phys=0x0f000000\0"  \
     "linux_load_addr_virt=0x90000000\0"  \
     "linux_load_addr_phys=0x10000000\0" \
-    "ramdisk_load_addr_virt=0x90000000\0"  \
-    "ramdisk_load_addr_phys=0x10000000\0" \
+    "ramdisk_load_addr_virt=0x80000000\0"  \
+    "ramdisk_load_addr_phys=0x00000000\0" \
     "slave_dtb_load_addr_phys=0x4f000000\0" \
     "slave_linux_load_addr_phys=0x50000000\0" \
     "update_spl=" \
@@ -186,6 +186,14 @@
         "setenv dtb_size_sector ${fw_sz} ; " \
         "saveenv ; " \
         "\0" \
+    "update_ramdisk=" \
+        "tftpboot ${ramdisk_load_addr_virt} c860/rootfs.ext2 ; " \
+        "setexpr fw_sz ${filesize} / 0x200 ; " \
+        "setexpr fw_sz ${fw_sz} + 1 ; " \
+        "mmc write ${ramdisk_load_addr_phys} ${ramdisk_start_sector} ${fw_sz} ; " \
+        "setenv ramdisk_size_sector ${fw_sz} ; " \
+        "saveenv ; " \
+        "\0" \
     "update_linux=" \
         "tftpboot ${linux_load_addr_virt} c860/uImage ; " \
         "setexpr fw_sz ${filesize} / 0x200 ; " \
@@ -195,7 +203,7 @@
         "saveenv ; " \
         "\0" \
     "update_linux_all=" \
-        "run update_dtb;run update_linux" \
+        "run update_dtb;run update_linux;run update_ramdisk" \
         "\0" \
     "update_slave_spl=" \
         "tftpboot ${dtb_load_addr_virt} c810/u-boot-spl.bin ; " \
