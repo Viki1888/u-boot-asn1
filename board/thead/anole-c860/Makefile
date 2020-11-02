@@ -8,7 +8,7 @@ obj-y := anole_c860_evb.o
 obj-y += clock/clock.o
 
 ifdef CONFIG_SPL_BUILD
-ifdef SYS_ANOLE_DDR4
+ifdef CONFIG_SYS_ANOLE_DDR4
 obj-y += spl/ddr4/ddr.o
 obj-y += spl/ddr4/ddr_phy.o
 else
