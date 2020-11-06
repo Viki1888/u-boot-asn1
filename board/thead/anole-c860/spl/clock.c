@@ -23,7 +23,7 @@ GATED CLOCK:
 4)I2S/PCIE/USB/GMAC: enable in software driver when needed
 *************************************************/
 
-void sys_clk_config(int ddr_freq)
+void sys_clk_config(int cpu_freq, int ddr_freq)
 {
     unsigned int read,i;
 
@@ -78,6 +78,62 @@ void sys_clk_config(int ddr_freq)
     asm("nop");
     asm("nop");
     asm("nop");
+
+    //CPU core_clk
+    switch (cpu_freq) {
+    case 1500:
+        *(volatile unsigned int*)(0xfff77000) = 0x01107d02; //1500MHz, 1500MHz
+        break;
+    case 1400:
+        *(volatile unsigned int*)(0xfff77000) = 0x01103a01; //1392MHz, 1392MHz
+        break;
+    case 1300:
+        *(volatile unsigned int*)(0xfff77000) = 0x01103601; //1296MHz, 1296MHz
+        break;
+    case 1200:
+        *(volatile unsigned int*)(0xfff77000) = 0x01103201; //1200MHz, 1200MHz
+        break;
+    case 1100:
+        *(volatile unsigned int*)(0xfff77000) = 0x01205b01; //2184MHz, 1092MHz
+        break;
+    case 1000: //Anole CK860 SignOff Freq
+        *(volatile unsigned int*)(0xfff77000) = 0x0120fa03; //2000MHz, 1000MHz
+        break;
+    case 900:
+        *(volatile unsigned int*)(0xfff77000) = 0x01204b01; //1800MHz, 900MHz
+        break;
+    case 800:
+        *(volatile unsigned int*)(0xfff77000) = 0x0120c803; //1600MHz, 800MHz
+        break;
+    case 700:
+        *(volatile unsigned int*)(0xfff77000) = 0x01203a01; //1392MHz, 696MHz
+        break;
+    case 600:
+        *(volatile unsigned int*)(0xfff77000) = 0x01203201; //1200MHz, 600MHz
+        break;
+    case 500:
+        *(volatile unsigned int*)(0xfff77000) = 0x0140fa03; //2000MHz, 500MHz
+        break;
+    case 400:
+        *(volatile unsigned int*)(0xfff77000) = 0x0150fa03; //2000MHz, 400MHz
+        break;
+    case 300:
+        *(volatile unsigned int*)(0xfff77000) = 0x01403201; //1200MHz, 300MHz
+        break;
+    case 200:
+        *(volatile unsigned int*)(0xfff77000) = 0x01603201; //1200MHz, 200MHz
+        break;
+    }
+    *(volatile unsigned int*)(0xfff77004) = 0x03000000;
+    *(volatile unsigned int*)(0xfff77008) = 0x3;	//reconfig
+    read = *(volatile unsigned int*)(0xfff77008);	//readback
+    //Wait ALL PLLs Lock
+    read = *(volatile unsigned int*)(0xfff77060);
+    read = *(volatile unsigned int*)(0xfff77060);
+    read = *(volatile unsigned int*)(0xfff77060);
+    while ((read & 0x1f) != 0x1f) {
+        read = *(volatile unsigned int*)(0xfff77060);
+    }
 
     //***********************
     //CPU_CLK=1GHz, BUS_CLK=500MHz, CNT_CLK=125MHz

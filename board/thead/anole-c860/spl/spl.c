@@ -17,7 +17,7 @@
 #include "../hardware.h"
 
 
-extern void sys_clk_config(int ddr_freq);
+extern void sys_clk_config(int cpu_freq, int ddr_freq);
 extern s32 uart_open(u32 uart_addrbase);
 extern void sdram_init(void);
 
@@ -28,6 +28,21 @@ extern int load_from_multi_bin(phys_addr_t img_baseaddr, phys_addr_t fdt_baseadd
 
 #define UBOOT_IMG_BASEADDR (u32)(0xfe500000)
 
+static void print_some_freq(void)
+{
+    u32 read = 0;
+
+    mini_printf("\n\n---- Welcome to Anole EVB_BOARD T-HEAD ----\n");
+    read = *(volatile unsigned int*)(0xfff77120);
+    mini_printf("CPU_CLK = %dMHz\n",read/1000);
+    read = *(volatile unsigned int*)(0xfff77124);
+    mini_printf("AXI_CLK = %dMHz\n",read/1000);
+    read = *(volatile unsigned int*)(0xfff77130);
+    mini_printf("AHB_CLK = %dMHz\n",read/1000);
+    read = *(volatile unsigned int*)(0xfff7712c);
+    mini_printf("DDR_CK = %d MT\n",read/1000*4);
+    mini_printf("GMAC = RGMII MODE\n");
+}
 
 void board_init_f(ulong dummy)
 {
@@ -38,14 +53,14 @@ void board_init_f(ulong dummy)
 #endif
 
     /* initialize clocks */
-    sys_clk_config(ddr_freq);
+    sys_clk_config(1000, ddr_freq);
 
     /* Clear global data */
     uart_open(CONSOLE_UART_BASE);
     mini_printf("Welcome to SPL!\n");
 
-    mini_printf("DDR freq %dMT\n", ddr_freq);
     sdram_init();
+    print_some_freq();
 }
 
 static void emmc_load_image(u32 offset, u32 size, phys_addr_t baseaddr)
