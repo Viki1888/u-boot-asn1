@@ -67,6 +67,11 @@
 #define CONFIG_PHY_MARVELL      1
 #define CONFIG_NET_RETRY_COUNT  20
 
+#define PHYS_FLASH_1                0x00000000 /* Flash Bank #0 */
+#define CONFIG_SYS_FLASH_BASE       PHYS_FLASH_1
+#define CONFIG_SYS_MAX_FLASH_BANKS  1
+#define CONFIG_ENV_ADDR             (CONFIG_SYS_FLASH_BASE + CONFIG_ENV_OFFSET)
+#define CONFIG_SYS_MMC_ENV_DEV      0
 
 /* Image address in Flash */
 #define FLASH_PPL_READ_ADDR     0x0
@@ -90,6 +95,8 @@
 #define TFTP_LOAD_DTB "tftpboot ${dtb_load_addr_virt} c910/hw.dtb ; "
 #define TFTP_LOAD_SLAVE_DTB "tftpboot ${dtb_load_addr_virt} c810/ice_ck810.dtb ; "
 #endif
+
+#define DEBUG_CMD 0
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
     "fdt_high=0xffffffffffffffff\0" \
@@ -121,6 +128,10 @@
     "linux_load_addr_virt=0x00200000\0" \
     "ramdisk_load_addr_virt=0x02000000\0" \
     "avail_addr=0x10000000\0" \
+    "ipaddr=169.254.143.244\0" \
+    "netmask=255.255.255.0\0" \
+    "serverip=169.254.143.246\0" /* \ */
+#if DEBUG_CMD
     "www=" \
         "mmc write 0x10000000 0x0 0x1000;" \
         "\0" \
@@ -208,6 +219,7 @@
         "cp ${slave_spl_load_addr_virt} ${sram_addr_virt} 0x8000;" \
         "bootslave ${sram_addr_virt}; " \
         "\0"
+#endif
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \

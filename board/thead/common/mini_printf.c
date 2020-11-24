@@ -23,7 +23,9 @@
 static char *bf __attribute__((section(".data")));
 static char zs __attribute__((section(".data")));
 
+#ifdef CONFIG_USE_MINI_PRINTF
 static char *outstr __attribute__((section(".data")));
+#endif
 
 static void out(char c)
 {
@@ -264,6 +266,7 @@ abort:
 	return 0;
 }
 
+#ifdef CONFIG_USE_MINI_PRINTF
 static void putc_outstr(char ch)
 {
 	*outstr++ = ch;
@@ -282,3 +285,4 @@ int sprintf(char *buf, const char *fmt, ...)
 
 	return ret;
 }
+#endif
