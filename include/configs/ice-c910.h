@@ -36,12 +36,6 @@
 #define CONFIG_SYS_MMC_ENV_DEV      0
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"opensbi_emmc_start=0x800\0" \
-	"opensbi_emmc_size=0x280\0" \
-	"dtb_emmc_start=0x1000\0" \
-	"dtb_emmc_size=0x100\0" \
-	"kernel_emmc_start=0x2000\0" \
-	"kernel_emmc_size=0xa000\0" \
 	"opensbi_addr=0x0\0" \
 	"dtb_addr=0x40000000\0" \
 	"kernel_addr=0x00200000\0" \
