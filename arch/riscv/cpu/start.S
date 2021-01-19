@@ -39,24 +39,13 @@ secondary_harts_relocation_error:
 .section .text
 .globl _start
 _start:
-#if CONFIG_IS_ENABLED(RISCV_MMODE) || CONFIG_PPL_BUILD
+#if CONFIG_IS_ENABLED(RISCV_MMODE)
 	csrr	a0, CSR_MHARTID
 #endif
 
-#ifdef CONFIG_PPL_BUILD
+#if (defined CONFIG_SPL_BUILD) && (defined CONFIG_TARGET_ICE_C910)
 	li x3, 128
 	csrs 0x7cb, x3
-
-	/* peripherals: 0x3 f000 0000 ~ 0x4 0000 0000 napot rw */
-	li		t0, 0xfdffffff
-	csrw	pmpaddr2, t0
-
-	csrw	pmpaddr3, x0
-	csrw	pmpaddr4, x0
-	csrw	pmpaddr5, x0
-
-	li		t0, 0x88980000001b1f1d
-	csrw	pmpcfg0, t0
 #endif
 
 	/* save hart id and dtb pointer */
@@ -93,14 +82,11 @@ call_board_init_f:
 	li	t0, -16
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_STACK)
 	li	t1, CONFIG_SPL_STACK
-#elif defined(CONFIG_PPL_BUILD) && defined(CONFIG_PPL_STACK)
-	li	t1, CONFIG_PPL_STACK
 #else
 	li	t1, CONFIG_SYS_INIT_SP_ADDR
 #endif
 	and	sp, t1, t0		/* force 16 byte alignment */
 
-#ifndef CONFIG_PPL_BUILD
 call_board_init_f_0:
 	mv	a0, sp
 	jal	board_init_f_alloc_reserve
@@ -171,7 +157,6 @@ wait_for_gd_init:
 	 */
 	bnez	s2, secondary_hart_loop
 #endif
-#endif // CONFIG_PPL_BUILD
 
 	/* Enable cache */
 	jal	icache_enable
@@ -224,9 +209,7 @@ spl_secondary_hart_stack_gd_setup:
 	beqz	a0, 1f
 	mv	a1, a0
 	la	a0, secondary_harts_relocation_error
-#ifdef CONFIG_SPL_PRINTF
 	jal	printf
-#endif
 	jal	hang
 
 	/* set new global data pointer on main hart */
@@ -237,14 +220,6 @@ spl_call_board_init_r:
 	mv	a1, zero
 	jal	board_init_r
 #endif
-
-#ifdef CONFIG_PPL_BUILD
-spl_call_board_init_r:
-	mv	a0, zero
-	mv	a1, zero
-	jal	board_init_r
-
-#else  // ifdef CONFIG_PPL_BUILD
 
 /*
  * void relocate_code (addr_sp, gd, addr_moni)
@@ -375,9 +350,7 @@ relocate_secondary_harts:
 	beqz	a0, 1f
 	mv	a1, a0
 	la	a0, secondary_harts_relocation_error
-#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_PRINTF)
 	jal	printf
-#endif
 	jal	hang
 
 	/* restore relocation offset */
@@ -404,8 +377,6 @@ call_board_init_r:
  * jump to it ...
  */
 	jr	t4			/* jump to board_init_r() */
-
-#endif // ifdef CONFIG_PPL_BUILD
 
 #ifdef CONFIG_SMP
 hart_out_of_bounds_loop:

@@ -469,24 +469,6 @@ static int initr_env(void)
 	return 0;
 }
 
-int linux_bootup_prepare(void)
-{
-	const void *blob = gd->fdt_blob;
-	u64 *start, *end;
-	u64 initrd_start, initrd_end;
-
-	start = (u64 *)fdtdec_get_chosen_prop(blob, "linux,initrd-start");
-	end = (u64 *)fdtdec_get_chosen_prop(blob, "linux,initrd-end");
-	initrd_start = __be64_to_cpu(*start);
-	initrd_end = __be64_to_cpu(*end);
-	debug("initrd_start: 0x%llx\n", initrd_start);
-	debug("initrd_end: 0x%llx\n", initrd_end);
-	//env_set_hex("ramdisk_load_addr_virt", initrd_start);
-	//env_set_hex("linux_load_addr_virt", gd->ram_base);
-
-	return 0;
-}
-
 #ifdef CONFIG_SYS_BOOTPARAMS_LEN
 static int initr_malloc_bootparams(void)
 {
@@ -699,6 +681,9 @@ static init_fnc_t init_sequence_r[] = {
 #ifdef CONFIG_DM
 	initr_dm,
 #endif
+#ifdef CONFIG_ARCH_EARLY_INIT_R
+	arch_early_init_r,
+#endif
 #if defined(CONFIG_ARM) || defined(CONFIG_NDS32) || defined(CONFIG_RISCV) || \
 	defined(CONFIG_SANDBOX)
 	board_init,	/* Setup chipselects */
@@ -746,9 +731,6 @@ static init_fnc_t init_sequence_r[] = {
 	 */
 	initr_pci,
 #endif
-#ifdef CONFIG_ARCH_EARLY_INIT_R
-	arch_early_init_r,
-#endif
 	power_init_board,
 #ifdef CONFIG_MTD_NOR_FLASH
 	initr_flash,
@@ -768,9 +750,6 @@ static init_fnc_t init_sequence_r[] = {
 	initr_mmc,
 #endif
 	initr_env,
-#ifdef CONFIG_RISCV
-	linux_bootup_prepare,
-#endif
 #ifdef CONFIG_SYS_BOOTPARAMS_LEN
 	initr_malloc_bootparams,
 #endif
