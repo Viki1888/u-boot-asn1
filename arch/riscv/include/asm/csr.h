@@ -104,6 +104,15 @@
 #define CSR_INSTRETH		0xc82
 #define CSR_MHARTID		0xf14
 
+#define CSR_SMPEN			0x7f3
+#define CSR_MTEE			0x7f4
+#define CSR_MCOR         0x7c2
+#define CSR_MHCR         0x7c1
+#define CSR_MCCR2        0x7c3
+#define CSR_MHINT        0x7c5
+#define CSR_MXSTATUS     0x7c0
+#define CSR_PLIC_BASE    0xfc1
+
 #ifndef __ASSEMBLY__
 
 #define csr_swap(csr, val)					\

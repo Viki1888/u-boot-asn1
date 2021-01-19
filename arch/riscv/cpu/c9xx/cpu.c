@@ -19,12 +19,6 @@ void (*image_entry)(u32, phys_addr_t);
 extern bootm_headers_t images;
 static inline void boot_core_vector(void)
 {
-#define CSR_MCOR         0x7c2
-#define CSR_MHCR         0x7c1
-#define CSR_MCCR2        0x7c3
-#define CSR_MHINT        0x7c5
-#define CSR_MXSTATUS     0x7c0
-
 	/* Set pmp regs */
 	csr_write(pmpaddr0, 0x0 >> 2 | ((0x100000000 - 1) >> 3));
 	csr_write(pmpaddr1, 0x3f0000000 >> 2 | ((0x10000000 - 1) >> 3));
