@@ -41,11 +41,9 @@
 	"kernel_addr=0x00200000\0" \
 	"avail_addr=0x10000000\0" \
 	"boot_vector=0\0" \
-	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"boot_size=60MiB\0" \
-	"partitions=name=table,size=2031KB;name=boot,size=$boot_size,type=boot;name=root,size=-,type=linux,uuid=$uuid_rootfs\0" \
-	"bootargs=console=ttyS0,115200 root=PARTUUID=$uuid_rootfs rootfstype=ext4 rdinit=/sbin/init rootwait rw earlyprintk clk_ignore_unused loglevel=7 c910_mmu_v1 eth=$ethaddr\0" \
-	"bootcmd=ext4load mmc 0:2 $opensbi_addr fw_jump.bin; ext4load mmc 0:2 $dtb_addr hw.dtb; ext4load mmc 0:2 $kernel_addr uImage; bootm $kernel_addr - $dtb_addr\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=$uuid_rootfs rootfstype=ext4 rdinit=/sbin/init rootwait rw earlyprintk clk_ignore_unused loglevel=7 c910_mmu_v1 eth=$ethaddr\0" \
+	"bootcmd_load=ext4load mmc 0:2 $opensbi_addr fw_jump.bin; ext4load mmc 0:2 $dtb_addr hw.dtb; ext4load mmc 0:2 $kernel_addr uImage\0" \
+	"bootcmd=run bootcmd_load; run set_bootargs; bootm $kernel_addr - $dtb_addr\0" \
 	"\0"
 
 #endif /* __CONFIG_H */
