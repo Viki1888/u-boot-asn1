@@ -89,6 +89,9 @@ static int do_bootm_subcommand(cmd_tbl_t *cmdtp, int flag, int argc,
 /* bootm - boot application image from image in memory */
 /*******************************************************************/
 
+#ifdef CONFIG_TARGET_LIGHT_FPGA_FM_C910
+extern int light_boot(int argc, char * const argv[]);
+#endif
 int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 #ifdef CONFIG_NEEDS_MANUAL_RELOC
@@ -103,6 +106,11 @@ int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 		relocated = 1;
 	}
+#endif
+
+#ifdef CONFIG_TARGET_LIGHT_FPGA_FM_C910
+	if (light_boot(argc, argv) < 0)
+		return -1;
 #endif
 
 	/* determine if we have a sub command */

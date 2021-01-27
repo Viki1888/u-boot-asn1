@@ -26,6 +26,9 @@
 #define CONFIG_SYS_BOOTM_LEN        SZ_64M
 #define CONFIG_SYS_CACHELINE_SIZE   64
 
+#define PLIC_BASE_ADDR   0xffd8000000
+#define PMP_BASE_ADDR    0xffdc020000
+
 /* Network Configuration */
 #define CONFIG_DW_ALTDESCRIPTOR
 #define CONFIG_RGMII            1
@@ -68,6 +71,10 @@
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
+       "bootm $t_kernel_addr $t_rootfs_addr $t_dtb_addr $nt_dtb_addr"
+
+#endif /* __CONFIG_H */
+/*
        "mmc read $t_opensbi_addr $t_opensbi_start $t_opensbi_size;" \
        "mmc read $t_kernel_addr $t_kernel_start $t_kernel_size;" \
        "mmc read $t_rootfs_addr $t_rootfs_start $t_rootfs_size;" \
@@ -76,6 +83,4 @@
        "mmc read $nt_kernel_addr $nt_kernel_start $nt_kernel_size;" \
        "mmc read $nt_rootfs_addr $nt_rootfs_start $nt_rootfs_size;" \
        "mmc read $nt_dtb_addr $nt_dtb_start $nt_dtb_size;" \
-       "bootm $t_kernel_addr $t_rootfs_addr $t_dtb_addr $nt_dtb_addr"
-
-#endif /* __CONFIG_H */
+*/

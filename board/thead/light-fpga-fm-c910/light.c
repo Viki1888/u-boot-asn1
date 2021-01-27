@@ -24,11 +24,17 @@ void usb_clk_config(void)
 
 int board_init(void)
 {
+#define GMAC_IOPMP   0xfff7038000
+	writel(0xffffffff, (void *)(GMAC_IOPMP+0xc0));
+
+#define USB_IOPMP   0xfff703a000
+	writel(0xffffffff, (void *)(USB_IOPMP+0xc0));
+
 #define SPI_NOR_FLASH_PINMUX 0xffef01c430
 	writel(readl((void *)SPI_NOR_FLASH_PINMUX) | 0x30, (void *)SPI_NOR_FLASH_PINMUX);
 
 #define SPI_NAND_FLASH_PINMUX 0xffef01c428
-	writel(readl((void *)SPI_NAND_FLASH_PINMUX) | (3 << 20), (void *)SPI_NAND_FLASH_PINMUX);
+	writel(readl((void *)SPI_NAND_FLASH_PINMUX) | (3<<20), (void *)SPI_NAND_FLASH_PINMUX);
 
 	usb_clk_config();
 	gmac_clk_config();

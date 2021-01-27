@@ -113,6 +113,8 @@
 #define CSR_MXSTATUS     0x7c0
 #define CSR_PLIC_BASE    0xfc1
 
+#define sync_is()   asm volatile (".long 0x01b0000b")
+
 #ifndef __ASSEMBLY__
 
 #define csr_swap(csr, val)					\

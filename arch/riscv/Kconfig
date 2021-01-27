@@ -28,6 +28,10 @@ config TARGET_LIGHT_EVB_MPW_C910
 	bool "Support T-HEAD LIGHT EVB MPW C910 Board"
 	select SUPPORT_SPL
 
+config TARGET_LIGHT_FPGA_FM_C910
+	bool "Support T-HEAD LIGHT EVB MPW C910 Board"
+	select SUPPORT_SPL
+
 endchoice
 
 config SYS_ICACHE_OFF
@@ -63,6 +67,7 @@ source "board/microchip/mpfs_icicle/Kconfig"
 source "board/sifive/fu540/Kconfig"
 source "board/thead/ice-c910/Kconfig"
 source "board/thead/light-evb-mpw-c910/Kconfig"
+source "board/thead/light-fpga-fm-c910/Kconfig"
 
 # platform-specific options below
 source "arch/riscv/cpu/ax25/Kconfig"

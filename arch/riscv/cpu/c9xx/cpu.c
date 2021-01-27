@@ -90,8 +90,6 @@ int cleanup_before_linux(void)
 	return 0;
 }
 
-#define sync_is()   asm volatile (".long 0x01b0000b")
-
 void flush_dcache_range(unsigned long start, unsigned long end)
 {
 	register unsigned long i asm("a0") = start & ~(CONFIG_SYS_CACHELINE_SIZE - 1);
