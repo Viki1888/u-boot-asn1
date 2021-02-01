@@ -144,7 +144,7 @@ static int parse_soc(const void *blob, int t)
 {
 	int node, device, irq;
 	fdt32_t *intc, *reg;
-	const char *status;
+	const char *status, *name;
 	long address, size;
 
 	node = fdt_path_offset(blob, "/soc");
@@ -157,7 +157,8 @@ static int parse_soc(const void *blob, int t)
 		if (device == -FDT_ERR_NOTFOUND)
 			return -ENOENT;
 
-		printf("name: %s\n", fdt_get_name(blob, device, NULL));
+		name = fdt_get_name(blob, device, NULL);
+		printf("name: %s\n", name);
 		status = (char *)fdt_getprop(blob, device, "status", NULL);
 		if (status)
 			printf("\tstatus: %s\n", status);
@@ -181,6 +182,35 @@ static int parse_soc(const void *blob, int t)
 			printf("\tsize: 0x%lx\n", size);
 			if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
 				return -EINVAL;
+
+			if (!strncmp(name, "mbox", 4)) {
+				reg += 2;
+				address = fdt_translate_address(blob, device, reg);
+				printf("\taddress: 0x%lx\n", address);
+				reg += 2;
+				size = fdt_translate_address(blob, device, reg);
+				printf("\tsize: 0x%lx\n", size);
+				if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
+					return -EINVAL;
+
+				reg += 2;
+				address = fdt_translate_address(blob, device, reg);
+				printf("\taddress: 0x%lx\n", address);
+				reg += 2;
+				size = fdt_translate_address(blob, device, reg);
+				printf("\tsize: 0x%lx\n", size);
+				if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
+					return -EINVAL;
+
+				reg += 2;
+				address = fdt_translate_address(blob, device, reg);
+				printf("\taddress: 0x%lx\n", address);
+				reg += 2;
+				size = fdt_translate_address(blob, device, reg);
+				printf("\tsize: 0x%lx\n", size);
+				if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
+					return -EINVAL;
+			}
 		}
 	}
 
