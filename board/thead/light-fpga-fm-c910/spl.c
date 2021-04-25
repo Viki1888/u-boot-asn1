@@ -24,8 +24,11 @@ extern void show_sys_clk(void);
 
 void setup_ddr_pmp(void)
 {
+	/* clear pmp entry0,entry1 setting in bootrom */
 	writel(0x0 >> 12, (void *)(PMP_BASE_ADDR + 0x100));
 	writel(0x0 >> 12, (void *)(PMP_BASE_ADDR + 0x104));
+	writel(0x0 >> 12, (void *)(PMP_BASE_ADDR + 0x108));
+	writel(0x0 >> 12, (void *)(PMP_BASE_ADDR + 0x10c));
 
 	writel(0, (void *)(PMP_BASE_ADDR + 0x000));
 
