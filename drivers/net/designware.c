@@ -232,28 +232,52 @@ static int _dw_write_hwaddr(struct dw_eth_dev *priv, u8 *mac_id)
 	return 0;
 }
 
+__weak int dw_txclk_set_rate(unsigned long rate)
+{
+        return 0;
+}
+
 static int dw_adjust_link(struct dw_eth_dev *priv, struct eth_mac_regs *mac_p,
 			  struct phy_device *phydev)
 {
 	u32 conf = readl(&mac_p->conf) | FRAMEBURSTENABLE | DISABLERXOWN;
+	ulong rate;
+	int ret;
 
 	if (!phydev->link) {
 		printf("%s: No link.\n", phydev->dev->name);
 		return 0;
 	}
 
-	if (phydev->speed != 1000)
-		conf |= MII_PORTSELECT;
-	else
+        switch (phydev->speed) {
+        case SPEED_1000:
+                rate = 125 * 1000 * 1000;
 		conf &= ~MII_PORTSELECT;
-
-	if (phydev->speed == 100)
+                break;
+        case SPEED_100:
+                rate = 25 * 1000 * 1000;
+		conf |= MII_PORTSELECT;
 		conf |= FES_100;
+                break;
+        case SPEED_10:
+                rate = 2.5 * 1000 * 1000;
+		conf |= MII_PORTSELECT;
+                break;
+        default:
+                pr_err("invalid speed %d", phydev->speed);
+                return -EINVAL;
+        }
 
 	if (phydev->duplex)
 		conf |= FULLDPLXMODE;
 
 	writel(conf, &mac_p->conf);
+
+	ret = dw_txclk_set_rate(rate);
+        if (ret < 0) {
+                pr_err("dw (tx_clk, %lu) failed: %d", rate, ret);
+                return ret;
+        }
 
 	printf("Speed: %d, %s duplex%s\n", phydev->speed,
 	       (phydev->duplex) ? "full" : "half",
