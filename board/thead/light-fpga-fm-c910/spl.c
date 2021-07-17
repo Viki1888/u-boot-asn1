@@ -70,30 +70,33 @@ void board_boot_order(u32 *spl_boot_list)
 {
 #define SOC_OM_ADDRBASE        0xffef018010
 	switch (readl((void *)SOC_OM_ADDRBASE) & 0x7) {
-    case 0:
-		spl_boot_list[0] = BOOT_DEVICE_MMC1;
-        break;
-    case 1:
-        //ret = sd_boot();
-        break;
-    case 2:
-    case 3:
-        //ret = qspi_flash_boot();
-        break;
-    case 4:
-        //ret = usb_boot();
-        break;
-    case 5:
-		debug("Wait here for JTAG/GDB connecting\n");
-		asm volatile ("ebreak");
-        break;
-    case 7:
-        //ret = polling_boot();
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+		/* usb boot */
 		break;
+	case 4:
+		/* emmc boot */
+		spl_boot_list[0] = BOOT_DEVICE_MMC1;
+		break;
+	case 5:
+		/* sd boot */
+		spl_boot_list[0] = BOOT_DEVICE_MMC1;
+		break;
+	case 6:
+		/* qspi-nand boot */
+		spl_boot_list[0] = BOOT_DEVICE_NAND;
+		break;
+	case 7:
+		/* spi-nor boot */
+		spl_boot_list[0] = BOOT_DEVICE_SPI;
+		break;
+	default:
+		spl_boot_list[0] = BOOT_DEVICE_NONE;
 	}
 
 	cpu_performance_enable();
-	asm volatile ("ebreak");
 }
 
 #if 0
