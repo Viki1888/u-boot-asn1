@@ -45,6 +45,22 @@ void cpu_performance_enable(void)
 	csr_write(CSR_MHINT, 0x6e30c);
 }
 
+static void light_board_init_r(gd_t *gd, ulong dummy)
+{
+	void (*entry)(long, long);
+
+	cpu_performance_enable();
+
+#define UBOOT_SIZE CONFIG_SYS_MONITOR_LEN
+	memcpy((void *)CONFIG_SYS_TEXT_BASE, (void *)(CONFIG_SPL_TEXT_BASE + CONFIG_SPL_MAX_SIZE), UBOOT_SIZE);
+	entry = (void (*)(long, long))CONFIG_SYS_TEXT_BASE;
+	invalidate_icache_all();
+	flush_dcache_range(CONFIG_SYS_TEXT_BASE, CONFIG_SYS_TEXT_BASE + UBOOT_SIZE);
+	entry(0, 0);
+
+	while (1);
+}
+
 void board_init_f(ulong dummy)
 {
 	int ret;
@@ -64,6 +80,9 @@ void board_init_f(ulong dummy)
 	init_ddr();
 	mdelay(1000);
 	setup_ddr_pmp();
+
+	printf("ddr initialized, jump to uboot\n");
+	light_board_init_r(NULL, 0);
 }
 
 void board_boot_order(u32 *spl_boot_list)
@@ -98,20 +117,3 @@ void board_boot_order(u32 *spl_boot_list)
 
 	cpu_performance_enable();
 }
-
-#if 0
-void board_init_r(gd_t *gd, ulong dummy)
-{
-	void (*entry)(long, long);
-
-#define UBOOT_SIZE (512 * 1024)
-	memcpy((void *)CONFIG_SYS_TEXT_BASE, (void *)(0xffe0000000 + CONFIG_SPL_MAX_SIZE), UBOOT_SIZE);
-	entry = (void (*)(long, long))CONFIG_SYS_TEXT_BASE;
-	invalidate_icache_all();
-	flush_dcache_range(CONFIG_SYS_TEXT_BASE, CONFIG_SYS_TEXT_BASE + UBOOT_SIZE);
-	entry(0, 0);
-
-	asm volatile("ebreak\n");
-	while (1);
-}
-#endif
