@@ -67,6 +67,7 @@
     "nt_kernel_addr=0x80200000\0" \
     "nt_rootfs_addr=0x82000000\0" \
     "nt_dtb_addr=0x81f00000\0" \
+    "fdt_high=0xffffffffffffffff\0" \
         "\0"
 
 #undef CONFIG_BOOTCOMMAND
