@@ -8,6 +8,7 @@
 #include <fdt_support.h>
 #include <fdtdec.h>
 #include <asm/csr.h>
+#include <asm/arch-thead/boot_mode.h>
 
 enum board_type {
 	NT_DTS = 0,
@@ -17,7 +18,7 @@ enum board_type {
 
 long t_start_address;
 long t_size;
-long nt_start_address;
+long nt_start_address = 0;
 long nt_size;
 long t_dtb_address;
 long nt_dtb_address;
@@ -262,10 +263,10 @@ static long boot_addr_chk[4];
 static void boot_t_core(void)
 {
 	void (*fly)(long, long);
+	long hart = csr_read(CSR_MHARTID);
 
 	fly = (void *)t_start_address;
-
-	if (csr_read(CSR_MHARTID) == 0)
+	if (hart == 0)
 		goto boot;
 
 	csr_write(CSR_SMPEN, 0x1);
@@ -277,9 +278,9 @@ static void boot_t_core(void)
 
 boot:
 	/* Set this for locking it */
-	csr_write(CSR_MTEE, 0xff);
+	//csr_write(CSR_MTEE, 0xff);
 
-	fly(0xdeadbeef, t_dtb_address);
+	fly(hart, t_dtb_address);
 }
 
 static void boot_nt_core(void)
@@ -371,8 +372,8 @@ static int parse_dtb(const void *blob_t, const void *blob_nt)
 	parse_and_set_iopmp(blob_nt, NT_DTS);
 
 	ret = parse_cpu(blob_t, T_DTS);
-	ret |= parse_cpu(blob_nt, NT_DTS);
-	ret |= check_cpu();
+	parse_cpu(blob_nt, NT_DTS);
+	check_cpu();
 
 	if (ret)
 		return -EINVAL;
@@ -404,30 +405,52 @@ static int boot_buddies(void)
 	return 0;
 }
 
-extern int check_for_good(char *name, long addr);
-static int parse_args(ulong *addr, char *const argv[])
+static int parse_img_verify(ulong *addr, char *const argv[])
 {
+	char *env;
+	long sbi_addr = SBI_ENTRY_ADDR;
+	int t_dtb_off = 0;
+	int ret;
+
+	ret = csi_sec_init();
+	if (ret)
+		return ret;
+
 	addr[1] = simple_strtoul(argv[1], NULL, 16);
 	printf("linux: 0x%lx\n", addr[1]);
-	if (check_for_good("linux", addr[1]) < 0)
-		return -1;
+	ret = csi_sec_image_verify(T_KRLIMG, addr[1]);
+	if (ret)
+		return ret;
 
 	addr[2] = simple_strtoul(argv[2], NULL, 16);
 	printf("rootfs: 0x%lx\n", addr[2]);
-	if (check_for_good("rootfs", addr[1]) < 0)
-		return -1;
+#if CONFIG_ROOTFS_SEC_CHECK
+	ret = csi_sec_image_verify(T_ROOTFS, addr[1]);
+	if (ret)
+		return ret;
+#endif
 
 	addr[3] = simple_strtoul(argv[3], NULL, 16);
 	t_dtb_address = addr[3];
+	if (image_have_head(addr[3]) == 1)
+		t_dtb_off = HEADER_SIZE;
+	ret = csi_sec_image_verify(T_DTB, addr[3]);
+	if (ret)
+		return ret;
+	addr[3] += t_dtb_off;
+	t_dtb_address = addr[3];
 	printf("t dtb: 0x%lx\n", addr[3]);
-	if (check_for_good("t.dtb", addr[1]) < 0)
-		return -1;
 
 	addr[4] = simple_strtoul(argv[4], NULL, 16);
 	nt_dtb_address = addr[4];
 	printf("nt dtb: 0x%lx\n", addr[4]);
-	if (check_for_good("nt.dtb", addr[1]) < 0)
-		return -1;
+
+	env = env_get("t_opensbi_addr");
+	if (env)
+		sbi_addr = simple_strtol(env, NULL, 0);
+	ret = csi_sec_image_verify(T_SBI, sbi_addr);
+	if (ret)
+		return ret;
 
 	return 0;
 }
@@ -436,7 +459,7 @@ static int parse_args(ulong *addr, char *const argv[])
 char tee_bootcode[BOOTCODE_SIZE] = {0x73, 0x50, 0x40, 0x7f};
 int light_boot(int argc, char * const argv[])
 {
-	ulong	addr[5];
+	ulong	addr[5] = {0};
 	void (*entry)(int, long);
 
 	if (argc < 2) {
@@ -445,7 +468,7 @@ int light_boot(int argc, char * const argv[])
 		return CMD_RET_USAGE;
 	}
 
-	if (parse_args(addr, argv) < 0) {
+	if (parse_img_verify(addr, argv) < 0) {
 		printf("parse args failed!\n");
 		return CMD_RET_USAGE;
 	}
@@ -459,9 +482,10 @@ int light_boot(int argc, char * const argv[])
 
 	dump_nt_pmp_array();
 
-	memcpy((void *)nt_start_address, tee_bootcode, BOOTCODE_SIZE);
+	if (nt_start_address)
+		memcpy((void *)nt_start_address, tee_bootcode, BOOTCODE_SIZE);
 
-	boot_buddies();
+	//boot_buddies();
 
 	/* Set cpu 0's start address */
 	addr[0] = boot_addr[0];

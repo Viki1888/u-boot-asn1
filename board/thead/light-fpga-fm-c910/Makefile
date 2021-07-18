@@ -12,6 +12,6 @@ else
 obj-y += light.o
 obj-y += board.o
 obj-y += clock_config.o
-obj-y += check.o
+obj-y += sec_check.o
 obj-y += boot.o
 endif

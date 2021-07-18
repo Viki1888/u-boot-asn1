@@ -26,6 +26,7 @@
 #define CONFIG_SYS_BOOTM_LEN        SZ_64M
 #define CONFIG_SYS_CACHELINE_SIZE   64
 
+#define SRAM_BASE_ADDR	 0xffe0000000
 #define PLIC_BASE_ADDR   0xffd8000000
 #define PMP_BASE_ADDR    0xffdc020000
 
@@ -40,6 +41,26 @@
 #define CONFIG_ENV_ADDR             (CONFIG_SYS_FLASH_BASE + CONFIG_ENV_OFFSET)
 #define CONFIG_SYS_MMC_ENV_DEV      0
 
+/* SEC Configuration */
+//#define CONFIG_ROOTFS_SEC_CHECK		1
+#define SBI_ENTRY_ADDR		0x800
+
+#undef CONFIG_BOOTCOMMAND
+
+#ifdef CONFIG_LIGHT_SEC_BOOT
+#define CONFIG_EXTRA_ENV_SETTINGS \
+    "t_opensbi_addr=0x100000\0" \
+    "t_kernel_addr=0x1ff800\0" \
+    "t_rootfs_addr=0x02000000\0" \
+    "t_dtb_addr=0x1eff800\0" \
+    "nt_dtb_addr=0x81f00000\0" \
+    "fdt_high=0xffffffffffffffff\0" \
+        "\0"
+
+#define CONFIG_BOOTCOMMAND \
+       "bootm $t_kernel_addr $t_rootfs_addr $t_dtb_addr $nt_dtb_addr"
+
+#else
 #define CONFIG_EXTRA_ENV_SETTINGS \
     "uboot_start=0x0\0" \
     "uboot_size=0x400\0" \
@@ -70,9 +91,9 @@
     "fdt_high=0xffffffffffffffff\0" \
         "\0"
 
-#undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
        "bootm $t_kernel_addr $t_rootfs_addr $t_dtb_addr $nt_dtb_addr"
+#endif
 
 #endif /* __CONFIG_H */
 /*

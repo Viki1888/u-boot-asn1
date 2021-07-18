@@ -13,6 +13,7 @@
 #include <asm/barrier.h>
 #include <spl.h>
 #include <asm/spl.h>
+#include <asm/arch-thead/boot_mode.h>
 #include <string.h>
 #include "../common/uart.h"
 #include "../common/mini_printf.h"
@@ -45,17 +46,42 @@ void cpu_performance_enable(void)
 	csr_write(CSR_MHINT, 0x6e30c);
 }
 
+static int bl1_img_have_head(unsigned long img_src_addr)
+{
+    uint8_t *buffer = (uint8_t *)img_src_addr;
+
+    if (memcmp(header_magic, &buffer[4], 4) == 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
 static void light_board_init_r(gd_t *gd, ulong dummy)
 {
 	void (*entry)(long, long);
+	void *sram_uboot_start;
 
 	cpu_performance_enable();
 
-#define UBOOT_SIZE CONFIG_SYS_MONITOR_LEN
-	memcpy((void *)CONFIG_SYS_TEXT_BASE, (void *)(CONFIG_SPL_TEXT_BASE + CONFIG_SPL_MAX_SIZE), UBOOT_SIZE);
+	sram_uboot_start = (void *)(CONFIG_SPL_TEXT_BASE + CONFIG_SPL_MAX_SIZE);
+	if (bl1_img_have_head((unsigned long)SRAM_BASE_ADDR) == 1) {
+		uint32_t sign_en, encrypt_en;
+		img_header_t *phead;
+
+		phead = (img_header_t *)SRAM_BASE_ADDR;
+		sign_en = phead->option_flag & 0x1;
+		encrypt_en = phead->option_flag & 0x2;
+		printf("image has header, sign %s, encrypt %s\n",
+			sign_en ? "en" : "disabled",
+			encrypt_en ? "en" : "disabled");
+	} else {
+		printf("image has no header\n");
+	}
+	memcpy((void *)CONFIG_SYS_TEXT_BASE, sram_uboot_start, CONFIG_SYS_MONITOR_LEN);
 	entry = (void (*)(long, long))CONFIG_SYS_TEXT_BASE;
 	invalidate_icache_all();
-	flush_dcache_range(CONFIG_SYS_TEXT_BASE, CONFIG_SYS_TEXT_BASE + UBOOT_SIZE);
+	flush_dcache_range(CONFIG_SYS_TEXT_BASE, CONFIG_SYS_TEXT_BASE + CONFIG_SYS_MONITOR_LEN);
 	entry(0, 0);
 
 	while (1);

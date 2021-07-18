@@ -18,13 +18,18 @@ config SYS_BOARD
 config SYS_CONFIG_NAME
     default "light-fpga-fm-c910"
 
+config LIGHT_SEC_BOOT
+    bool "light security boot"
+    default n
+
 config SYS_TEXT_BASE
-	default 0xc0000000 if RISCV_MMODE
+    default 0xc0000000 if RISCV_MMODE
     default 0x00200000 if RISCV_SMODE
 
 config SPL_TEXT_BASE
     hex
-    default 0xffe0000000
+    default 0xffe0000800 if LIGHT_SEC_BOOT
+    default 0xffe0000000 if !LIGHT_SEC_BOOT
 
 config SPL_MAX_SIZE
     hex
