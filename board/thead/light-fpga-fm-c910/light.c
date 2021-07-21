@@ -8,6 +8,7 @@
 #include <asm/io.h>
 #include <asm/types.h>
 #include <thead/clock_config.h>
+#include <linux/bitops.h>
 
 void gmac_clk_config(void)
 {
@@ -61,9 +62,36 @@ int board_init(void)
 
 	usb_clk_config();
 	gmac_clk_config();
-    spi_hw_init();
+	spi_hw_init();
 
 	clk_config();
 
+	return 0;
+}
+
+#ifdef LIGHT_IMAGE_WRITER
+static void light_usb_boot_check(void)
+{
+	int boot_mode;
+
+#define SOC_OM_ADDRBASE        0xffef018010
+	boot_mode = readl((void *)SOC_OM_ADDRBASE) & 0x7;
+	if (boot_mode & BIT(2))
+		return;
+
+#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+	env_set("usb_fastboot", "yes");
+#endif
+	run_command("env default -a -f", 0);
+	run_command("run gpt_partition", 0);
+	run_command("fastboot usb 0", 0);
+}
+#endif
+
+int board_late_init(void)
+{
+#ifdef LIGHT_IMAGE_WRITER
+	light_usb_boot_check();
+#endif
 	return 0;
 }

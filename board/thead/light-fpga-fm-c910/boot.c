@@ -381,7 +381,7 @@ static int parse_dtb(const void *blob_t, const void *blob_nt)
 	return 0;
 }
 
-static int boot_buddies(void)
+static int __maybe_unused boot_buddies(void)
 {
 	printf("cpu 0 ---0x%lx\n", boot_addr[0]);
 	printf("cpu 1 ---0x%lx\n", boot_addr[1]);
@@ -424,7 +424,7 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 
 	addr[2] = simple_strtoul(argv[2], NULL, 16);
 	printf("rootfs: 0x%lx\n", addr[2]);
-#if CONFIG_ROOTFS_SEC_CHECK
+#if LIGHT_ROOTFS_SEC_CHECK
 	ret = csi_sec_image_verify(T_ROOTFS, addr[1]);
 	if (ret)
 		return ret;
