@@ -10,6 +10,10 @@
 #include <thead/clock_config.h>
 #include <linux/bitops.h>
 
+#define SYSCLK_USB_CTRL 0xFFFC02D104
+#define REF_SSP_EN      0xFFEC03F034
+#define USB3_DRD_SWRST  0xFFEC02C014
+
 void gmac_clk_config(void)
 {
 	writel(1 << 13, (void *)(0xffe7030004));
@@ -19,9 +23,14 @@ void gmac_clk_config(void)
 
 void usb_clk_config(void)
 {
-	writel(0x0, (void *)(0xffef01406c));
+	writel(readl((void *)SYSCLK_USB_CTRL) | 0xf, (void *)SYSCLK_USB_CTRL);
+	writel(readl((void *)REF_SSP_EN) | 0x1, (void *)REF_SSP_EN);
+
+	udelay(10);
+
+	writel(0x0, (void *)USB3_DRD_SWRST);
 	udelay(1000);
-	writel(0x7, (void *)(0xffef01406c));
+	writel(0x7, (void *)USB3_DRD_SWRST);
 }
 
 static void spi_hw_init(void)
@@ -57,7 +66,7 @@ int board_init(void)
 #define GMAC_IOPMP   0xfff7038000
 	writel(0xffffffff, (void *)(GMAC_IOPMP+0xc0));
 
-#define USB_IOPMP   0xfff703a000
+#define USB_IOPMP   0xFFFC02E000
 	writel(0xffffffff, (void *)(USB_IOPMP+0xc0));
 
 	usb_clk_config();
