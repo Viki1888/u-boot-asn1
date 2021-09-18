@@ -122,11 +122,11 @@
 			};
 		};
 
-		spi0: spi@fff700c000 {
+		spi0: spi@ffe700c000 {
 			compatible = "snps,dw-apb-ssi";
-			reg = <0xff 0xf700c000 0x0 0x1000>;
+			reg = <0xff 0xe700c000 0x0 0x1000>;
 			clocks = <&dummy_apb>;
-			cs-gpio = <&gpio2_porta 15 2>;
+			cs-gpio = <&gpio2_porta 15 0>;
 			spi-max-frequency = <12500000>;
 			#address-cells = <1>;
 			#size-cells = <0>;
