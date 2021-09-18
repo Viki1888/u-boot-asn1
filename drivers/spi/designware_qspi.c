@@ -221,12 +221,29 @@ static inline void spi_enable_chip(struct dw_qspi_priv *priv, int enable)
 	dw_write(priv, DW_SPI_SSIENR, (enable ? 1 : 0));
 }
 
+static inline void spi_enable_slave(struct dw_qspi_priv *priv, u32 slave_idx)
+{
+	u32 val;
+	val = dw_read(priv,DW_SPI_SER);
+	val |= 1 << slave_idx;
+	dw_write(priv, DW_SPI_SER, val);
+}
+
+static inline void spi_disable_slave(struct dw_qspi_priv *priv, int slave_idx)
+{
+	u32 val;
+	val = dw_read(priv,DW_SPI_SER);
+	val &= ~(1 << slave_idx);
+	dw_write(priv, DW_SPI_SER, val);
+}
+
 /* Restart the controller, disable all interrupts, clean rx fifo */
 static void spi_hw_init(struct dw_qspi_priv *priv)
 {
 	spi_enable_chip(priv, 0);
 	dw_write(priv, DW_SPI_IMR, 0xff);
-	dw_write(priv, DW_SPI_SER, 0xf);
+	dw_write(priv, DW_SPI_SER, 0x0);
+	dw_write(priv, DW_SPI_RX_SAMPLE_DLY, 0x0);
 	spi_enable_chip(priv, 1);
 
 	/*
@@ -486,6 +503,12 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 
 	/*disable spi core */
 	spi_enable_chip(priv, 0);
+	/*disable slalve*/
+	if(op->data.dir == SPI_MEM_DATA_OUT) {
+		spi_disable_slave(priv,0);
+	}else {
+		spi_enable_slave(priv,0);
+	}
 	/*build pre-xfer data portion*/
 	dw_qspi_build_xfer_pre_portion(priv, op);
 
@@ -562,7 +585,6 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 		/*!!!note: in quad mode, dw-ssi can't be interrupt during sending pre portion and data portion
 		 * otherwise, the timing won't be expected
 		 */
-		//local_irq_save(flag);
 		dw_write(priv, DW_SPI_DR, op->cmd.opcode);
 		if (op->addr.nbytes) {
 			dw_write(priv, DW_SPI_DR, op->addr.val);
@@ -586,10 +608,8 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 		}
 		do {
 			dw_writer(priv);
-		} while (priv->tx_end > priv->tx);
-		if (op->data.nbytes && op->data.buswidth > 1) {
-			//local_irq_restore(flag);
-		}
+        } while (priv->tx_end > priv->tx);
+		spi_enable_slave(priv,0);
 	} else if (op->data.dir == SPI_MEM_DATA_IN) {
 		/* if data portion use standard mode,pre transfer mode is tx, need set rx mode  */
 		if (op->data.buswidth == 1) {
@@ -612,7 +632,6 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 			priv->len = op->data.nbytes;
 			do {
 				dw_reader(priv);
-				//cpu_relax();
 			} while (priv->rx_end > priv->rx);
 		}
 		/* non-standard mode */
@@ -626,16 +645,14 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 			}
 			do {
 				dw_reader(priv);
-				//cpu_relax();
 			} while (priv->rx_end > priv->rx);
 			if (op->data.nbytes && op->data.buswidth > 1) {
-				//local_irq_restore(flag);
 			}
 		}
 
 	}
 
-	ret = dw_qspi_wait_bus_idle(priv, 1000);
+	ret = dw_qspi_wait_bus_idle(priv, 500000);
 	if (ret) {
 		debug("wait bus idle timeout \n");
 		return ret;
@@ -719,6 +736,21 @@ static int dw_qspi_check_buswidth(u8 width)
 
 	return -ENOTSUPP;
 }
+
+int dw_qspi_adjust_op_size(struct spi_slave *slave, struct spi_mem_op *op)
+{
+	
+	if(op->data.dir == SPI_MEM_DATA_OUT && op->data.nbytes >= (256<<2) ){
+		op->data.nbytes = 254<<2;
+	};
+
+	if(op->data.dir == SPI_MEM_DATA_IN && op->data.nbytes >= (256<<2)){
+		op->data.nbytes = 256<<2;
+	}
+
+	return 0;
+}
+
 static bool dw_qspi_supports_op(struct spi_slave *slave, const struct spi_mem_op *op)
 {
 	//struct udevice      *bus = slave->dev->parent;
@@ -748,6 +780,7 @@ static bool dw_qspi_supports_op(struct spi_slave *slave, const struct spi_mem_op
 
 static const struct spi_controller_mem_ops dw_qspi_mem_ops = {
 	.exec_op = dw_qspi_exec_op,
+	.adjust_op_size = dw_qspi_adjust_op_size,
 	.supports_op = dw_qspi_supports_op,
 };
 
