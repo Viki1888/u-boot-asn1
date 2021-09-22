@@ -28,11 +28,11 @@
 static unsigned int	bus;
 static unsigned int	cs;
 static unsigned int	mode;
-static int   		bitlen;
+static int          bitlen;
 static unsigned int speed = 10000000;
-static uchar 		dout[MAX_SPI_BYTES];
-static uchar 		din[MAX_SPI_BYTES];
-typedef struct 
+static uchar		dout[MAX_SPI_BYTES];
+static uchar		din[MAX_SPI_BYTES];
+typedef struct
 {
 	/* data */
 	char*          cmd_str;
@@ -89,7 +89,7 @@ static inline int ate_get_write_rsp(unsigned char *rsp, unsigned char *err_code)
 	if(rsp == NULL || err_code == NULL)
 		return -1;
 
-	*err_code = *(rsp+1);	
+	*err_code = *(rsp+1);
 
 	return 0;
 }
@@ -105,7 +105,7 @@ static  int ate_get_read_value(unsigned char *rsp, unsigned int reg_len, unsigne
 	for(i = 0; i < reg_len; i++)
 	{
 		*val |= *(rsp+1+i) << (i*8);
-	}	
+	}
 
 	return 0;
 }
@@ -119,13 +119,13 @@ static int ate_build_cmd_frame(unsigned char cmd,unsigned long long reg_addr, un
 
 	/*fill cmd code*/
 	dout[spi_frame_index++] = cmd;
-	//printf("spi_frame_index: %d\n",spi_frame_index);	
+	//printf("spi_frame_index: %d\n",spi_frame_index);
 	/*fill reg_addr,exp 0xffea000000 -> 0x00 0x00 0x00 0xea 0xff */
 	for(i = 0; i < 5; i++){
 		dout[spi_frame_index++] = (unsigned char)((reg_addr >> i*8 ) &0xFF);
 	}
 
-	//printf("spi_frame_index: %d\n",spi_frame_index);	
+	//printf("spi_frame_index: %d\n",spi_frame_index);
 	/*check whether send reg_value and reg_value length in bytes */
 	len = ate_get_reg_width(cmd);
 
@@ -136,7 +136,7 @@ static int ate_build_cmd_frame(unsigned char cmd,unsigned long long reg_addr, un
 		}
 	}
 
-	//printf("spi_frame_index: %d\n",spi_frame_index);	
+	//printf("spi_frame_index: %d\n",spi_frame_index);
 	/*insert 2-byte or 3byte dummy data */
 	if(ate_is_write_cmd(cmd)) {
 		spi_frame_index +=2;
@@ -144,7 +144,7 @@ static int ate_build_cmd_frame(unsigned char cmd,unsigned long long reg_addr, un
 		spi_frame_index +=2;
 	}
 
-	//printf("spi_frame_index: %d %d\n",len,spi_frame_index);	
+	//printf("spi_frame_index: %d %d\n",len,spi_frame_index);
 	/*pading clk for rsp */
 	if(ate_is_write_cmd(cmd)) {
 		/*0xc1 + err_code(1B)*/
@@ -154,7 +154,7 @@ static int ate_build_cmd_frame(unsigned char cmd,unsigned long long reg_addr, un
 		spi_frame_index +=len + 1;
 	}
 
-	//printf("spi_frame_index: %d\n",spi_frame_index);	
+	//printf("spi_frame_index: %d\n",spi_frame_index);
    #if 0 
 	for(i= 0; i < spi_frame_index; i++){
 		if(i == 0)
@@ -181,7 +181,7 @@ static int ate_get_cmd_code(char*pcmd, uchar* cmd)
 		}
 	}
 
-	return -1;	
+	return -1;
 }
 
 static void ate_spi_config(unsigned int bus, unsigned int cs, unsigned mode, unsigned int speed)
@@ -193,7 +193,7 @@ static void ate_spi_config(unsigned int bus, unsigned int cs, unsigned mode, uns
 	return;
 }
 
-static int do_spi_xfer(int bus, int cs)
+static int do_spi_xfer(int bus, int cs ,int bprint_rx)
 {
 	struct spi_slave *slave;
 	int ret = 0;
@@ -314,7 +314,7 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 		return 1;
 	}
 
-	if (do_spi_xfer(bus, cs))
+	if (do_spi_xfer(bus, cs,1))
 		return 1;
 
 	return 0;
@@ -398,9 +398,9 @@ int do_ate_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	frame_len = ate_build_cmd_frame(cmd,reg_addr,reg_value);
 	if(frame_len < 0)
 		return -1;
-	
+
 	bitlen = frame_len<<3;
-	/*send cmd frame and receive result */	
+	/*send cmd frame and receive result */
 	if (do_spi_xfer(bus, cs,0))
 		return 1;
 	/* get rsp */
@@ -414,15 +414,15 @@ int do_ate_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 		unsigned int reg_len = 0;
 		reg_len = ate_get_reg_width(cmd);
 		ate_get_read_value(&din[frame_len-reg_len-1],reg_len,&val);
-		if(reg_len == 1){	
+		if(reg_len == 1){
 			printf("0x%02x \n",val);
 		}
 
-		if(reg_len == 2){	
+		if(reg_len == 2){
 			printf("0x%04x \n",val);
 		}
 
-		if(reg_len == 4){	
+		if(reg_len == 4){
 			printf("0x%08x \n",val);
 		}
 	}
