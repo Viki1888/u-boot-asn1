@@ -8,6 +8,7 @@
 #include <asm/io.h>
 #include <dwc3-uboot.h>
 #include <usb.h>
+#include <cpu_func.h>
 
 #ifdef CONFIG_USB_DWC3
 static struct dwc3_device dwc3_device_data = {
