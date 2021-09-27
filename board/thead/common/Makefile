@@ -28,6 +28,7 @@ CFLAGS_spiflash.o       += -I$(srctree)/board/$(BOARDDIR)
 
 endif
 
-
+ifeq ($(CONFIG_TARGET_LIGHT_FPGA_FM_C910),)
 obj-$(CONFIG_CMD_BOOT_SLAVE) += boot/bootslave.o
+endif
 
