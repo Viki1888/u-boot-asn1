@@ -16,14 +16,14 @@ void cpu_clk_config(int cpu_freq)
 {
 #ifdef CONFIG_TARGET_LIGHT_C910 /* for sillicon */
 	unsigned int tmp;
-#define	LIGHT_APCLK_ADDRBASE	0xffef010000
+#define LIGHT_APCLK_ADDRBASE	0xffff011000
 #define LIGHT_AONCLK_ADDRBASE	0xfffff46000
 #define LIGHT_DDRCLK_ADDRBASE	0xffff005000
-#define LIGHT_MISC_SUBSYS_ADDRBASE	0xffec02c000
-#define LIGHT_VI_SUBSYS_ADDRBASE	0xffe4040000
-#define LIGHT_VO_SUBSYS_ADDRBASE	0xffef400000
-#define LIGHT_VP_SUBSYS_ADDRBASE	0xffecc00000
-#define LIGHT_DSP_SUBSYS_ADDRBASE	0xffef040000
+#define LIGHT_MISC_SUBSYS_ADDRBASE	0xfffc02d000
+#define LIGHT_VI_SUBSYS_ADDRBASE	0xfff4041000
+#define LIGHT_VO_SUBSYS_ADDRBASE	0xffff401000
+#define LIGHT_VP_SUBSYS_ADDRBASE	0xfffcc01000
+#define LIGHT_DSP_SUBSYS_ADDRBASE	0xffff041000
 #define LIGHT_AUDIO_SUBSYS_ADDRBASE	0xffcb000000
 
 	/* 1. double check all pll lock */
@@ -143,9 +143,16 @@ void cpu_clk_config(int cpu_freq)
 
 	/* set apb3_cpusys_pclk to ahb2_cpusys_hclk/2 */
 	/* CPU AHB 125MHz  CPU pclk 125MHz */
-	writel(0x1, (void *)LIGHT_APCLK_ADDRBASE + 0x130);
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x130);
+	tmp &= ~0x8;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x130);
 	udelay(1);
-	writel(0x9, (void *)LIGHT_APCLK_ADDRBASE + 0x130);
+	tmp &= ~0x7;
+	tmp |= 0x1;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x130);
+	udelay(1);
+	tmp |= 0x8;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x130);
 	udelay(1);
 	/* CPU AHB 125MHz  CPU pclk 62.5MHz */
 
@@ -154,19 +161,33 @@ void cpu_clk_config(int cpu_freq)
 	tmp |= 0x20;
 	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
 	udelay(1);
-	writel(0x22, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
+	tmp &= ~0x10;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
 	udelay(1);
-	writel(0x32, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
+	tmp &= ~0x7;
+	tmp |= 0x2;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
 	udelay(1);
-	writel(0x12, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
+	tmp |= 0x10;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
+	udelay(1);
+	tmp &= ~0x20;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x120);
 	udelay(1);
 	/* CPU AHB 250MHz  CPU pclk 125MHz */
 
 	/* perisys_apb_pclk to perisys_ahb_hclk/4 */
 	/* perisys_ahb_hclk 62.5MHz  perisys_apb_pclk 62.5MHz */
-	writel(0x3, (void *)LIGHT_APCLK_ADDRBASE + 0x150);
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x150);
+	tmp &= ~0x8;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x150);
 	udelay(1);
-	writel(0xb, (void *)LIGHT_APCLK_ADDRBASE + 0x150);
+	tmp &= ~0x7;
+	tmp |= 0x3;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x150);
+	udelay(1);
+	tmp |= 0x8;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x150);
 	udelay(1);
 	/* perisys_ahb_hclk 62.5MHz  perisys_apb_pclk 15.625MHz */
 
@@ -200,7 +221,7 @@ void cpu_clk_config(int cpu_freq)
 
 	/* enable dsp0/1_cclk, dsp0/1_pclk */
 	tmp = readl((void *)LIGHT_DSP_SUBSYS_ADDRBASE + 0x24);
-	tmp |= 0x7;
+	tmp |= 0xf;
 	writel(tmp, (void *)LIGHT_DSP_SUBSYS_ADDRBASE + 0x24);
 
 	/* enable gpu_core_clk, gpu_cfg_aclk */
