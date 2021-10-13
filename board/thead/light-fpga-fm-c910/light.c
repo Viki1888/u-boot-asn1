@@ -7,6 +7,7 @@
 #include <common.h>
 #include <asm/io.h>
 #include <asm/types.h>
+#include <thead/clock_config.h>
 
 void gmac_clk_config(void)
 {
@@ -61,6 +62,8 @@ int board_init(void)
 	usb_clk_config();
 	gmac_clk_config();
     spi_hw_init();
+
+	clk_config();
 
 	return 0;
 }
