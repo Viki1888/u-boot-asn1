@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2020 Alibaba Group Holding Limited
+ * Copyright (C) 2020-2021 Alibaba Group Holding Limited
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -271,7 +271,16 @@ struct clk_lightpll light_dpu1_plldiv = {
 	.clk_dev_type = CLK_DEV_PLL,
 };
 
-struct clk_lightpll *clks_pll[] = {&light_cpu_pll0div, &light_cpu_pll1div, &light_audio_plldiv, &light_audio_pllvco, &light_sys_plldiv, &light_sys_pllvco, &light_dpu0_plldiv, &light_dpu1_plldiv};
+struct clk_lightpll *clks_pll[] = {
+	&light_cpu_pll0div,
+	&light_cpu_pll1div,
+	&light_audio_plldiv,
+	&light_audio_pllvco,
+	&light_sys_plldiv,
+	&light_sys_pllvco,
+	&light_dpu0_plldiv,
+	&light_dpu1_plldiv,
+};
 
 static const struct light_pll_rate_table *light_get_pll_div_settings(
                 struct clk_lightpll *pll, unsigned long rate)
