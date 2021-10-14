@@ -116,6 +116,10 @@ static const struct light_pll_rate_table light_dpu_pll_tbl[] = {
 	LIGHT_PLL_RATE(1611200000U, 805600000U, 200, 0x43, 0x222222, 2, 1),	/* FRAC MODE */
 };
 
+static const struct light_pll_rate_table light_gmac_pll_tbl[] = {
+	LIGHT_PLL_RATE(3000000000U, 1000000000U, 1, 125, 0, 3, 1),
+};
+
 struct clk_lightpll light_cpu_pll0div = {
 	.clk_name = "cpu_pll0_foutpostdiv",
 	.base = ap_base,
@@ -271,6 +275,22 @@ struct clk_lightpll light_dpu1_plldiv = {
 	.clk_dev_type = CLK_DEV_PLL,
 };
 
+struct clk_lightpll light_gmac_plldiv = {
+	.clk_name = "gmac_pll_foutpostdiv",
+	.base = ap_base,
+	.out_type = LIGHT_PLL_DIV,
+	.clk_type = LIGHT_GMAC_PLL,
+	.rate_table = light_gmac_pll_tbl,
+	.rate_count = ARRAY_SIZE(light_gmac_pll_tbl),
+	.cfg0_reg_off = 0x20,
+	.pll_sts_off = 0x80,
+	.pll_lock_bit = BIT(3),
+	.pll_bypass_bit = BIT(30),
+	.pll_rst_bit = BIT(29),
+	.pll_mode = PLL_MODE_INT,
+	.clk_dev_type = CLK_DEV_PLL,
+};
+
 struct clk_lightpll *clks_pll[] = {
 	&light_cpu_pll0div,
 	&light_cpu_pll1div,
@@ -280,6 +300,7 @@ struct clk_lightpll *clks_pll[] = {
 	&light_sys_pllvco,
 	&light_dpu0_plldiv,
 	&light_dpu1_plldiv,
+	&light_gmac_plldiv,
 };
 
 static const struct light_pll_rate_table *light_get_pll_div_settings(
@@ -619,6 +640,7 @@ struct clk_lightdiv clks_div[] = {
 	{"ahb2_cpusys_hclk_out_div", CLK_DEV_DIV, "gmac_pll_fout1ph0", CLK_DEV_FACTOR, ap_base + 0x120, 0, 3, 4, MUX_TYPE_DIV, 2, 7},
 	{"apb3_cpusys_pclk", CLK_DEV_DIV, "ahb2_cpusys_hclk", CLK_DEV_MUX, ap_base + 0x130, 0, 3, 3, MUX_TYPE_CDE, 1, 7},
 	{"perisys_ahb_hclk_out_div", CLK_DEV_DIV, "gmac_pll_fout1ph0", CLK_DEV_FACTOR, ap_base + 0x140, 0, 4, 4, MUX_TYPE_DIV, 2, 7},
+	{"perisys_apb_pclk", CLK_DEV_DIV, "perisys_ahb_hclk", CLK_DEV_MUX, ap_base + 0x150, 0, 3, 3, MUX_TYPE_CDE, 3, 7},
 };
 
 int clk_lightdiv_set_rate(struct clk_lightdiv *lightdiv, unsigned long rate, unsigned long parent_rate)
@@ -913,6 +935,18 @@ int clk_config(void)
 		return -EINVAL;
 
 	printf("PERISYS_AHB_HCLK FREQ: %ldMHz\n", rate / 1000000);
+
+	rate = clk_light_get_rate("perisys_apb_pclk", CLK_DEV_DIV);
+	if (!rate)
+		return -EINVAL;
+
+	printf("PERISYS_APB_PCLK FREQ: %ldMHz\n", rate / 1000000);
+
+	rate = clk_light_get_rate("gmac_pll_foutpostdiv", CLK_DEV_PLL);
+	if (!rate)
+		return -EINVAL;
+
+	printf("GMAC PLL POSTDIV FREQ: %ldMHZ\n", rate / 1000000);
 
 	rate = clk_light_get_rate("dpu0_pll_foutpostdiv", CLK_DEV_PLL);
 	if (!rate)
