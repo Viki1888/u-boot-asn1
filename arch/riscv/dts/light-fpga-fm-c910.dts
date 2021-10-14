@@ -103,6 +103,19 @@
 			u-boot,dm-pre-reloc;
 		};
 
+		sdhci0: sd@ffe7090000 {
+			compatible = "snps,dwcmshc-sdhci";
+			reg = <0xff 0xe7090000 0x0 0x10000>;
+			index = <0x1>;
+			clocks = <&dummy_ahb>;
+			clock-frequency = <50000000>;
+			max-frequency = <20000000>;
+			//sd-uhs-sdr104 = "true";
+			clock-names = "core";
+			bus-width = <4>;
+			voltage= "3.3v";
+		};
+
 		qspi0: spi@ffea000000 {
 			compatible = "snps,dw-apb-ssi-quad";
 			reg = <0xff 0xea000000 0x0 0x1000>;
