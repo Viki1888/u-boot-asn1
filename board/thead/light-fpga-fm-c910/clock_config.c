@@ -34,6 +34,9 @@
 #define LIGHT_FRAC_SHIFT        0
 #define LIGHT_FRAC_DIV          BIT(24)
 
+#define LIGHT_DSMPD_MASK        BIT(24)
+#define LIGHT_DACPD_MASK        BIT(25)
+
 #define LIGHT_PLL_RATE(_vco, _rate, _r, _b, _f, _p, _k) \
          {                                               \
                  .vco_rate       =       (_vco),         \
@@ -410,6 +413,8 @@ int clk_pll_set_rate(struct clk_lightpll *pll, unsigned long drate)
 	writel(div_val, pll->base + pll->cfg0_reg_off);
 
 	if (pll->pll_mode == PLL_MODE_FRAC) {
+		tmp &= ~LIGHT_DSMPD_MASK;
+		tmp |= LIGHT_DACPD_MASK;
 		tmp &= ~(LIGHT_FRAC_MASK << LIGHT_FRAC_SHIFT);
 		tmp |= rate->frac;
 		writel(tmp, cfg1_off);
