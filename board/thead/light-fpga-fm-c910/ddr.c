@@ -10,5 +10,5 @@
 
 void init_ddr(void)
 {
-	writel(0x1ff << 4, (void *)0xffef005000);
+	writel(0x1ff << 4, (void *)0xffff005000);
 }
