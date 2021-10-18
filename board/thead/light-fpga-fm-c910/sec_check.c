@@ -5,10 +5,16 @@
 */
 
 #include <common.h>
+#include <command.h>
+#include <console.h>
+#include <malloc.h>
+#include <linux/errno.h>
 #include <asm/arch-thead/boot_mode.h>
 #include "../../../lib/sec_library/include/csi_sec_img_verify.h"
 
 extern int csi_efuse_api_int(void);
+extern int csi_efuse_read_raw(uint32_t addr, void *data, uint32_t cnt);
+extern int csi_efuse_write_raw(uint32_t addr, const void *data, uint32_t cnt);
 extern uint32_t rambus_crypto_init(void);
 
 int image_have_head(unsigned long img_src_addr)
@@ -75,3 +81,117 @@ exit:
 	while (1);
 	return ret;
 }
+
+static int strtou32(const char *str, unsigned int base, u32 *result)
+{
+	char *ep;
+
+	*result = simple_strtoul(str, &ep, base);
+	if (ep == str || *ep != '\0')
+		return -EINVAL;
+
+	return 0;
+}
+
+static int confirm_prog(void)
+{
+	puts("Warning: Programming fuses is an irreversible operation!\n"
+			"         This may brick your system.\n"
+			"         Use this command only if you are sure of "
+					"what you are doing!\n"
+			"\nReally perform this fuse programming? <y/N>\n");
+
+	if (confirm_yesno())
+		return 1;
+
+	puts("Fuse programming aborted\n");
+	return 0;
+}
+
+static int do_fuse(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
+{
+	const char *op = argc >= 2 ? argv[1] : NULL;
+	int confirmed = argc >= 3 && !strcmp(argv[2], "-y");
+	u32 addr, cnt, val;
+	u8 *data;
+	int ret, i;
+
+	/* Initialize eFuse module */
+	ret = csi_efuse_api_int();
+	if (ret) {
+		printf("efuse init faild[%d]\n", ret);
+		goto err;
+	}
+
+	argc -= 2 + confirmed;
+	argv += 2 + confirmed;
+
+	if (argc < 1 || strtou32(argv[0], 0, &addr))
+		return CMD_RET_USAGE;
+
+	if (!strcmp(op, "read")) {
+		if (argc == 1)
+			cnt = 1;
+		else if (argc != 2 || strtou32(argv[1], 0, &cnt))
+			return CMD_RET_USAGE;
+
+		printf("Reading addr %u:\n", addr);
+		{
+			data = malloc(cnt);
+			ret = csi_efuse_read_raw(addr, data, cnt);
+			if (ret) {
+				free(data);
+				goto err;
+			}
+			for (i = 0; i < cnt; i++)
+				printf(" 0x%.2x", data[i]);
+			free(data);
+		}
+		putc('\n');
+	} else if (!strcmp(op, "write")) {
+		if (argc < 2)
+			return CMD_RET_USAGE;
+
+		data = malloc(argc - 1);
+		printf("Programming addr %u  to\n", addr);
+
+		for (i = 1; i < argc; i++) {
+			if (strtou32(argv[i], 16, &val))
+				return CMD_RET_USAGE;
+
+			data[i-1] = val;
+			printf(" 0x%.2x\n", val);
+		}
+
+		cnt = argc - 1;
+
+		if (!confirmed && !confirm_prog()) {
+			free(data);
+			return CMD_RET_FAILURE;
+		}
+
+		ret = csi_efuse_write_raw(addr, data, cnt);
+		if (ret) {
+			free(data);
+			goto err;
+		}
+		free(data);
+	} else {
+		return CMD_RET_USAGE;
+	}
+
+	return 0;
+
+err:
+	puts("ERROR\n");
+	return CMD_RET_FAILURE;
+}
+
+U_BOOT_CMD(
+	efuse, CONFIG_SYS_MAXARGS, 0, do_fuse,
+	"eFuse sub-system",
+	"read <addr> [<cnt>] - read 1 or 'cnt' fuse bytes,\n"
+	" starting at 'addr'\n"
+	"efuse write [-y] <addr> <hexval> [<hexval>...]  - program 1 or\n"
+	" several fuse bytes, starting at 'addr'\n"
+);
