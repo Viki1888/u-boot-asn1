@@ -22,6 +22,17 @@
 #define LIGHT_IOPMP_DEFAULT_ATTR	0xffffffff
 #define LIGHT_IOPMP_DEFAULT_OFF		0xc0
 
+static struct light_reset_list {
+        u32 val;
+        u64 reg;
+} light_reset_lists[] = {
+	{0x0000000F, 0xFFFF015220}, /* VP/VO/VI/DSP */
+	{0x00000001, 0xFFFF0151B0}, /* NPU */
+	{0xFFFFFFFF, 0xFFFF041028}, /* DSP */
+	{0x00000001, 0xFFFF529000}, /* GPU */
+	{0x00000007, 0xFFFF529004}, /* DPU */
+};
+
 static struct light_iopmp_list {
         int iopmp_type;
         u64 reg;
@@ -63,6 +74,20 @@ static void light_iopmp_config(void)
 
 	while (i < entry_size) {
 		writel(LIGHT_IOPMP_DEFAULT_ATTR, (void *)(light_iopmp_lists[i].reg) + LIGHT_IOPMP_DEFAULT_OFF);
+		i++;
+	}
+}
+
+static void light_reset_config(void)
+{
+	/* Reset VI/VO/VP/DSP/NPU/GPU/DPU */
+	int i = 0;
+	int entry_size;
+
+	entry_size = ARRAY_SIZE(light_reset_lists);
+
+	while (i < entry_size) {
+		writel(light_reset_lists[i].val, (void *)(light_reset_lists[i].reg));
 		i++;
 	}
 }
@@ -113,6 +138,7 @@ static void spi_hw_init(void)
 
 int board_init(void)
 {
+	light_reset_config();
 	light_iopmp_config();
 
 	usb_clk_config();
