@@ -85,7 +85,7 @@ exit:
 #define LIGHT_MAC1ADDR_OFF	176
 void designware_get_mac_from_fuse(unsigned char *mac)
 {
-	int ret, i;
+	int ret;
 
 	/* Initialize eFuse module */
 	ret = csi_efuse_api_int();
