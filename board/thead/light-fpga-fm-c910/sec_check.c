@@ -82,6 +82,25 @@ exit:
 	return ret;
 }
 
+#define LIGHT_MAC1ADDR_OFF	176
+void designware_get_mac_from_fuse(unsigned char *mac)
+{
+	int ret, i;
+
+	/* Initialize eFuse module */
+	ret = csi_efuse_api_int();
+	if (ret) {
+		printf("efuse init faild[%d]\n", ret);
+		return;
+	}
+
+	ret = csi_efuse_read_raw(LIGHT_MAC1ADDR_OFF, mac, 6);
+	if (ret) {
+		printf("efuse macaddr read faild[%d]\n", ret);
+		return;
+	}
+}
+
 static int strtou32(const char *str, unsigned int base, u32 *result)
 {
 	char *ep;
