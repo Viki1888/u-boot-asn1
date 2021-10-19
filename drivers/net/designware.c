@@ -654,6 +654,24 @@ int designware_eth_write_hwaddr(struct udevice *dev)
 	return _dw_write_hwaddr(priv, pdata->enetaddr);
 }
 
+__weak void designware_get_mac_from_fuse(unsigned char *mac)
+{
+}
+
+static int designware_get_hwaddr(struct dw_eth_dev *priv, unsigned char *mac)
+{
+	designware_get_mac_from_fuse(mac);
+	return !is_valid_ethaddr(mac);
+}
+
+static int designware_eth_read_rom_hwaddr(struct udevice *dev)
+{
+	struct eth_pdata *pdata = dev_get_platdata(dev);
+	struct dw_eth_dev *priv = dev_get_priv(dev);
+
+	return designware_get_hwaddr(priv, pdata->enetaddr);
+}
+
 static int designware_eth_bind(struct udevice *dev)
 {
 #ifdef CONFIG_DM_PCI
@@ -802,6 +820,7 @@ const struct eth_ops designware_eth_ops = {
 	.free_pkt		= designware_eth_free_pkt,
 	.stop			= designware_eth_stop,
 	.write_hwaddr		= designware_eth_write_hwaddr,
+	.read_rom_hwaddr	= designware_eth_read_rom_hwaddr,
 };
 
 int designware_eth_ofdata_to_platdata(struct udevice *dev)
