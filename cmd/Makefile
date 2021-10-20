@@ -175,6 +175,9 @@ obj-$(CONFIG_CMD_BLOB) += blob.o
 # Android Verified Boot 2.0
 obj-$(CONFIG_CMD_AVB) += avb.o
 
+obj-$(CONFIG_DDR_SCAN) += ddrscan.o
+obj-$(CONFIG_DDR_PRBS_TEST) += prbs.o queue.o
+
 obj-$(CONFIG_ARM) += arm/
 obj-$(CONFIG_RISCV) += riscv/
 obj-$(CONFIG_X86) += x86/
