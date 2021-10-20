@@ -14,7 +14,7 @@ void show_sys_clk(void)
 
 void cpu_clk_config(int cpu_freq)
 {
-#ifdef CONFIG_TARGET_LIGHT_C910 /* for sillicon */
+#ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910 /* for sillicon */
 	unsigned int tmp;
 #define LIGHT_APCLK_ADDRBASE	0xffff011000
 #define LIGHT_AONCLK_ADDRBASE	0xfffff46000

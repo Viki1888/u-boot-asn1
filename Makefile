@@ -809,7 +809,7 @@ else
 PLATFORM_LIBGCC := -L $(shell dirname `$(CC) $(c_flags) -print-libgcc-file-name`) -lgcc
 endif
 PLATFORM_LIBS += $(PLATFORM_LIBGCC)
-ifeq ($(CONFIG_TARGET_LIGHT_FPGA_FM_C910),y)
+ifeq ($(CONFIG_TARGET_LIGHT_C910),y)
 PLATFORM_LIBS += -L $(shell pwd)/lib/sec_library -lsec_library
 endif
 

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-2.0+
 #
 
-if TARGET_LIGHT_FPGA_FM_C910
+if TARGET_LIGHT_C910
 
 config SYS_CPU
     default "c9xx"
@@ -13,13 +13,17 @@ config SYS_VENDOR
     default "thead"
 
 config SYS_BOARD
-    default "light-fpga-fm-c910"
+    default "light-c910"
 
 config SYS_CONFIG_NAME
-    default "light-fpga-fm-c910"
+    default "light-c910"
 
 config LIGHT_SEC_BOOT
     bool "light security boot"
+    default n
+
+config TARGET_LIGHT_FPGA_FM_C910
+    bool "light fullmask FPGA board"
     default n
 
 config SYS_TEXT_BASE
