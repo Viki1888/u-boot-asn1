@@ -7,8 +7,11 @@
 #include <dm.h>
 #include <fdt_support.h>
 #include <fdtdec.h>
+#include <opensbi.h>
 #include <asm/csr.h>
 #include <asm/arch-thead/boot_mode.h>
+
+static struct fw_dynamic_info opensbi_info;
 
 enum board_type {
 	NT_DTS = 0,
@@ -21,6 +24,7 @@ long t_size;
 long nt_start_address = 0;
 long nt_size;
 long t_dtb_address;
+long t_kernel_address;
 long nt_dtb_address;
 struct pmp {
 	long start;
@@ -260,12 +264,26 @@ static int parse_and_set_iopmp(const void *blob, int t)
 static long boot_addr[4];
 static long boot_addr_chk[4];
 
+static void boot_kernel(long hart, long fly_addr, long krl_addr, long dtb_addr)
+{
+	void (*kernel)(ulong hart, void *dtb, struct fw_dynamic_info *p);
+
+	kernel = (void *)fly_addr;
+
+	opensbi_info.magic = FW_DYNAMIC_INFO_MAGIC_VALUE;
+	opensbi_info.version = 0x1;
+	opensbi_info.next_addr = krl_addr;
+	opensbi_info.next_mode = FW_DYNAMIC_INFO_NEXT_MODE_S;
+	opensbi_info.options = 0;
+	opensbi_info.boot_hart = 0;
+
+	kernel(hart, (void *)dtb_addr, &opensbi_info);
+}
+
 static void boot_t_core(void)
 {
-	void (*fly)(long, long);
 	long hart = csr_read(CSR_MHARTID);
 
-	fly = (void *)t_start_address;
 	if (hart == 0)
 		goto boot;
 
@@ -280,7 +298,7 @@ boot:
 	/* Set this for locking it */
 	//csr_write(CSR_MTEE, 0xff);
 
-	fly(hart, t_dtb_address);
+	boot_kernel(hart, t_start_address, t_kernel_address, t_dtb_address);
 }
 
 static void boot_nt_core(void)
@@ -409,7 +427,7 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 {
 	char *env;
 	long sbi_addr = SBI_ENTRY_ADDR;
-	int t_dtb_off = 0;
+	int header_off = 0;
 	int ret;
 
 	ret = csi_sec_init();
@@ -417,10 +435,15 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 		return ret;
 
 	addr[1] = simple_strtoul(argv[1], NULL, 16);
-	printf("linux: 0x%lx\n", addr[1]);
+	t_kernel_address = addr[1];
+	if (image_have_head(addr[1]) == 1)
+		header_off = HEADER_SIZE;
 	ret = csi_sec_image_verify(T_KRLIMG, addr[1]);
 	if (ret)
 		return ret;
+	addr[1] += header_off;
+	t_kernel_address = addr[1];
+	printf("linux: 0x%lx\n", addr[1]);
 
 	addr[2] = simple_strtoul(argv[2], NULL, 16);
 	printf("rootfs: 0x%lx\n", addr[2]);
@@ -433,11 +456,11 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 	addr[3] = simple_strtoul(argv[3], NULL, 16);
 	t_dtb_address = addr[3];
 	if (image_have_head(addr[3]) == 1)
-		t_dtb_off = HEADER_SIZE;
+		header_off = HEADER_SIZE;
 	ret = csi_sec_image_verify(T_DTB, addr[3]);
 	if (ret)
 		return ret;
-	addr[3] += t_dtb_off;
+	addr[3] += header_off;
 	t_dtb_address = addr[3];
 	printf("t dtb: 0x%lx\n", addr[3]);
 
@@ -459,7 +482,7 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 char tee_bootcode[BOOTCODE_SIZE] = {0x73, 0x50, 0x40, 0x7f};
 int light_boot(int argc, char * const argv[])
 {
-	ulong	addr[5] = {0};
+	ulong addr[5] = {0};
 	void (*entry)(int, long);
 
 	if (argc < 2) {
