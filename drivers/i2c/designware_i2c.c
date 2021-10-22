@@ -18,6 +18,8 @@ struct dw_scl_sda_cfg {
 	u32 fs_hcnt;
 	u32 ss_lcnt;
 	u32 fs_lcnt;
+	u32 hs_hcnt;
+	u32 hs_lcnt;
 	u32 sda_hold;
 };
 
@@ -29,6 +31,18 @@ static struct dw_scl_sda_cfg byt_config = {
 	.ss_lcnt = 0x200,
 	.fs_lcnt = 0x99,
 	.sda_hold = 0x6,
+};
+#endif
+
+#ifdef CONFIG_RISCV_THEAD
+static struct dw_scl_sda_cfg light_config = {
+	.ss_hcnt = 0xf6,
+	.ss_lcnt = 0x16e,
+	.fs_hcnt = 0x22,
+	.fs_lcnt = 0x6e,
+	.hs_hcnt = 0x22,
+	.hs_lcnt = 0x10,
+	.sda_hold = 0x1,
 };
 #endif
 
@@ -110,8 +124,13 @@ static unsigned int __dw_i2c_set_bus_speed(struct i2c_regs *i2c_base,
 	case IC_SPEED_MODE_MAX:
 		cntl |= IC_CON_SPD_SS;
 		if (scl_sda_cfg) {
+#ifdef	CONFIG_RISCV_THEAD
+			hcnt = scl_sda_cfg->hs_hcnt;
+			lcnt = scl_sda_cfg->hs_lcnt;
+#else
 			hcnt = scl_sda_cfg->fs_hcnt;
 			lcnt = scl_sda_cfg->fs_lcnt;
+#endif
 		} else {
 			hcnt = (bus_mhz * MIN_HS_SCL_HIGHTIME) / NANO_TO_MICRO;
 			lcnt = (bus_mhz * MIN_HS_SCL_LOWTIME) / NANO_TO_MICRO;
@@ -582,6 +601,9 @@ static int designware_i2c_probe(struct udevice *bus)
 #endif
 	} else {
 		priv->regs = (struct i2c_regs *)devfdt_get_addr_ptr(bus);
+#ifdef CONFIG_RISCV_THEAD
+		priv->scl_sda_cfg = &light_config;
+#endif
 	}
 
 	ret = reset_get_bulk(bus, &priv->resets);
