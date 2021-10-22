@@ -88,10 +88,6 @@ static int do_bootm_subcommand(cmd_tbl_t *cmdtp, int flag, int argc,
 /*******************************************************************/
 /* bootm - boot application image from image in memory */
 /*******************************************************************/
-
-#ifdef CONFIG_TARGET_LIGHT_C910
-extern int light_boot(int argc, char * const argv[]);
-#endif
 int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 #ifdef CONFIG_NEEDS_MANUAL_RELOC
@@ -106,11 +102,6 @@ int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 		relocated = 1;
 	}
-#endif
-
-#ifdef CONFIG_TARGET_LIGHT_C910
-	if (light_boot(argc, argv) < 0)
-		return -1;
 #endif
 
 	/* determine if we have a sub command */
@@ -203,6 +194,27 @@ U_BOOT_CMD(
 	bootm,	CONFIG_SYS_MAXARGS,	1,	do_bootm,
 	"boot application image from memory", bootm_help_text
 );
+
+/*******************************************************************/
+/* sboot - boot security image */
+/*******************************************************************/
+#ifdef CONFIG_TARGET_LIGHT_C910
+extern int light_boot(int argc, char * const argv[]);
+
+int do_sboot(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	if (light_boot(argc, argv) < 0)
+		return -1;
+
+	return 0;
+}
+
+U_BOOT_CMD(
+	sboot,	CONFIG_SYS_MAXARGS,	1,	do_sboot,
+	"boot application image from memory, run 'sboot $kernel_addr $rootfs_addr $dtb_addr'",
+	""
+);
+#endif
 
 /*******************************************************************/
 /* bootd - boot default image */
