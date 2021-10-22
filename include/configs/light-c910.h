@@ -83,7 +83,7 @@
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlyprintk clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
 	"bootcmd_load=ext4load mmc 0:2 $t_opensbi_addr fw_jump.bin; ext4load mmc 0:2 $t_dtb_addr hw.dtb; ext4load mmc 0:2 $t_kernel_addr Image; ext4load mmc 0:2 $t_rootfs_addr rootfs.cpio.gz;\0" \
-	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; bootm $t_kernel_addr $t_rootfs_addr $t_dtb_addr;\0" \
+	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; sboot $t_kernel_addr $t_rootfs_addr $t_dtb_addr;\0" \
         "\0"
 
 #else
@@ -126,7 +126,7 @@
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlyprintk clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
 	"bootcmd_load=ext4load mmc 0:2 $opensbi_addr fw_jump.bin; ext4load mmc 0:2 $dtb_addr hw.dtb; ext4load mmc 0:2 $kernel_addr Image\0" \
-	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; bootm $kernel_addr - $dtb_addr;\0" \
+	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
 
 #endif /* __CONFIG_H */
