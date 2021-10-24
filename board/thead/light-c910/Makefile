@@ -53,4 +53,9 @@ ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910
 obj-$(CONFIG_LPDDR) += $(DDR_SRC_PATH)/ddr_common_func.o
 obj-$(CONFIG_LPDDR) += $(DDR_SRC_PATH)/common_lib.o
 endif
+
+ifdef CONFIG_TARGET_LIGHT_FM_C910_VAL_SV
+obj-y += light-sv/pll_io_test.o
+obj-y += light-sv/adc_test.o
+endif
 endif
