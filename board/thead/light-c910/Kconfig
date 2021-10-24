@@ -26,6 +26,10 @@ config TARGET_LIGHT_FPGA_FM_C910
     bool "light fullmask FPGA board"
     default n
 
+config TARGET_LIGHT_FM_C910_VAL_SV
+    bool "light fullmask VAL board for system validation"
+    default n
+
 config SYS_TEXT_BASE
     default 0xc0000000 if RISCV_MMODE
     default 0x00200000 if RISCV_SMODE
