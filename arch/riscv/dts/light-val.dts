@@ -62,6 +62,15 @@
 			u-boot,dm-pre-reloc;
 		};
 
+		dummy_uart_sclk: uart-sclk-clock {
+			compatible = "fixed-clock";
+			clock-frequency = <100000000>;
+			clock-output-names = "dummy_uart_sclk";
+			#clock-cells = <0>;
+			u-boot,dm-pre-reloc;
+		};
+
+
 		i2c0: i2c@ffe7f20000 {
 			compatible = "snps,designware-i2c";
 			reg = <0xff 0xe7f20000 0x0 0x4000>;
@@ -75,8 +84,8 @@
 		serial@ffe7014000 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0xff 0xe7014000 0x0 0x400>;
-			clocks = <&dummy_apb>;
-			clock-frequency = <62500000>;
+			clocks = <&dummy_uart_sclk>;
+			clock-frequency = <100000000>;
 			clock-names = "baudclk";
 			reg-shift = <2>;
 			reg-io-width = <4>;
