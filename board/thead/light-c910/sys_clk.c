@@ -29,7 +29,7 @@ void cpu_clk_config(int cpu_freq)
 	/* 1. double check all pll lock */
 	udelay(60);
 	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x80);
-	if (!(tmp & 0x1))
+	if (!((tmp & 0x3fe) == 0x3fe))
 		return;
 
 	/* 2. update sys_pll to frac mode, 2438.5536MHz */
@@ -212,6 +212,32 @@ void cpu_clk_config(int cpu_freq)
 	tmp &= ~0x20;
 	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x140);
 	/* perisys_ahb_hclk 250MHz  perisys_apb_pclk 62.5MHz */
+
+	/* set dpu0_pll_div_clk to dpu0_pll_foutpostdiv/16 as 74.25MHz */
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1e8);
+	tmp &= ~0x100;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1e8);
+	udelay(1);
+	tmp &= ~0xff;
+	tmp |= 0x10;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1e8);
+	udelay(1);
+	tmp |= 0x100;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1e8);
+	udelay(1);
+
+	/* set dpu1_pll_div_clk to dpu1_pll_foutpostdiv/16 as 74.25MHz */
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1ec);
+	tmp &= ~0x100;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1ec);
+	udelay(1);
+	tmp &= ~0xff;
+	tmp |= 0x10;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1ec);
+	udelay(1);
+	tmp |= 0x100;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1ec);
+	udelay(1);
 
 	/*5. enable necessary gates */
 	/* enable dsp_subsys, vi_subsys, vo_subsys all clocls */
