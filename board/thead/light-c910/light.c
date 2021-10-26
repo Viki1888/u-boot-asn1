@@ -526,8 +526,8 @@ static void usb_clk_config(void)
 
 static void light_iopin_init(void)
 {
-	light_pin_cfg(I2C_AON_SCL,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(I2C_AON_SDA,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(I2C_AON_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
+	light_pin_cfg(I2C_AON_SDA,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(AOGPIO_8,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_9,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_mux(AOGPIO_10,1);
