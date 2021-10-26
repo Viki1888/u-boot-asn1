@@ -107,8 +107,8 @@
 				#size-cells = <0>;
 				compatible = "snps,dwmac-mdio";
 
-				phy_88E1111: ethernet-phy@0 {
-					reg = <0x0 0x0>;
+				phy_88E1111: ethernet-phy@1 {
+					reg = <0x1>;
 				};
 			};
 		};
