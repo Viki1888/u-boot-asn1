@@ -17,6 +17,7 @@
 
 #define PAD_GRP_BASE_SET(x)           (x << 12)
 #define PAD_GRP_IDX_GET(x)            ( (x >> 12) & 0xF)
+#define PAD_INDEX(x)                  (x & 0xFFF)
 
 typedef enum {
 	UART0_TXD = PAD_GRP_BASE_SET(SOC_PIN_AP_RIGHT_TOP),
@@ -138,9 +139,9 @@ typedef enum {
 	GPIO1_28,
 	GPIO1_29,
 	GPIO1_30,
-	OSC_CLK_IN,
 
-	OSC_CLK_OUT= PAD_GRP_BASE_SET(SOC_PIN_AON),
+	OSC_CLK_IN= PAD_GRP_BASE_SET(SOC_PIN_AON),
+	OSC_CLK_OUT,
 	SYS_RST_N,
 	TEST_MODE,
 	DFT_PROT_DIS_0,
@@ -346,7 +347,7 @@ static inline int light_pin_pllmode(pin_name_t pin_name, uint32_t mode)
 		return -1;
 		break;
 	}
-	PADCFG_PULL(reg_addr,pin_name,bpull,bpullup);
+	PADCFG_PULL(reg_addr,PAD_INDEX(pin_name),bpull,bpullup);
 
     return 0;
 }
@@ -379,7 +380,7 @@ static inline int light_pin_speed(pin_name_t pin_name, uint32_t speed)
 		return -1;
 	}
 
-	PADCFG_SLEW(reg_addr,pin_name,bfast);
+	PADCFG_SLEW(reg_addr,PAD_INDEX(pin_name),bfast);
     return 0;
 }
 
@@ -402,7 +403,7 @@ static inline int light_pin_drv_strength(pin_name_t pin_name, uint32_t strength)
 		return -1;
 	}
 
-	PADCFG_DRV(reg_addr,pin_name,strength);
+	PADCFG_DRV(reg_addr,PAD_INDEX(pin_name),strength);
 	return 0;
 }
 
@@ -415,7 +416,7 @@ int light_pin_mux(pin_name_t pin_name, uint32_t pin_func)
 	if (ret)
 		return ret;
 
-	PADMUX_CFG(reg_addr,pin_name,pin_func);
+	PADMUX_CFG(reg_addr,PAD_INDEX(pin_name),pin_func);
     return 0;
 }
 
