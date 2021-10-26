@@ -676,6 +676,11 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO3_0,1);
 	light_pin_mux(GPIO3_1,1);
 
+	light_pin_mux(GMAC0_COL,1);
+	light_pin_mux(GMAC0_CRS,1);
+	light_pin_cfg(GMAC0_COL,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_cfg(GMAC0_CRS,PIN_SPEED_NORMAL,PIN_PU,2);
+
 	/*spi0 cs0 gpio2-15 pad strength and pin-pull mode*/
 	light_pin_mux(SPI_CSN,3);
 	light_pin_cfg(SPI_CSN,PIN_SPEED_NORMAL,PIN_PN,5);
