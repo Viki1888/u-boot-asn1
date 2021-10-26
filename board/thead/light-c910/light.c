@@ -19,6 +19,11 @@
 #define PAD_GRP_IDX_GET(x)            ( (x >> 12) & 0xF)
 #define PAD_INDEX(x)                  (x & 0xFFF)
 
+#define LIGHT_GPIO3_BADDR	0xffe7f38000
+#define LIGHT_GPIO3_21		(0x1 << 21)
+
+#define GMAC0_APB3S_BADDR     0xffe7030000
+
 typedef enum {
 	UART0_TXD = PAD_GRP_BASE_SET(SOC_PIN_AP_RIGHT_TOP),
 	UART0_RXD,
@@ -512,6 +517,64 @@ static void gmac_clk_config(void)
 	udelay(10000);
 }
 
+int dw_txclk_set_rate(u32 rate)
+{
+        switch (rate) {
+        case 125000000:
+		writel(0x4, (void *)(GMAC0_APB3S_BADDR + 0xc));
+		writel(0x80000004, (void *)(GMAC0_APB3S_BADDR + 0xc));
+                break;
+        case 25000000:
+		writel(0x14, (void *)(GMAC0_APB3S_BADDR + 0xc));
+		writel(0x80000014, (void *)(GMAC0_APB3S_BADDR + 0xc));
+                break;
+        case 2500000:
+		writel(0xc8, (void *)(GMAC0_APB3S_BADDR + 0xc));
+		writel(0x800000c8, (void *)(GMAC0_APB3S_BADDR + 0xc));
+                break;
+        default:
+                return -EINVAL;
+        }
+
+        return 0;
+}
+
+void gmac_hw_init(void)
+{
+	//GPIO reset
+	writel(readl((void *)(LIGHT_GPIO3_BADDR + 0x4)) | LIGHT_GPIO3_21,
+	       (void *)(LIGHT_GPIO3_BADDR + 0x4));
+
+	writel(readl((void *)LIGHT_GPIO3_BADDR) & ~LIGHT_GPIO3_21,
+	       (void *)LIGHT_GPIO3_BADDR);
+	mdelay(100);
+	writel(readl((void *)LIGHT_GPIO3_BADDR) | LIGHT_GPIO3_21,
+	       (void *)LIGHT_GPIO3_BADDR);
+
+	mdelay(500);
+
+	/* Interface select mii:0   rgmii:1 */
+	//writel(0x0, (void *)(GMAC0_APB3S_BADDR + 0x1c));
+	writel(0x1, (void *)(GMAC0_APB3S_BADDR + 0x1c));
+	writel(0x7e, (void *)(GMAC0_APB3S_BADDR + 0x0));
+
+	writel(0x4, (void *)(GMAC0_APB3S_BADDR + 0xc));
+	writel(0x80000004, (void *)(GMAC0_APB3S_BADDR + 0xc));
+
+	/* Clock source pad:0   pll:1 */
+	//writel(0x0, (void *)(GMAC0_APB3S_BADDR + 0x18));
+	writel(0x1, (void *)(GMAC0_APB3S_BADDR + 0x18));
+
+	/* tx clk direction output:0 input:1 */
+	//writel(0x1, (void *)(GMAC0_APB3S_BADDR + 0x20));
+	writel(0x0, (void *)(GMAC0_APB3S_BADDR + 0x20));
+
+	/* mac rx delay */
+	writel(0x4000, (void *)(GMAC0_APB3S_BADDR + 0x4));
+	/* mac tx delay */
+	writel(0x1f, (void *)(GMAC0_APB3S_BADDR + 0x8));
+}
+
 static void usb_clk_config(void)
 {
 	writel(readl((void *)SYSCLK_USB_CTRL) | 0xf, (void *)SYSCLK_USB_CTRL);
@@ -636,11 +699,11 @@ int board_init(void)
 	light_reset_config();
 	light_iopmp_config();
 
-	usb_clk_config();
-	gmac_clk_config();
 	light_iopin_init();
-
 	clk_config();
+
+	usb_clk_config();
+	gmac_hw_init();
 
 	return 0;
 }
