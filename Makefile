@@ -778,6 +778,7 @@ libs-y += drivers/usb/musb/
 libs-y += drivers/usb/musb-new/
 libs-y += drivers/usb/phy/
 libs-y += drivers/usb/ulpi/
+libs-$(CONFIG_TARGET_LIGHT_FM_C910_VAL_SV) += drivers/trng/
 libs-y += cmd/
 libs-y += common/
 libs-y += env/
