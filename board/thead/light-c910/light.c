@@ -213,6 +213,8 @@ enum {
 #define LIGHT_IOPMP_DEFAULT_ATTR	0xffffffff
 #define LIGHT_IOPMP_DEFAULT_OFF		0xc0
 
+#ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910
+
 #define PADMUX_REG_ADDR(base,index)  ((void*)(base) + ((index >> 3) << 2))
 #define PADMUX_REG_BIT_POS(index)    ((index & 0x7) << 2)
 #define PADMUX_REG_MASK(index)       (0xF << PADMUX_REG_BIT_POS(index))
@@ -439,6 +441,7 @@ int light_pin_cfg(pin_name_t pin_name,uint32_t slew_rate, uint32_t pullmode,uint
 
 	return ret;
 }
+#endif
 
 static struct light_iopmp_list {
         int iopmp_type;
@@ -562,6 +565,7 @@ static void usb_clk_config(void)
 	writel(0x7, (void *)USB3_DRD_SWRST);
 }
 
+#ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910
 static void light_iopin_init(void)
 {
 	light_pin_cfg(I2C_AON_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
@@ -673,12 +677,16 @@ static void light_iopin_init(void)
 	light_pin_cfg(QSPI0_D3_HOLD,PIN_SPEED_NORMAL,PIN_PU,8);
 
 }
+#endif
 
 int board_init(void)
 {
 	light_iopmp_config();
 
+#ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910
 	light_iopin_init();
+#endif
+
 	clk_config();
 
 	usb_clk_config();
