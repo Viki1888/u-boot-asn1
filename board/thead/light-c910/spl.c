@@ -23,6 +23,32 @@ extern void cpu_clk_config(int cpu_freq);
 extern void ddr_clk_config(int ddr_freq);
 extern void show_sys_clk(void);
 
+static struct light_reset_list {
+        u32 val;
+        u64 reg;
+} light_reset_lists[] = {
+	{0x0000000F, 0xFFFF015220}, /* VP/VO/VI/DSP */
+	{0x00000001, 0xFFFF0151B0}, /* NPU */
+	{0xFFFFFFFF, 0xFFFF041028}, /* DSP */
+	{0x00000001, 0xFFFF529000}, /* GPU */
+	{0x00000007, 0xFFFF529004}, /* DPU */
+	{0x00000037, 0xFFFFF4403C}, /* Audio sys */
+};
+
+static void light_reset_config(void)
+{
+	/* Reset VI/VO/VP/DSP/NPU/GPU/DPU */
+	int i = 0;
+	int entry_size;
+
+	entry_size = ARRAY_SIZE(light_reset_lists);
+
+	while (i < entry_size) {
+		writel(light_reset_lists[i].val, (void *)(light_reset_lists[i].reg));
+		i++;
+	}
+}
+
 void setup_ddr_pmp(void)
 {
 	/* clear pmp entry0,entry1 setting in bootrom */
@@ -91,6 +117,7 @@ void board_init_f(ulong dummy)
 {
 	int ret;
 
+	light_reset_config();
 	cpu_clk_config(0);
 
 	ret = spl_early_init();
