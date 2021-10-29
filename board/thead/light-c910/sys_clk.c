@@ -262,7 +262,7 @@ void cpu_clk_config(int cpu_freq)
 
 	/* enable npu_axi_aclk, npu_core_clk */
 	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
-	tmp |= 0x18;
+	tmp |= 0x30;
 	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
 #endif
 }
