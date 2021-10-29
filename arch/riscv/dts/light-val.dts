@@ -70,11 +70,18 @@
 			u-boot,dm-pre-reloc;
 		};
 
+		dummy_i2c_icclk: i2c-icclk-clock {
+			compatible = "fixed-clock";
+			clock-frequency = <100000000>;
+			clock-output-names = "dummy_i2c_icclk";
+			#clock-cells = <0>;
+			u-boot,dm-pre-reloc;
+		};
 
 		i2c0: i2c@ffe7f20000 {
 			compatible = "snps,designware-i2c";
 			reg = <0xff 0xe7f20000 0x0 0x4000>;
-			clocks = <&dummy_apb>;
+			clocks = <&dummy_i2c_icclk>;
 			clock-frequency = <100000>;
 
 			#address-cells = <1>;
