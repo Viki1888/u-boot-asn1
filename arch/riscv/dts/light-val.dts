@@ -128,7 +128,7 @@
 			clock-frequency = <198000000>;
 			clock-names = "core";
 			max-frequency = <198000000>;
-			sdhci-caps-mask = <50331648>;
+			sdhci-caps-mask = <0x0 0x1000000>;
 			//mmc-hs400-1_8v = "true";
 			non-removable;
 			no-sdio;
