@@ -25,6 +25,7 @@ void cpu_clk_config(int cpu_freq)
 #define LIGHT_VP_SUBSYS_ADDRBASE	0xfffcc01000
 #define LIGHT_DSP_SUBSYS_ADDRBASE	0xffff041000
 #define LIGHT_AUDIO_SUBSYS_ADDRBASE	0xffcb000000
+#define LIGHT_APSYS_RSTGEN_ADDRBASE	0xffff015000
 
 	/* 1. double check all pll lock */
 	udelay(60);
@@ -244,6 +245,9 @@ void cpu_clk_config(int cpu_freq)
 	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x220);
 	tmp |= 0x7;
 	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x220);
+
+	/* AP rst_gen: VP/VO/VI/DSP */
+	writel(0xf, (void *)LIGHT_APSYS_RSTGEN_ADDRBASE + 0x220);
 
 	/* enable dsp0/1_cclk, dsp0/1_pclk */
 	tmp = readl((void *)LIGHT_DSP_SUBSYS_ADDRBASE + 0x24);
