@@ -13,7 +13,7 @@
 #include <div64.h>
 #include <thead/clock_config.h>
 
-#define ap_base		((void __iomem *)0xffef010000)
+#define ap_base		((void __iomem *)0xffff011000)
 #define aon_base         ((void __iomem *)0xfffff46000)
 
 #define C910_CCLK	0
