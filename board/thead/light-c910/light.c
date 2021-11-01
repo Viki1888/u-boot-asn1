@@ -148,6 +148,8 @@ typedef enum {
 	OSC_CLK_IN= PAD_GRP_BASE_SET(SOC_PIN_AON),
 	OSC_CLK_OUT,
 	SYS_RST_N,
+	RTC_CLK_IN,
+	RTC_CLK_OUT,
 	TEST_MODE,
 	DFT_PROT_DIS_0,
 	DEBUG_MODE,
@@ -212,7 +214,6 @@ enum {
 
 #define LIGHT_IOPMP_DEFAULT_ATTR	0xffffffff
 #define LIGHT_IOPMP_DEFAULT_OFF		0xc0
-
 #ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910
 
 #define PADMUX_REG_ADDR(base,index)  ((void*)(base) + ((index >> 3) << 2))
@@ -675,6 +676,7 @@ static void light_iopin_init(void)
 	light_pin_cfg(QSPI0_D1_MISO,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI0_D2_WP,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI0_D3_HOLD,PIN_SPEED_NORMAL,PIN_PU,8);
+
 
 }
 #endif
