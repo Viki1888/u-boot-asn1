@@ -278,7 +278,7 @@ struct pinmux_addr_t {
 struct pinmux_addr_t g_soc_pin_grp_addr[] = {
 	PIN_GRP_ADDR_DEF(SOC_PIN_AP_RIGHT_TOP,      0xFFEC007000,0xFFEC007400),
 	PIN_GRP_ADDR_DEF(SOC_PIN_AP_LEFT_TOP,       0xFFE7F3C000,0xFFE7F3C400),
-	PIN_GRP_ADDR_DEF(SOC_PIN_AON,               0xFFFF4A000,0xFFFF4A400),
+	PIN_GRP_ADDR_DEF(SOC_PIN_AON,               0xFFFFF4A000,0xFFFFF4A400),
 };
 
 static int  light_pinmx_get_cfg_base(pin_name_t pin_name, uint32_t** cfg_base)
