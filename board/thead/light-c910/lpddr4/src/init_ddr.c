@@ -8,7 +8,7 @@ void init_ddr(void)
 {
     enum DDR_TYPE type = DDR_TYPE_LPDDR4X;
     int freq = 3733;
-    int rank_num = 2;
+    int rank_num = 1;
     enum DDR_BITWIDTH bits = DDR_BITWIDTH_64;
     bool dbi_off = false;
     int board_ver = 1;
