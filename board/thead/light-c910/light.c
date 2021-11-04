@@ -19,10 +19,14 @@
 #define PAD_GRP_IDX_GET(x)            ( (x >> 12) & 0xF)
 #define PAD_INDEX(x)                  (x & 0xFFF)
 
+#define LIGHT_GPIO1_BADDR	0xffec006000
 #define LIGHT_GPIO3_BADDR	0xffe7f38000
+#define LIGHT_GPIO1_13		(0x1 << 13)
 #define LIGHT_GPIO3_21		(0x1 << 21)
 
-#define GMAC0_APB3S_BADDR     0xffe7030000
+#define GMAC0_APB3S_BADDR	0xffec003000
+#define GMAC1_APB3S_BADDR	0xffec004000
+static uint64_t apb3s_baddr;
 
 typedef enum {
 	UART0_TXD = PAD_GRP_BASE_SET(SOC_PIN_AP_RIGHT_TOP),
@@ -489,27 +493,20 @@ static void light_iopmp_config(void)
 	}
 }
 
-static void gmac_clk_config(void)
-{
-	writel(1 << 13, (void *)(0xffe7030004));
-	writel(1 << 13, (void *)(0xffe7030008));
-	udelay(10000);
-}
-
 int dw_txclk_set_rate(u32 rate)
 {
         switch (rate) {
         case 125000000:
-		writel(0x4, (void *)(GMAC0_APB3S_BADDR + 0xc));
-		writel(0x80000004, (void *)(GMAC0_APB3S_BADDR + 0xc));
+		writel(0x4, (void *)(apb3s_baddr + 0xc));
+		writel(0x80000004, (void *)(apb3s_baddr + 0xc));
                 break;
         case 25000000:
-		writel(0x14, (void *)(GMAC0_APB3S_BADDR + 0xc));
-		writel(0x80000014, (void *)(GMAC0_APB3S_BADDR + 0xc));
+		writel(0x14, (void *)(apb3s_baddr + 0xc));
+		writel(0x80000014, (void *)(apb3s_baddr + 0xc));
                 break;
         case 2500000:
-		writel(0xc8, (void *)(GMAC0_APB3S_BADDR + 0xc));
-		writel(0x800000c8, (void *)(GMAC0_APB3S_BADDR + 0xc));
+		writel(0xc8, (void *)(apb3s_baddr + 0xc));
+		writel(0x800000c8, (void *)(apb3s_baddr + 0xc));
                 break;
         default:
                 return -EINVAL;
@@ -518,40 +515,57 @@ int dw_txclk_set_rate(u32 rate)
         return 0;
 }
 
-void gmac_hw_init(void)
+static void gmac_phy_rst(void)
 {
 	//GPIO reset
 	writel(readl((void *)(LIGHT_GPIO3_BADDR + 0x4)) | LIGHT_GPIO3_21,
 	       (void *)(LIGHT_GPIO3_BADDR + 0x4));
+	writel(readl((void *)(LIGHT_GPIO1_BADDR + 0x4)) | LIGHT_GPIO1_13,
+	       (void *)(LIGHT_GPIO1_BADDR + 0x4));
 
 	writel(readl((void *)LIGHT_GPIO3_BADDR) & ~LIGHT_GPIO3_21,
 	       (void *)LIGHT_GPIO3_BADDR);
-	mdelay(100);
+	writel(readl((void *)LIGHT_GPIO1_BADDR) & ~LIGHT_GPIO1_13,
+	       (void *)LIGHT_GPIO1_BADDR);
+	mdelay(20);
 	writel(readl((void *)LIGHT_GPIO3_BADDR) | LIGHT_GPIO3_21,
 	       (void *)LIGHT_GPIO3_BADDR);
+	writel(readl((void *)LIGHT_GPIO1_BADDR) | LIGHT_GPIO1_13,
+	       (void *)LIGHT_GPIO1_BADDR);
 
-	mdelay(500);
+	mdelay(100);
+}
 
+static void gmac_glue_init(uint64_t apb3s_baddr)
+{
 	/* Interface select mii:0   rgmii:1 */
-	//writel(0x0, (void *)(GMAC0_APB3S_BADDR + 0x1c));
-	writel(0x1, (void *)(GMAC0_APB3S_BADDR + 0x1c));
-	writel(0x7e, (void *)(GMAC0_APB3S_BADDR + 0x0));
+	//writel(0x0, (void *)(apb3s_baddr + 0x1c));
+	writel(0x1, (void *)(apb3s_baddr + 0x1c));
+	writel(0x7e, (void *)(apb3s_baddr + 0x0));
 
-	writel(0x4, (void *)(GMAC0_APB3S_BADDR + 0xc));
-	writel(0x80000004, (void *)(GMAC0_APB3S_BADDR + 0xc));
+	writel(0x4, (void *)(apb3s_baddr + 0xc));
+	writel(0x80000004, (void *)(apb3s_baddr + 0xc));
 
 	/* Clock source pad:0   pll:1 */
-	//writel(0x0, (void *)(GMAC0_APB3S_BADDR + 0x18));
-	writel(0x1, (void *)(GMAC0_APB3S_BADDR + 0x18));
+	//writel(0x0, (void *)(apb3s_baddr + 0x18));
+	writel(0x1, (void *)(apb3s_baddr + 0x18));
 
 	/* tx clk direction output:0 input:1 */
-	//writel(0x1, (void *)(GMAC0_APB3S_BADDR + 0x20));
-	writel(0x0, (void *)(GMAC0_APB3S_BADDR + 0x20));
+	//writel(0x1, (void *)(apb3s_baddr + 0x20));
+	writel(0x0, (void *)(apb3s_baddr + 0x20));
+}
 
-	/* mac rx delay */
-	writel(0x4000, (void *)(GMAC0_APB3S_BADDR + 0x4));
-	/* mac tx delay */
-	writel(0x1f, (void *)(GMAC0_APB3S_BADDR + 0x8));
+void gmac_hw_init(void)
+{
+#ifdef LIGHT_GMAC1_ENABLE
+	apb3s_baddr = GMAC1_APB3S_BADDR;
+	light_pin_mux(GMAC0_MDIO, 2);
+	light_pin_mux(GMAC0_MDC, 2);
+#else
+	apb3s_baddr = GMAC0_APB3S_BADDR;
+#endif
+	gmac_phy_rst();
+	gmac_glue_init(apb3s_baddr);
 }
 
 static void usb_clk_config(void)
@@ -598,7 +612,6 @@ static void light_iopin_init(void)
 	light_pin_cfg(UART3_TXD,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(UART3_RXD,PIN_SPEED_NORMAL,PIN_PN,2);
 
-
 	light_pin_mux(GPIO0_18,1);
 	light_pin_mux(GPIO0_19,1);
 	light_pin_cfg(GPIO0_18,PIN_SPEED_NORMAL,PIN_PN,4);
@@ -608,7 +621,6 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO0_21,2);
 	light_pin_cfg(GPIO0_20,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO0_21,PIN_SPEED_NORMAL,PIN_PN,2);
-
 
 	light_pin_mux(GPIO1_0,1);
 	light_pin_mux(GPIO1_1,1);
@@ -621,12 +633,10 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO1_3,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_4,PIN_SPEED_NORMAL,PIN_PN,2);
 
-
 	light_pin_cfg(I2C2_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(I2C2_SDA,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(I2C3_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(I2C3_SDA,PIN_SPEED_NORMAL,PIN_PN,4);
-
 
 	light_pin_mux(GPIO2_18,1);
 	light_pin_mux(GPIO2_19,1);
@@ -646,7 +656,6 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO2_24,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_25,PIN_SPEED_NORMAL,PIN_PN,2);
 
-
 	light_pin_mux(SDIO0_WPRTN,3);
 	light_pin_mux(SDIO1_WPRTN,3);
 	light_pin_mux(SDIO1_DETN,3);
@@ -656,7 +665,7 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO3_0,1);
 	light_pin_mux(GPIO3_1,1);
 
-	light_pin_mux(GMAC0_COL,1);
+	light_pin_mux(GMAC0_COL,3);
 	light_pin_mux(GMAC0_CRS,1);
 	light_pin_cfg(GMAC0_COL,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GMAC0_CRS,PIN_SPEED_NORMAL,PIN_PU,2);
@@ -676,8 +685,6 @@ static void light_iopin_init(void)
 	light_pin_cfg(QSPI0_D1_MISO,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI0_D2_WP,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI0_D3_HOLD,PIN_SPEED_NORMAL,PIN_PU,8);
-
-
 }
 #endif
 

@@ -35,6 +35,7 @@
 #define CONFIG_RGMII            1
 #define CONFIG_PHY_MARVELL      1
 #define CONFIG_NET_RETRY_COUNT  20
+//#define LIGHT_GMAC1_ENABLE	1
 
 #define CONFIG_SYS_FLASH_BASE       0x0
 #define CONFIG_SYS_MAX_FLASH_BANKS  1
