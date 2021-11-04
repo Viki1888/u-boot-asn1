@@ -258,11 +258,13 @@ void enable_auto_refresh() {
  //4266
   ddr_sysreg_wr(DDR_CFG0+0xc,0x4b000000);
   ddr_sysreg_wr(DDR_CFG0+0x8,0x01205801);
+  udelay(2);
   ddr_sysreg_wr(DDR_CFG0+0xc,0x0b000000);
  } else if(speed==3733) {
  //3733
   ddr_sysreg_wr(DDR_CFG0+0xc,0x4b000000);
   ddr_sysreg_wr(DDR_CFG0+0x8,0x01204d01);
+  udelay(2);
   ddr_sysreg_wr(DDR_CFG0+0xc,0x0b000000);
  } else if(speed==3200) {
  //3200
@@ -270,6 +272,7 @@ void enable_auto_refresh() {
  //2133
   ddr_sysreg_wr(DDR_CFG0+0xc,0x4b000000);
   ddr_sysreg_wr(DDR_CFG0+0x8,0x01608501);
+  udelay(2);
   ddr_sysreg_wr(DDR_CFG0+0xc,0x0b000000);
  } else {
  printf("Reserved Pll setting\n");

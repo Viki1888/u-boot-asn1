@@ -35042,6 +35042,10 @@ ddr_phy_reg_wr(0xc0080,0x3);
 
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
+printf("PllCtrl1 is %0x\n",ddr_phy_reg_rd(0x200c7));
+printf("PllCtrl2 is %0x\n",ddr_phy_reg_rd(0x200c5));
+printf("PllCtrl4 is %0x\n",ddr_phy_reg_rd(0x200cc));
+printf("PllTestmode is %0x\n",ddr_phy_reg_rd(0x200ca));
 printf("Trained DB0 DFIMRL is %0x\n",ddr_phy_reg_rd(0x10020));
 printf("Trained DB1 DFIMRL is %0x \n",ddr_phy_reg_rd(0x11020));
 printf("Trained DB2 DFIMRL is %0x \n",ddr_phy_reg_rd(0x12020));
