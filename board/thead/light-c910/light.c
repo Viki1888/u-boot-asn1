@@ -638,6 +638,11 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO1_3,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_4,PIN_SPEED_NORMAL,PIN_PN,2);
 
+	light_pin_mux(CLK_OUT_0,1);
+	light_pin_mux(CLK_OUT_1,1);
+	light_pin_mux(CLK_OUT_2,1);
+	light_pin_mux(CLK_OUT_3,1);
+
 	light_pin_cfg(I2C2_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(I2C2_SDA,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(I2C3_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
