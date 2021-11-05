@@ -39,6 +39,7 @@ int g_dnl_board_usb_cable_connected(void)
 {
 	return 1;
 }
+#endif
 
 #ifdef CONFIG_CMD_BOOT_SLAVE
 #define E902_SYSREG_START	0xfffff48044
@@ -54,7 +55,7 @@ void set_slave_cpu_entry(phys_addr_t entry)
 
 void disable_slave_cpu(void)
 {
-    writel(0x2, (void *)E902_SYSREG_RESET);
+    writel(0x0, (void *)E902_SYSREG_RESET);
 }
 
 void enable_slave_cpu(void)
@@ -72,6 +73,4 @@ int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 
 	return 0;
 }
-#endif
-
 #endif
