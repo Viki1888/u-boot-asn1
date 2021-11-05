@@ -671,7 +671,7 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO3_1,1);
 
 	light_pin_mux(GMAC0_COL,3);
-	light_pin_mux(GMAC0_CRS,1);
+	light_pin_mux(GMAC0_CRS,3);
 	light_pin_cfg(GMAC0_COL,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GMAC0_CRS,PIN_SPEED_NORMAL,PIN_PU,2);
 
