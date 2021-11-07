@@ -562,14 +562,10 @@ static void gmac_glue_init(uint64_t apb3s_baddr)
 
 void gmac_hw_init(void)
 {
-#ifdef LIGHT_GMAC1_ENABLE
-	apb3s_baddr = GMAC1_APB3S_BADDR;
-	light_pin_mux(GMAC0_MDIO, 2);
-	light_pin_mux(GMAC0_MDC, 2);
-#else
-	apb3s_baddr = GMAC0_APB3S_BADDR;
-#endif
 	gmac_phy_rst();
+	apb3s_baddr = GMAC1_APB3S_BADDR;
+	gmac_glue_init(apb3s_baddr);
+	apb3s_baddr = GMAC0_APB3S_BADDR;
 	gmac_glue_init(apb3s_baddr);
 }
 
