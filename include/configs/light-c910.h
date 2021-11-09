@@ -61,12 +61,6 @@
 #define LIGHT_DTB_ADDR_CMD	"0x1f00000"
 //#define LIGHT_IMAGE_WRITER	1
 
-/* boot environment */
-#undef CONFIG_BOOTCOMMAND
-#define CONFIG_BOOTCOMMAND \
-       "bootm $t_kernel_addr $t_rootfs_addr $t_dtb_addr $nt_dtb_addr"
-
-#endif
 #ifdef CONFIG_LIGHT_SEC_BOOT
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"t_opensbi_addr=0x100000\0" \
@@ -75,6 +69,7 @@
 	"t_dtb_addr=0x1eff800\0" \
 	"nt_dtb_addr=0x81f00000\0" \
 	"fdt_high=0xffffffffffffffff\0" \
+	"aon_ram_addr=0xffffef8000\0" \
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
@@ -82,42 +77,17 @@
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
-	"bootcmd_load=ext4load mmc 0:2 $t_opensbi_addr fw_jump.bin; ext4load mmc 0:2 $t_dtb_addr light-val.dtb; ext4load mmc 0:2 $t_kernel_addr Image; ext4load mmc 0:2 $t_rootfs_addr rootfs.cpio.gz;\0" \
-	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; sboot $t_kernel_addr $t_rootfs_addr $t_dtb_addr;\0" \
+	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:2 $t_opensbi_addr fw_jump.bin; ext4load mmc 0:2 $t_dtb_addr light-val.dtb; ext4load mmc 0:2 $t_kernel_addr Image; ext4load mmc 0:2 $t_rootfs_addr rootfs.cpio.gz;\0" \
+	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; sboot $t_kernel_addr $t_rootfs_addr $t_dtb_addr;\0" \
         "\0"
 
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"uboot_start=0x0\0" \
-	"uboot_size=0x400\0" \
-	"t_opensbi_start=0x0\0" \
-	"t_opensbi_size=0x200\0" \
-	"t_kernel_start=0x1000\0" \
-	"t_kernel_size=0x8000\0" \
-	"t_rootfs_start=0x10000\0" \
-	"t_rootfs_size=0x8000\0" \
-	"t_dtb_start=0x60000\0" \
-	"t_dtb_size=0x20\0" \
-	"nt_opensbi_start=0x30000\0" \
-	"nt_opensbi_size=0x200\0" \
-	"nt_kernel_start=0x31000\0" \
-	"nt_kernel_size=0x8000\0" \
-	"nt_rootfs_start=0x40000\0" \
-	"nt_rootfs_size=0x8000\0" \
-	"nt_dtb_start=0x90000\0" \
-	"nt_dtb_size=0x20\0" \
-	"t_opensbi_addr=0x0\0" \
-	"t_kernel_addr=0x00200000\0" \
-	"t_rootfs_addr=0x02000000\0" \
-	"t_dtb_addr=0x01f00000\0" \
-	"nt_opensbi_addr=0x80000000\0" \
-	"nt_kernel_addr=0x80200000\0" \
-	"nt_rootfs_addr=0x82000000\0" \
-	"nt_dtb_addr=0x81f00000\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
 	"dtb_addr=0x01f00000\0" \
 	"kernel_addr=0x00200000\0" \
+	"aon_ram_addr=0xffffef8000\0" \
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
@@ -125,8 +95,9 @@
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
-	"bootcmd_load=ext4load mmc 0:2 $opensbi_addr fw_jump.bin; ext4load mmc 0:2 $dtb_addr light-val.dtb; ext4load mmc 0:2 $kernel_addr Image\0" \
-	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
+	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:2 $opensbi_addr fw_jump.bin; ext4load mmc 0:2 $dtb_addr light-val.dtb; ext4load mmc 0:2 $kernel_addr Image\0" \
+	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
+#endif
 
 #endif /* __CONFIG_H */
