@@ -496,6 +496,7 @@ static void light_iopmp_config(void)
 void board_lmb_reserve(struct lmb *lmb)
 {
 	lmb_add(lmb, (phys_addr_t)0x0, (phys_addr_t)0x20000000);
+	lmb_add(lmb, (phys_addr_t)0xffffef8000, (phys_addr_t)(64*1024));
 }
 
 int dw_txclk_set_rate(u32 rate)
