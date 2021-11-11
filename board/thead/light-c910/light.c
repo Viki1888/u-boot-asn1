@@ -464,8 +464,8 @@ static struct light_iopmp_list {
         {IOPMP_EIP120III, 0xFFFF240000},
         {IOPMP_ISP0, 0xFFF4080000},
         {IOPMP_ISP1, 0xFFF4081000},
-        {IOPMP_DSP, 0xFFF4082000},
-        {IOPMP_DW200, 0xFFF4083000},
+        {IOPMP_DW200, 0xFFF4082000},
+        {IOPMP_VIPRE, 0xFFF4083000},
         {IOPMP_VENC, 0xFFFCC60000},
         {IOPMP_VDEC, 0xFFFCC61000},
         {IOPMP_G2D, 0xFFFCC62000},
@@ -478,6 +478,8 @@ static struct light_iopmp_list {
         {IOPMP_GMAC2, 0xFFFC002000},
         {IOPMP_DMAC, 0xFFFFC20000},
         {IOPMP_TEE_DMAC, 0xFFFF250000},
+	{IOPMP_DSP0, 0xFFFF058000},
+	{IOPMP_DSP1, 0xFFFF059000},
 };
 
 static void light_iopmp_config(void)
