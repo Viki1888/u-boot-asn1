@@ -22,6 +22,7 @@ void cpu_clk_config(int cpu_freq)
 #define LIGHT_MISC_SUBSYS_ADDRBASE	0xfffc02d000
 #define LIGHT_VI_SUBSYS_ADDRBASE	0xfff4041000
 #define LIGHT_VO_SUBSYS_ADDRBASE	0xffff401000
+#define LIGHT_VO_SUBSYS_R_ADDRBASE	0xffef528000
 #define LIGHT_VP_SUBSYS_ADDRBASE	0xfffcc01000
 #define LIGHT_DSP_SUBSYS_ADDRBASE	0xffff041000
 #define LIGHT_AUDIO_SUBSYS_ADDRBASE	0xffcb000000
@@ -258,6 +259,10 @@ void cpu_clk_config(int cpu_freq)
 	tmp = readl((void *)LIGHT_VO_SUBSYS_ADDRBASE + 0x50);
 	tmp |= 0x18;
 	writel(tmp, (void *)LIGHT_VO_SUBSYS_ADDRBASE + 0x50);
+
+	tmp = readl((void *)LIGHT_VO_SUBSYS_R_ADDRBASE + 0x50);
+	tmp |= 0x3ff;
+	writel(tmp, (void *)LIGHT_VO_SUBSYS_R_ADDRBASE + 0x50);
 
 	/* enable dpu_pixelclk0/1, dpu_hclk, dpu_aclk, dpu_cclk */
 	tmp = readl((void *)LIGHT_VO_SUBSYS_ADDRBASE + 0x50);

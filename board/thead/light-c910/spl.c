@@ -36,6 +36,7 @@ static struct light_reset_list light_post_reset_lists[] = {
 	{0x00000001, 0xFFFF0151B0}, /* AP rst_gen: NPU rst */
 	{0xFFFFFFFF, 0xFFFF041028}, /* DSP sys_reg: DSP rst */
 	{0x00000001, 0xFFFF529000}, /* VO sys_reg: GPU rst */
+	{0x00000003, 0xFFEF528000}, /* VO sys_reg: GPU rst */
 	{0x00000007, 0xFFFF529004}, /* VO sys_reg: DPU rst */
 };
 
