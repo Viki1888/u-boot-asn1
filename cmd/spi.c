@@ -197,6 +197,7 @@ static int do_spi_xfer(int bus, int cs ,int bprint_rx)
 {
 	struct spi_slave *slave;
 	int ret = 0;
+	int j;
 
 #ifdef CONFIG_DM_SPI
 	char name[30], *str;
@@ -206,7 +207,6 @@ static int do_spi_xfer(int bus, int cs ,int bprint_rx)
 	str = strdup(name);
 	if (!str)
 		return -ENOMEM;
-	printf("bus %d cs %d speed %d mode %d \n",bus,cs,speed,mode);
 	ret = spi_get_bus_and_cs(bus, cs, speed, mode, "spi_generic_drv",
 				 str, &dev, &slave);
 	if (ret)
@@ -222,6 +222,13 @@ static int do_spi_xfer(int bus, int cs ,int bprint_rx)
 	ret = spi_claim_bus(slave);
 	if (ret)
 		goto done;
+	printf("out:\n");
+	if(bprint_rx)
+	{
+		for (j = 0; j < ((bitlen + 7) / 8); j++)
+			printf("%02X", dout[j]);
+		printf("\n");
+	}
 	ret = spi_xfer(slave, bitlen, dout, din,
 		       SPI_XFER_BEGIN | SPI_XFER_END);
 #ifndef CONFIG_DM_SPI
@@ -232,8 +239,7 @@ static int do_spi_xfer(int bus, int cs ,int bprint_rx)
 	if (ret) {
 		printf("Error %d during SPI transaction\n", ret);
 	} else {
-		int j;
-
+		printf("in:\n");
 		if(bprint_rx)
 		{
 			for (j = 0; j < ((bitlen + 7) / 8); j++)
@@ -441,7 +447,6 @@ int spi_tst_cfg (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 	speed = simple_strtoul(argv[1],&cp,10);
 	mode  = simple_strtoul(argv[2],&cp,10);
-	printf("speed %d mode %d \n",speed,mode);
 
 	return 0;
 }
@@ -462,7 +467,6 @@ int spi_tst_xfer (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			bus = simple_strtoul(argv[1], &cp, 10);
 			cs =  simple_strtoul(argv[2], &cp, 10);
 			bitlen = simple_strtoul(argv[3], NULL, 10);
-			printf("bus %d cs %d bitlen %d \n",bus,cs,bitlen);
 			cp = argv[4];
 			for(j = 0; *cp; j++, cp++) {
 				tmp = *cp - '0';

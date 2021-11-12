@@ -243,7 +243,7 @@ static void spi_hw_init(struct dw_qspi_priv *priv)
 	spi_enable_chip(priv, 0);
 	dw_write(priv, DW_SPI_IMR, 0xff);
 	dw_write(priv, DW_SPI_SER, 0x0);
-	dw_write(priv, DW_SPI_RX_SAMPLE_DLY, 0x0);
+	dw_write(priv, DW_SPI_RX_SAMPLE_DLY, 0x7);
 	spi_enable_chip(priv, 1);
 
 	/*
@@ -411,7 +411,7 @@ static void dw_reader(struct dw_qspi_priv *priv)
 
 	while (max--) {
 		rxw = dw_read(priv, DW_SPI_DR);
-		//debug("%s: rx=0x%02x\n", __func__, rxw);
+		debug("%s: rx=0x%02x\n", __func__, rxw);
 
 		/* Care about rx if the transfer's original "rx" is not null */
 		if (priv->rx_end - priv->len) {
@@ -428,6 +428,15 @@ static void dw_reader(struct dw_qspi_priv *priv)
 	}
 }
 
+static int poll_transfer(struct dw_qspi_priv *priv)
+{
+	do {
+		dw_writer(priv);
+		//dw_reader(priv);
+	} while (priv->tx > priv->tx_end);
+
+	return 0;
+}
 /*
  * We define external_cs_manage function as 'weak' as some targets
  * (like MSCC Ocelot) don't control the external CS pin using a GPIO
@@ -492,6 +501,105 @@ static bool dw_qspi_can_xfer_32bits_frame(const struct spi_mem_op *op)
 	return ret;
 }
 
+static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
+		       const void *dout, void *din, unsigned long flags)
+{
+	struct udevice *bus = dev->parent;
+	struct dw_qspi_priv *priv = dev_get_priv(bus);
+	const u8 *tx = dout;
+	u8 *rx = din;
+	int ret = 0;
+	u32 cr0 = 0,spi_cr0;
+	u32 val;
+	u32 cs;
+
+	debug("%s:\n",__func__);
+	/* spi core configured to do 8 bit transfers */
+	if (bitlen % 8) {
+		debug("Non byte aligned SPI transfer.\n");
+		return -1;
+	}
+
+	/* Start the transaction if necessary. */
+	if (flags & SPI_XFER_BEGIN)
+		external_cs_manage(dev, false);
+
+	cr0 = (7) << 16 | (priv->type << SPI_FRF_OFFSET) |
+		((priv->mode & 0x03) << SPI_MODE_OFFSET) |
+		(priv->tmode << SPI_TMOD_OFFSET);
+#if 0
+	if (rx && tx)
+		priv->tmode = SPI_TMOD_TR;
+	else if (rx)
+		priv->tmode = SPI_TMOD_RO;
+	else
+		/*
+		 * In transmit only mode (SPI_TMOD_TO) input FIFO never gets
+		 * any data which breaks our logic in poll_transfer() above.
+		 */
+		priv->tmode = SPI_TMOD_TR;
+#endif
+	priv->tmode = SPI_TMOD_TO;
+
+	cr0 &= ~SPI_TMOD_MASK;
+	cr0 |= (priv->tmode << SPI_TMOD_OFFSET);
+	/*set quad-mode for test only*/
+        cr0 |= 2<<21;
+	priv->len = bitlen >> 3;
+	debug("%s: rx=%p tx=%p len=%d [bytes]\n", __func__, rx, tx, priv->len);
+
+	priv->tx = (void *)tx;
+	priv->tx_end = priv->tx + priv->len;
+	priv->rx = rx;
+	priv->rx_end = priv->rx + priv->len;
+
+	/* Disable controller before writing control registers */
+	spi_enable_chip(priv, 0);
+
+	debug("%s: cr0=%08x\n", __func__, cr0);
+	/* Reprogram cr0 only if changed */
+	if (dw_read(priv, DW_SPI_CTRL0) != cr0)
+		dw_write(priv, DW_SPI_CTRL0, cr0);
+	/*set spi_ctrl0:inst_len = 1,addr_len = 1,wait_cycles = 0, both inst and addr sent in quad-mode */
+	spi_cr0 = 2 << 0 |2<<2|2<<8;
+	dw_write(priv,DW_SPI_SPI_CTRLR0,spi_cr0);
+	dw_write(priv, DW_SPI_CTRL1, priv->len - 1);
+	debug("%s: cr0:%08x,spi_cr0:%08x \n",__func__,cr0,spi_cr0);
+	/*
+	 * Configure the desired SS (slave select 0...3) in the controller
+	 * The DW SPI controller will activate and deactivate this CS
+	 * automatically. So no cs_activate() etc is needed in this driver.
+	 */
+	cs = spi_chip_select(dev);
+	dw_write(priv, DW_SPI_SER, 1 << cs);
+
+	/* Enable controller after writing control registers */
+	spi_enable_chip(priv, 1);
+
+	/* Start transfer in a polling loop */
+	priv->n_bytes = 1;
+	ret = poll_transfer(priv);
+
+	/*
+	 * Wait for current transmit operation to complete.
+	 * Otherwise if some data still exists in Tx FIFO it can be
+	 * silently flushed, i.e. dropped on disabling of the controller,
+	 * which happens when writing 0 to DW_SPI_SSIENR which happens
+	 * in the beginning of new transfer.
+	 */
+	if (readl_poll_timeout(priv->regs + DW_SPI_SR, val,
+			       (val & SR_TF_EMPT) && !(val & SR_BUSY),
+			       RX_TIMEOUT * 1000)) {
+		ret = -ETIMEDOUT;
+	}
+
+	/* Stop the transaction if necessary */
+	if (flags & SPI_XFER_END)
+		external_cs_manage(dev, true);
+
+	return ret;
+}
+
 static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 {
 	struct udevice      *bus = slave->dev->parent;
@@ -499,7 +607,8 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 	u32    cr0 = 0, spi_cr0 = 0;
 	u32 addr_bits_len, dummy_bits_len;
 	int ret;
-	//unsigned long flag;
+	struct dw_qspi_platdata *plat = NULL;
+	plat = dev_get_platdata(bus);
 
 	/*disable spi core */
 	spi_enable_chip(priv, 0);
@@ -571,10 +680,14 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 		cr0 |= ((32 - 1) << SPI_DFS32_OFFSET);
 	}
 	dw_write(priv, DW_SPI_CTRL0, cr0);
+	/* init freq  */
+	u32 clk_div = priv->bus_clk_rate/plat->frequency;
+	clk_div = (clk_div + 1) & 0xfffe;
+	dw_write(priv, DW_SPI_BAUDR, clk_div);
+	debug("%s:busclk_%u iofreq:%u clk_div:%u \n",__func__, priv->bus_clk_rate, plat->frequency, clk_div);
 	/*  for poll mode just disable all interrupts */
 	external_cs_manage(slave->dev, false);
 	dw_write(priv, DW_SPI_IMR, 0xff);
-	printf("cmd:0x%02x  cr0 %08x\n", op->cmd.opcode, cr0);
 	debug("#1:cr0 %08x cr1 %08x spi_cr0 %08x \n", dw_read(priv, DW_SPI_CTRL0), dw_read(priv, DW_SPI_CTRL1), dw_read(priv, DW_SPI_SPI_CTRLR0));
 	/* transfer data_pre portion(cmd+addr+dummy) */
 	spi_enable_chip(priv, 1);
@@ -671,18 +784,19 @@ static int dw_qspi_set_speed(struct udevice *bus, uint speed)
 	struct dw_qspi_priv *priv = dev_get_priv(bus);
 	u16 clk_div;
 	debug("bus_clk %ld plat->freq %d speed %d \n", priv->bus_clk_rate, plat->frequency, speed);
+	printf("%s:bus_clk %ld plat->freq %d speed %d \n",__func__, priv->bus_clk_rate, plat->frequency, speed);
 	/* Disable controller before writing control registers */
 	spi_enable_chip(priv, 0);
 	(void)(speed);
 	/* clk_div doesn't support odd number */
-	clk_div = priv->bus_clk_rate / plat->frequency;
+	clk_div = priv->bus_clk_rate /speed; //plat->frequency;
 	clk_div = (clk_div + 1) & 0xfffe;
 	dw_write(priv, DW_SPI_BAUDR, clk_div);
-
+	printf("%s:div:%u \n",__func__,clk_div);
 	/* Enable controller after writing control registers */
 	spi_enable_chip(priv, 1);
 
-	priv->freq = plat->frequency;
+	priv->freq = speed;//plat->frequency;
 	debug("%s: regs=%p speed=%d clk_div=%d\n", __func__, priv->regs,
 	      priv->freq, clk_div);
 
@@ -701,6 +815,7 @@ static int dw_qspi_set_mode(struct udevice *bus, uint mode)
 	priv->mode = mode;
 	debug("%s: regs=%p, mode=%d\n", __func__, priv->regs, priv->mode);
 
+	printf("%s:mode:%u \n",__func__,mode);
 	return 0;
 }
 
@@ -739,7 +854,6 @@ static int dw_qspi_check_buswidth(u8 width)
 
 int dw_qspi_adjust_op_size(struct spi_slave *slave, struct spi_mem_op *op)
 {
-	
 	if(op->data.dir == SPI_MEM_DATA_OUT && op->data.nbytes >= (256<<2) ){
 		op->data.nbytes = 254<<2;
 	};
@@ -785,7 +899,7 @@ static const struct spi_controller_mem_ops dw_qspi_mem_ops = {
 };
 
 static const struct dm_spi_ops dw_qspi_ops = {
-	//.xfer         = dw_qspi_xfer,
+	.xfer         = dw_qspi_xfer,
 	.set_speed      = dw_qspi_set_speed,
 	.set_mode       = dw_qspi_set_mode,
 	.mem_ops    = &dw_qspi_mem_ops,

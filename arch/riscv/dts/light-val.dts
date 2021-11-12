@@ -56,8 +56,16 @@
 
 		dummy_spi: spi-clock {
 			compatible = "fixed-clock";
-			clock-frequency = <400000000>;
+			clock-frequency = <396000000>;
 			clock-output-names = "dummy_spi";
+			#clock-cells = <0>;
+			u-boot,dm-pre-reloc;
+		};
+
+		dummy_qspi0: qspi0-clock {
+			compatible = "fixed-clock";
+			clock-frequency = <792000000>;
+			clock-output-names = "dummy_qspi0";
 			#clock-cells = <0>;
 			u-boot,dm-pre-reloc;
 		};
@@ -174,10 +182,10 @@
 		qspi0: spi@ffea000000 {
 			compatible = "snps,dw-apb-ssi-quad";
 			reg = <0xff 0xea000000 0x0 0x1000>;
-			clocks = <&dummy_spi>;
+			clocks = <&dummy_qspi0>;
 			num-cs = <1>;
 			cs-gpio = <&gpio2_porta 3 0>; // GPIO_ACTIVE_HIGH: 0
-			spi-max-frequency = <3125000>;
+			spi-max-frequency = <100000000>;
 			#address-cells = <1>;
 			#size-cells =<0>;
 			spi-flash@0 {
@@ -195,13 +203,13 @@
 			reg = <0xff 0xe700c000 0x0 0x1000>;
 			clocks = <&dummy_spi>;
 			cs-gpio = <&gpio2_porta 15 0>;
-			spi-max-frequency = <12500000>;
+			spi-max-frequency = <100000000>;
 			#address-cells = <1>;
 			#size-cells = <0>;
 			flash@0 {
 				compatible = "jedec,spi-nor";
 				reg = <0>;
-				spi-max-frequency = <12500000>;
+				spi-max-frequency = <40000000>;
 			};
 		};
 
