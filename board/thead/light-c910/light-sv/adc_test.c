@@ -64,8 +64,8 @@ static uint32_t g_sample_cnt = 49152;
 static uint32_t g_fclk_ctrl = 0x10004;
 static uint32_t g_sample_time = 0x10;
 static uint32_t g_start_time = 0x160;
-static int32_t g_phy_cfg = 0x3;
-static uint32_t g_op_ctrl = 0x3000;
+static int32_t g_phy_cfg = 0x103;
+static uint32_t g_op_ctrl = 0xff000;
 static uint32_t g_console_print = 0;
 
 static void light_adc_reset(void)
@@ -95,6 +95,18 @@ static void light_adc_hw_init(void)
 	/* disable the irq */
 	writel(0x3, (void *)(ADC_BASE + LIGHT_ADC_INT_CTRL2));
 	writel(0, (void *)(ADC_BASE + LIGHT_ADC_PHY_CTRL));
+}
+
+static bool term_get_char(void)
+{
+	s32 c;
+
+	c = getc();
+#define cESC '\x1b'
+	if (c == cESC)
+		return true;
+
+	return false;
 }
 
 static void light_adc_start_sampling(void)
@@ -136,6 +148,9 @@ static void light_adc_start_sampling(void)
 					break;
 				}
 			}
+
+			if (term_get_char())
+				break;
 		} while (1);
 
 		cont_data[cnt] = (ushort)val;
@@ -166,8 +181,8 @@ static int adc_sampling(cmd_tbl_t *cmdtp, int flag, int argc,
 	ulong chan, sample_cnt, fclk_ctrl, sample_time, start_time, phy_cfg, op_ctrl, console_print;
 	int ret = 0;
 
-	if (argc > 1)
-		if (strict_strtoul(argv[1], 16, &chan) < 0) {
+	if (argc > 1) {
+		if (strict_strtoul(argv[1], 16, &chan) < 0)
 			return CMD_RET_USAGE;
 		g_chan = (uint32_t)chan;
 	}
