@@ -64,7 +64,7 @@ static uint32_t g_sample_cnt = 49152;
 static uint32_t g_fclk_ctrl = 0x10004;
 static uint32_t g_sample_time = 0x10;
 static uint32_t g_start_time = 0x160;
-static int32_t g_phy_cfg = 0x103;
+static int32_t g_phy_cfg = 0x0;
 static uint32_t g_op_ctrl = 0xff000;
 static uint32_t g_console_print = 0;
 
@@ -97,7 +97,7 @@ static void light_adc_hw_init(void)
 	writel(0, (void *)(ADC_BASE + LIGHT_ADC_PHY_CTRL));
 }
 
-static bool term_get_char(void)
+static bool __maybe_unused term_get_char(void)
 {
 	s32 c;
 
@@ -127,8 +127,9 @@ static void light_adc_start_sampling(void)
 
 	while (cnt < g_sample_cnt) {
 		uint ievent;
-		uint val;
+		uint val = 0;
 		uint chan_number;
+		int timeout = 1000000;
 
 		do {
 			ievent = readl((void *)(ADC_BASE + LIGHT_ADC_SAMPLE_DATA));
@@ -149,9 +150,16 @@ static void light_adc_start_sampling(void)
 				}
 			}
 
-			if (term_get_char())
-				break;
-		} while (1);
+		} while (timeout--);
+
+		if (timeout <= 0) {
+			printf("timeout to read chan sample data\n");
+
+			phy_ctrl = readl((void *)(ADC_BASE + LIGHT_ADC_PHY_CTRL));
+			phy_ctrl &= ~LIGHT_ADC_PHY_CTRL_ENADC_EN;
+			writel(phy_ctrl, (void *)(ADC_BASE + LIGHT_ADC_PHY_CTRL));
+			return;
+		}
 
 		cont_data[cnt] = (ushort)val;
 		cnt++;
@@ -241,6 +249,6 @@ static int adc_sampling(cmd_tbl_t *cmdtp, int flag, int argc,
 
 U_BOOT_CMD(
 	adc_sampling,	9,	1,	adc_sampling,
-	"Light ADC sampling, example: adc_sampling 0x0 0xc000 0x10004 0x10 0x160 0x3 0x3000 1",
+	"Light ADC sampling, example: adc_sampling 0x0 100 0x10004 0x10 0x160 0x0 0x1000 1",
 	"[chan sample_cnt fclk_ctrl sample_time satrt_time phy_cfg op_ctrl console_print]"
 );
