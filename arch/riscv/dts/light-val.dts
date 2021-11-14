@@ -204,7 +204,7 @@
 			clock-names = "core";
 			max-frequency = <198000000>;
 			sdhci-caps-mask = <0x0 0x1000000>;
-			//mmc-hs400-1_8v = "true";
+			mmc-hs400-1_8v;
 			non-removable;
 			no-sdio;
 			no-sd;
@@ -222,11 +222,11 @@
 			clocks = <&dummy_ahb>;
 			clock-frequency = <198000000>;
 			max-frequency = <198000000>;
-			//sd-uhs-sdr104 = "true";
+			sd-uhs-sdr104;
 			pull_up;
 			clock-names = "core";
 			bus-width = <4>;
-			//voltage= "3.3v";
+			voltage= "3.3v";
 		};
 
 		qspi0: spi@ffea000000 {

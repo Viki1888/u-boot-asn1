@@ -10,7 +10,7 @@
 #include <sdhci.h>
 #include "snps_sdhci.h"
 
-#define DELAY_LANE 30
+volatile int DELAY_LANE = 30;
 
 static void sdhci_phy_1_8v_init_no_pull(struct sdhci_host *host)
 {
@@ -150,20 +150,25 @@ void snps_set_uhs_timing(struct sdhci_host *host)
 	switch (mmc->selected_mode) {
 	case UHS_SDR50:
 	case MMC_HS_52:
+		sdhci_phy_1_8v_init(host);
 		reg |= SDHCI_CTRL_UHS_SDR50;
 		break;
 	case UHS_DDR50:
 	case MMC_DDR_52:
+		sdhci_phy_1_8v_init(host);
 		reg |= SDHCI_CTRL_UHS_DDR50;
 		break;
 	case UHS_SDR104:
 	case MMC_HS_200:
+		sdhci_phy_1_8v_init(host);
 		reg |= SDHCI_CTRL_UHS_SDR104;
 		break;
-    case MMC_HS_400:
+	case MMC_HS_400:
+		sdhci_phy_1_8v_init(host);
 		reg |= SNPS_SDHCI_CTRL_HS400;
-        break;
+		break;
 	default:
+		sdhci_phy_3_3v_init(host);
 		reg |= SDHCI_CTRL_UHS_SDR12;
 	}
 

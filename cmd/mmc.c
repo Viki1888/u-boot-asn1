@@ -319,6 +319,22 @@ static int do_mmc_read(cmd_tbl_t *cmdtp, int flag,
 	return (n == cnt) ? CMD_RET_SUCCESS : CMD_RET_FAILURE;
 }
 
+static int do_mmc_memset(cmd_tbl_t *cmdtp, int flag,
+		       int argc, char * const argv[])
+{
+	u32 cnt;
+	void *addr;
+
+	addr = (void *)simple_strtoul(argv[1], NULL, 16);
+	cnt = simple_strtoul(argv[2], NULL, 10);
+
+	memset(addr, 0xff, cnt);
+
+	printf("\nMMC memset addr:%p  cnt: %d\n", addr, cnt);
+
+	return CMD_RET_SUCCESS;
+}
+
 static int do_mmc_cmp(cmd_tbl_t *cmdtp, int flag,
 		       int argc, char * const argv[])
 {
@@ -542,6 +558,12 @@ static int do_mmc_rescan(cmd_tbl_t *cmdtp, int flag,
 
 	if (0 != snps_mmc_init(mmc))
 		return CMD_RET_FAILURE;
+
+	if (IS_SD(mmc)) {
+		sd_resetore_sd_modes_by_pref();
+	} else {
+		mmc_resetore_mmc_modes_by_pref();
+	}
 #endif
 
 	mmc = init_mmc_device(curr_device, true);
@@ -550,6 +572,81 @@ static int do_mmc_rescan(cmd_tbl_t *cmdtp, int flag,
 
 	return CMD_RET_SUCCESS;
 }
+
+extern volatile uint32_t DELAY_LANE;
+static int do_mmc_set_delay_lane(cmd_tbl_t *cmdtp, int flag,
+	       int argc, char * const argv[])
+{
+	struct mmc *mmc;
+	u32 val;
+
+	val = simple_strtoul(argv[1], NULL, 10);
+	DELAY_LANE = val;
+	printf("set DELAY_LANE = %d\n", DELAY_LANE);
+
+	mmc = find_mmc_device(curr_device);
+	if (!mmc) {
+		printf("no mmc device at slot %x\n", curr_device);
+		return CMD_RET_FAILURE;
+	}
+
+	if (0 != snps_mmc_init(mmc))
+		return CMD_RET_FAILURE;
+
+	mmc = init_mmc_device(curr_device, true);
+	if (!mmc)
+		return CMD_RET_FAILURE;
+
+	return CMD_RET_SUCCESS;
+}
+
+static int do_mmc_turning(cmd_tbl_t *cmdtp, int flag,
+	       int argc, char * const argv[])
+{
+	struct mmc *mmc;
+	int i = 0, n;
+	for(i = 0; i <= 128; i++) {
+		DELAY_LANE = i;
+		printf("set DELAY_LANE = %d\n", DELAY_LANE);
+
+		mmc = find_mmc_device(curr_device);
+
+		if (!mmc) {
+			printf("no mmc device at slot %x\n", curr_device);
+			return CMD_RET_FAILURE;
+		}
+
+		if (0 != snps_mmc_init(mmc)) {
+			printf("Error: mmc init error!\n");
+			return CMD_RET_FAILURE;
+		}
+
+		mmc = init_mmc_device(curr_device, true);
+		if (!mmc) {
+			continue;
+		}
+
+		if (mmc_getwp(mmc) == 1) {
+			printf("Error: card is write protected!\n");
+			return CMD_RET_FAILURE;
+		}
+
+		n = blk_dwrite(mmc_get_blk_desc(mmc), 0, 1, 0);
+		if (n == 1) {
+			printf("blocks written: %s\n", "OK" );
+			return CMD_RET_SUCCESS;
+		} else {
+			printf("written: %s\n", "error");
+		}
+	}
+
+	if (i > 128) {
+		return CMD_RET_FAILURE;
+	}
+
+	return CMD_RET_SUCCESS;
+}
+
 static int do_mmc_part(cmd_tbl_t *cmdtp, int flag,
 		       int argc, char * const argv[])
 {
@@ -976,10 +1073,6 @@ static int do_mmc_set_speed(cmd_tbl_t *cmdtp, int flag,
 		}
 	}
 
-	if (mmc_select_speed_mode(mmc, mode) != 0) {
-		ret = CMD_RET_FAILURE;
-	}
-
 	if (0 != snps_mmc_init(mmc))
 		return CMD_RET_FAILURE;
 
@@ -987,11 +1080,13 @@ static int do_mmc_set_speed(cmd_tbl_t *cmdtp, int flag,
 	if (!mmc)
 		return CMD_RET_FAILURE;
 
+#ifndef CONFIG_TARGET_LIGHT_C910
 	if (IS_SD(mmc)) {
 		sd_resetore_sd_modes_by_pref();
 	} else {
 		mmc_resetore_mmc_modes_by_pref();
 	}
+#endif
 
 	printf("set mode: %s\n", (ret == CMD_RET_SUCCESS) ? "OK" : "ERROR");
 
@@ -1052,6 +1147,7 @@ static int do_mmc_bkops_enable(cmd_tbl_t *cmdtp, int flag,
 static cmd_tbl_t cmd_mmc[] = {
 	U_BOOT_CMD_MKENT(info, 1, 0, do_mmcinfo, "", ""),
 	U_BOOT_CMD_MKENT(read, 4, 1, do_mmc_read, "", ""),
+	U_BOOT_CMD_MKENT(memset, 4, 1, do_mmc_memset, "", ""),
 	U_BOOT_CMD_MKENT(cmp, 4, 1, do_mmc_cmp, "", ""),
 	U_BOOT_CMD_MKENT(memcmp, 4, 1, do_mem_cmp, "", ""),
 	U_BOOT_CMD_MKENT(set_speed, 4, 1, do_mmc_set_speed, "", ""),
@@ -1065,6 +1161,8 @@ static cmd_tbl_t cmd_mmc[] = {
 	U_BOOT_CMD_MKENT(swrite, 3, 0, do_mmc_sparse_write, "", ""),
 #endif
 	U_BOOT_CMD_MKENT(rescan, 1, 1, do_mmc_rescan, "", ""),
+	U_BOOT_CMD_MKENT(set_delay, 4, 1, do_mmc_set_delay_lane, "", ""),
+	U_BOOT_CMD_MKENT(turning, 4, 1, do_mmc_turning, "", ""),
 	U_BOOT_CMD_MKENT(part, 1, 1, do_mmc_part, "", ""),
 	U_BOOT_CMD_MKENT(dev, 3, 0, do_mmc_dev, "", ""),
 	U_BOOT_CMD_MKENT(list, 1, 1, do_mmc_list, "", ""),
@@ -1141,6 +1239,9 @@ U_BOOT_CMD(
 #endif
 	"mmc erase blk# cnt\n"
 	"mmc rescan\n"
+	"mmc set_delay # val\n"
+	"mmc turning\n"
+	"mmc memset addr # lenght\n"
 	"mmc part - lists available partition on current mmc device\n"
 	"mmc dev [dev] [part] - show or set current mmc device [partition]\n"
 	"mmc list - lists available devices\n"
