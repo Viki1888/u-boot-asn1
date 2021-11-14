@@ -684,7 +684,7 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 	u32 clk_div = priv->bus_clk_rate/plat->frequency;
 	clk_div = (clk_div + 1) & 0xfffe;
 	dw_write(priv, DW_SPI_BAUDR, clk_div);
-	debug("%s:busclk_%u iofreq:%u clk_div:%u \n",__func__, priv->bus_clk_rate, plat->frequency, clk_div);
+	debug("%s:busclk_%lx iofreq:%x clk_div:%u \n", __func__, priv->bus_clk_rate, plat->frequency, clk_div);
 	/*  for poll mode just disable all interrupts */
 	external_cs_manage(slave->dev, false);
 	dw_write(priv, DW_SPI_IMR, 0xff);
