@@ -84,8 +84,9 @@ void setup_ddr_pmp(void)
 void cpu_performance_enable(void)
 {
 #define CSR_MHINT2_E	0x7cc
+	csr_write(CSR_SMPEN, 0x1);
 	csr_write(CSR_MHINT2_E, csr_read(CSR_MHINT2_E) | 0x8000);
-	csr_write(CSR_MCCR2, 0xe24a0009);
+	csr_write(CSR_MCCR2, 0xe24b0009);
 	csr_write(CSR_MHCR, 0x11ff);
 	csr_write(CSR_MXSTATUS, 0x638000);
 	csr_write(CSR_MHINT, 0x6e30c);
