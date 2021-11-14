@@ -96,6 +96,56 @@
 			#size-cells = <0>;
 		};
 
+		i2c1: i2c@ffe7f24000{
+			compatible = "snps,designware-i2c";
+			reg = <0xff 0xe7f24000 0x0 0x4000>;
+			clocks = <&dummy_i2c_icclk>;
+			clock-frequency = <100000>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		i2c2: i2c@ffec00c000{
+			compatible = "snps,designware-i2c";
+			reg = <0xff 0xec00c000 0x0 0x4000>;
+			clocks = <&dummy_i2c_icclk>;
+			clock-frequency = <100000>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		i2c3: i2c@ffec014000{
+			compatible = "snps,designware-i2c";
+			reg = <0xff 0xec014000 0x0 0x4000>;
+			clocks = <&dummy_i2c_icclk>;
+			clock-frequency = <100000>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		i2c4: i2c@ffe7f28000{
+			compatible = "snps,designware-i2c";
+			reg = <0xff 0xe7f28000 0x0 0x4000>;
+			clocks = <&dummy_i2c_icclk>;
+			clock-frequency = <100000>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		i2c5: i2c@fff7f2c000{
+			compatible = "snps,designware-i2c";
+			reg = <0xff 0xf7f2c000 0x0 0x4000>;
+			clocks = <&dummy_i2c_icclk>;
+			clock-frequency = <100000>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
 		serial@ffe7014000 {
 			compatible = "snps,dw-apb-uart";
 			reg = <0xff 0xe7014000 0x0 0x400>;
