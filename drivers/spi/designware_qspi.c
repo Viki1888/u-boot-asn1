@@ -555,6 +555,7 @@ static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 
 	/* Disable controller before writing control registers */
 	spi_enable_chip(priv, 0);
+	spi_disable_slave(priv,0);
 
 	debug("%s: cr0=%08x\n", __func__, cr0);
 	/* Reprogram cr0 only if changed */
@@ -570,8 +571,8 @@ static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 	 * The DW SPI controller will activate and deactivate this CS
 	 * automatically. So no cs_activate() etc is needed in this driver.
 	 */
-	cs = spi_chip_select(dev);
-	dw_write(priv, DW_SPI_SER, 1 << cs);
+	//cs = spi_chip_select(dev);
+	//dw_write(priv, DW_SPI_SER, 1 << cs);
 
 	/* Enable controller after writing control registers */
 	spi_enable_chip(priv, 1);
@@ -579,7 +580,7 @@ static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 	/* Start transfer in a polling loop */
 	priv->n_bytes = 1;
 	ret = poll_transfer(priv);
-
+        spi_enable_slave(priv,0);
 	/*
 	 * Wait for current transmit operation to complete.
 	 * Otherwise if some data still exists in Tx FIFO it can be
@@ -592,7 +593,7 @@ static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 			       RX_TIMEOUT * 1000)) {
 		ret = -ETIMEDOUT;
 	}
-
+        printf("DW_SPI_SR:%x \n",dw_read(priv,DW_SPI_SR));
 	/* Stop the transaction if necessary */
 	if (flags & SPI_XFER_END)
 		external_cs_manage(dev, true);
@@ -721,7 +722,7 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 		}
 		do {
 			dw_writer(priv);
-        } while (priv->tx_end > priv->tx);
+                } while (priv->tx_end > priv->tx);
 		spi_enable_slave(priv,0);
 	} else if (op->data.dir == SPI_MEM_DATA_IN) {
 		/* if data portion use standard mode,pre transfer mode is tx, need set rx mode  */
