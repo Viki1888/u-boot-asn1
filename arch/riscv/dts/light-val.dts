@@ -80,7 +80,7 @@
 
 		dummy_i2c_icclk: i2c-icclk-clock {
 			compatible = "fixed-clock";
-			clock-frequency = <100000000>;
+			clock-frequency = <50000000>;
 			clock-output-names = "dummy_i2c_icclk";
 			#clock-cells = <0>;
 			u-boot,dm-pre-reloc;
