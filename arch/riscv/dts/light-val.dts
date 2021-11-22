@@ -211,6 +211,7 @@
 			bus-width = <8>;
 			voltage= "1.8v";
 			pull_up;
+			io_fixed_1v8;
 			fifo-mode;
 			u-boot,dm-pre-reloc;
 		};
