@@ -667,6 +667,14 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO2_23,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_24,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_25,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(GPIO2_18, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_19, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_20, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_21, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_22, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_23, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_24, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_25, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 
 	light_pin_mux(SDIO0_WPRTN,3);
 	light_pin_mux(SDIO1_WPRTN,3);
@@ -676,6 +684,10 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO2_31,1);
 	light_pin_mux(GPIO3_0,1);
 	light_pin_mux(GPIO3_1,1);
+	light_pin_cfg(GPIO2_30, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO2_31, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO3_0, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO3_1, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 
 	light_pin_mux(GMAC0_COL,3);
 	light_pin_mux(GMAC0_CRS,3);
@@ -697,6 +709,20 @@ static void light_iopin_init(void)
 	light_pin_cfg(QSPI0_D1_MISO,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI0_D2_WP,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI0_D3_HOLD,PIN_SPEED_NORMAL,PIN_PU,8);
+
+	/* GMAC0 pad drive strength configurate to 0xF */
+	light_pin_cfg(GMAC0_TX_CLK, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_RX_CLK, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_TXEN, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_TXD0, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_TXD1, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_TXD2, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_TXD3, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_RXDV, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_RXD0, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_RXD1, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_RXD2, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GMAC0_RXD3, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 }
 #endif
 
