@@ -74,7 +74,8 @@
 struct snps_sdhci_plat {
 	struct mmc_config cfg;
 	struct mmc mmc;
-    bool  pull_up_en;
+	bool pull_up_en;
+	bool io_fixed_1v8;
 };
 
 

@@ -198,6 +198,7 @@ void snps_set_uhs_timing(struct sdhci_host *host)
 static void snps_sdhci_set_control_reg(struct sdhci_host *host)
 {
 	struct mmc *mmc = (struct mmc *)host->mmc;
+	struct snps_sdhci_plat *plat = dev_get_platdata(host->mmc->dev);
 	u32 reg;
 
     reg = sdhci_readw(host, EMMC_CTRL_R);
@@ -217,6 +218,8 @@ static void snps_sdhci_set_control_reg(struct sdhci_host *host)
     } else {
         reg = sdhci_readw(host, SDHCI_HOST_CONTROL2);
         reg &= ~SDHCI_CTRL_VDD_180;
+	if (plat->io_fixed_1v8)
+	    reg |= SDHCI_CTRL_VDD_180;
         sdhci_writew(host, reg, SDHCI_HOST_CONTROL2);
         sdhci_phy_3_3v_init(host);
     }
@@ -323,6 +326,7 @@ static int snps_sdhci_probe(struct udevice *dev)
 		return ret;
 
 	plat->pull_up_en = false;
+	plat->io_fixed_1v8 = false;
 	host->name = dev->name;
 	host->ioaddr = (void *)devfdt_get_addr(dev);
 
@@ -352,19 +356,22 @@ static int snps_sdhci_probe(struct udevice *dev)
 		goto err;
 
 	if (dev_read_bool(dev, "pull_up"))
-        plat->pull_up_en = true;
+		plat->pull_up_en = true;
+	if (dev_read_bool(dev, "io_fixed_1v8"))
+		plat->io_fixed_1v8 = true;
 
 	uint16_t val = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 	if (host->voltages == MMC_VDD_165_195) {
 		sdhci_phy_1_8v_init(host);
 		val |= SDHCI_CTRL_VDD_180;
-		sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
 	} else {
 		sdhci_phy_3_3v_init(host);
 		val &= ~SDHCI_CTRL_VDD_180;
-		sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
 	}
 
+	if (plat->io_fixed_1v8)
+		val |= SDHCI_CTRL_VDD_180;
+	sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
 	host->voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
 
 	return 0;
@@ -378,24 +385,27 @@ err:
 int snps_sdhci_init(struct mmc *mmc)
 {
 	struct sdhci_host *host = dev_get_priv(mmc->dev);
-    int ret;
+	struct snps_sdhci_plat *plat = dev_get_platdata(host->mmc->dev);
+	int ret;
 	host->voltages = MMC_VDD_33_34;
 	ret = sdhci_probe(mmc->dev);
 	if (ret)
 		return -1;
 
-    uint16_t val = sdhci_readw(host, SDHCI_HOST_CONTROL2);
-    if (host->voltages == MMC_VDD_165_195) {
-        sdhci_phy_1_8v_init(host);
-        val |= SDHCI_CTRL_VDD_180;
-        sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
-    } else {
-        sdhci_phy_3_3v_init(host);
-        val &= ~SDHCI_CTRL_VDD_180;
-        sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
-    }
+	uint16_t val = sdhci_readw(host, SDHCI_HOST_CONTROL2);
+	if (host->voltages == MMC_VDD_165_195) {
+		sdhci_phy_1_8v_init(host);
+		val |= SDHCI_CTRL_VDD_180;
+	} else {
+		sdhci_phy_3_3v_init(host);
+		val &= ~SDHCI_CTRL_VDD_180;
+	}
 
-    return 0;
+	if (plat->io_fixed_1v8)
+		val |= SDHCI_CTRL_VDD_180;
+	sdhci_writew(host, val, SDHCI_HOST_CONTROL2);
+
+	return 0;
 }
 
 static int snps_sdhci_bind(struct udevice *dev)
