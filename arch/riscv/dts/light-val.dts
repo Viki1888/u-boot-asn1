@@ -13,6 +13,7 @@
 	aliases {
 		spi0 = &spi0;
 		spi1 = &qspi0;
+		spi2 = &qspi1;
 	};
 
 	cpus {
@@ -249,6 +250,25 @@
 			};
 		};
 
+		qspi1: spi@fff8000000 {
+			compatible = "snps,dw-apb-ssi-quad";
+			reg = <0xff 0xf8000000 0x0 0x1000>;
+			clocks = <&dummy_spi>;
+			num-cs = <1>;
+			cs-gpio = <&gpio0_porta 1 0>; // GPIO_ACTIVE_HIGH: 0
+			spi-max-frequency = <66000000>;
+			#address-cells = <1>;
+			#size-cells =<0>;
+			spi-flash@0 {
+				#address-cells = <1>;
+				#size-cells = <1>;
+				compatible = "spi-nand";
+				spi-tx-bus-width = <4>;
+				spi-rx-bus-width = <4>;
+				reg = <0>;
+			};
+		};
+
 		spi0: spi@ffe700c000 {
 			compatible = "snps,dw-apb-ssi";
 			reg = <0xff 0xe700c000 0x0 0x1000>;
@@ -271,6 +291,21 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			gpio2_porta: gpio-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				snps,nr-gpios = <32>;
+				reg = <0>;
+			};
+		};
+
+		gpio0: gpio@ffec005000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0xff 0xec005000 0x0 0x1000>;
+			clocks = <&dummy_apb>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			gpio0_porta: gpio-controller@0 {
 				compatible = "snps,dw-apb-gpio-port";
 				gpio-controller;
 				#gpio-cells = <2>;
