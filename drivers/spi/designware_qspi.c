@@ -243,7 +243,7 @@ static void spi_hw_init(struct dw_qspi_priv *priv)
 	spi_enable_chip(priv, 0);
 	dw_write(priv, DW_SPI_IMR, 0xff);
 	dw_write(priv, DW_SPI_SER, 0x0);
-	dw_write(priv, DW_SPI_RX_SAMPLE_DLY, 0x7);
+	dw_write(priv, DW_SPI_RX_SAMPLE_DLY, 0x4);
 	spi_enable_chip(priv, 1);
 
 	/*
@@ -511,7 +511,6 @@ static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 	int ret = 0;
 	u32 cr0 = 0,spi_cr0;
 	u32 val;
-	u32 cs;
 
 	debug("%s:\n",__func__);
 	/* spi core configured to do 8 bit transfers */
@@ -593,7 +592,7 @@ static int dw_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 			       RX_TIMEOUT * 1000)) {
 		ret = -ETIMEDOUT;
 	}
-        printf("DW_SPI_SR:%x \n",dw_read(priv,DW_SPI_SR));
+        //printf("DW_SPI_SR:%x \n",dw_read(priv,DW_SPI_SR));
 	/* Stop the transaction if necessary */
 	if (flags & SPI_XFER_END)
 		external_cs_manage(dev, true);
@@ -611,6 +610,7 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 	struct dw_qspi_platdata *plat = NULL;
 	plat = dev_get_platdata(bus);
 
+	//printf("%s,reg_base:%08x \n",__func__,priv->regs);
 	/*disable spi core */
 	spi_enable_chip(priv, 0);
 	/*disable slalve*/
@@ -686,6 +686,7 @@ static int dw_qspi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
 	clk_div = (clk_div + 1) & 0xfffe;
 	dw_write(priv, DW_SPI_BAUDR, clk_div);
 	debug("%s:busclk_%lx iofreq:%x clk_div:%u \n", __func__, priv->bus_clk_rate, plat->frequency, clk_div);
+	//printf("%s:busclk_%lx iofreq:%x clk_div:%u \n", __func__, priv->bus_clk_rate, plat->frequency, clk_div);
 	/*  for poll mode just disable all interrupts */
 	external_cs_manage(slave->dev, false);
 	dw_write(priv, DW_SPI_IMR, 0xff);
