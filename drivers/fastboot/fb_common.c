@@ -118,7 +118,7 @@ void fastboot_boot(void)
 #ifdef THEAD_LIGHT_FASTBOOT
 	char cmdbuf[32];
 
-	sprintf(cmdbuf, "bootm %s - %s", LIGHT_KERNEL_ADDR_CMD, LIGHT_DTB_ADDR_CMD);
+	sprintf(cmdbuf, "bootslave; run set_bootargs; booti %s - %s", LIGHT_KERNEL_ADDR_CMD, LIGHT_DTB_ADDR_CMD);
 	printf("fastboot bootcmd %s\n", cmdbuf);
 	run_command(cmdbuf, 0);
 
