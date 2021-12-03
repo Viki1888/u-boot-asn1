@@ -47,8 +47,8 @@ static struct dw_scl_sda_cfg light_config = {
 	.fsp_hcnt = 0x14,
 	.fsp_lcnt = 0x1a,
 	.hs_hcnt = 0x2,
-	.hs_lcnt = 0x6,
-	.sda_hold = 0x1,
+	.hs_lcnt = 0x7,
+	.sda_hold = 0x3,
 };
 #endif
 
