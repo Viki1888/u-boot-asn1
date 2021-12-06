@@ -50,6 +50,8 @@
 /* SEC Configuration */
 //#define LIGHT_ROOTFS_SEC_CHECK	1
 #define SBI_ENTRY_ADDR			0x100000
+#define AON_DDR_ADDR			0x80000
+#define AON_SRAM_ADDR			0xffffef8000
 
 /* USB fastboot non_sec configs */
 #define THEAD_LIGHT_FASTBOOT	1
@@ -70,7 +72,7 @@
 	"t_dtb_addr=0x1eff800\0" \
 	"nt_dtb_addr=0x81f00000\0" \
 	"fdt_high=0xffffffffffffffff\0" \
-	"aon_ram_addr=0xffffef8000\0" \
+	"aon_ddr_addr=0x80000\0" \
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
 	"fdt_file=light-val.dtb\0" \
@@ -79,8 +81,8 @@
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
-	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:2 $t_opensbi_addr fw_dynamic.bin; ext4load mmc 0:2 $t_dtb_addr ${fdt_file}; ext4load mmc 0:2 $t_kernel_addr Image; ext4load mmc 0:2 $t_rootfs_addr rootfs.cpio.gz;\0" \
-	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; sboot $t_kernel_addr $t_rootfs_addr $t_dtb_addr;\0" \
+	"bootcmd_load=ext4load mmc 0:2 $aon_ddr_addr light_aon_fpga.bin; ext4load mmc 0:2 $t_opensbi_addr fw_dynamic.bin; ext4load mmc 0:2 $t_dtb_addr ${fdt_file}; ext4load mmc 0:2 $t_kernel_addr Image; ext4load mmc 0:2 $t_rootfs_addr rootfs.cpio.gz;\0" \
+	"bootcmd=run bootcmd_load; run finduuid; run set_bootargs; sboot $t_kernel_addr $t_rootfs_addr $t_dtb_addr;\0" \
         "\0"
 
 #else

@@ -29,6 +29,7 @@ typedef enum image_type {
 	T_DTB = 0,
 	T_KRLIMG,
 	T_SBI,
+	T_AON,
 	T_ROOTFS,
 } img_type_t;
 

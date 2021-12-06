@@ -57,14 +57,14 @@ exit:
 int csi_sec_image_verify(img_type_t type, long addr)
 {
 	int ret;
-	int sbi_size;
+	int secimg_size = 0;
 
 	if (image_have_head(addr) == 0)
 		return 0;
 
-	if (type == T_SBI) {
+	if (type == T_SBI || type == T_AON) {
 		img_header_t *phead = (img_header_t *)addr;
-		sbi_size = phead->image_size;
+		secimg_size = phead->image_size;
 	}
 
 	ret = csi_sec_custom_image_verify(addr, SRAM_BASE_ADDR);
@@ -72,7 +72,9 @@ int csi_sec_image_verify(img_type_t type, long addr)
 		goto exit;
 
 	if (type == T_SBI)
-		memmove((void *)0x0, (const void *)(addr + HEADER_SIZE), sbi_size);
+		memmove((void *)0x0, (const void *)(addr + HEADER_SIZE), secimg_size);
+	if (type == T_AON)
+		memmove((void *)AON_SRAM_ADDR, (const void *)(addr + HEADER_SIZE), secimg_size);
 
 	return ret;
 exit:

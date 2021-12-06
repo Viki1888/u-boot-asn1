@@ -36,7 +36,7 @@ static int total_pmp = 0;
 static int setup_nt_pmp_array(long start, long size)
 {
 	if (total_pmp == 31) {
-		printf("PMP entries are full!!!\n");
+		debug("PMP entries are full!!!\n");
 		return -1;
 	}
 
@@ -48,11 +48,11 @@ static int setup_nt_pmp_array(long start, long size)
 	return 0;
 }
 
-static void dump_nt_pmp_array(void)
+static void __maybe_unused dump_nt_pmp_array(void)
 {
-	printf("total pmp number: %d\n", total_pmp);
+	debug("total pmp number: %d\n", total_pmp);
 	for (int i = 0; i < total_pmp; i++) {
-		printf("pmp[%d]: 0x%lx ~ 0x%lx\n",
+		debug("pmp[%d]: 0x%lx ~ 0x%lx\n",
 			i, pmp_configs[i].start, pmp_configs[i].end);
 	}
 }
@@ -106,13 +106,13 @@ static int parse_memory(const void *blob, int t)
 	if (t == T_DTS) {
 		t_start_address = address;
 		t_size = size;
-		printf("t_start_address: 0x%lx\n", t_start_address);
+		debug("t_start_address: 0x%lx\n", t_start_address);
 	} else if (t == NT_DTS) {
 		nt_start_address = address;
 		nt_size = size;
 		if (setup_nt_pmp_array(address, size))
 			return -EINVAL;
-		printf("nt_start_address: 0x%lx\n", nt_start_address);
+		debug("nt_start_address: 0x%lx\n", nt_start_address);
 	}
 
 	return 0;
@@ -132,7 +132,7 @@ static int setup_t_plic(const void *blob)
 	writel(0x40000000, (void *)(PLIC_BASE_ADDR + 0x1ffff8));
 
 	for (i = 0; i < 255 && irq_no[i]; i++) {
-		printf("T irq_no: %d\n", irq_no[i]);
+		debug("T irq_no: %d\n", irq_no[i]);
 		x = irq_no[i] % 32;
 		y = irq_no[i] / 32;
 
@@ -156,22 +156,22 @@ static int parse_soc(const void *blob, int t)
 	if (node < 0)
 		return -ENOENT;
 
-	printf("%s device ================\n", t == T_DTS ? "T" : "NT");
+	debug("%s device ================\n", t == T_DTS ? "T" : "NT");
 	for (device = fdt_first_subnode(blob, node);
 		device >= 0; device = fdt_next_subnode(blob, device)) {
 		if (device == -FDT_ERR_NOTFOUND)
 			return -ENOENT;
 
 		name = fdt_get_name(blob, device, NULL);
-		printf("name: %s\n", name);
+		debug("name: %s\n", name);
 		status = (char *)fdt_getprop(blob, device, "status", NULL);
 		if (status)
-			printf("\tstatus: %s\n", status);
+			debug("\tstatus: %s\n", status);
 
 		intc = (fdt32_t *)fdt_getprop(blob, device, "interrupts", 0);
 		if (intc) {
 			irq = fdt_read_number(intc, 1);
-			printf("\tirq_no: %d\n", irq);
+			debug("\tirq_no: %d\n", irq);
 			if (t == T_DTS) {
 				irq_no[i] = irq;
 				i++;
@@ -181,38 +181,38 @@ static int parse_soc(const void *blob, int t)
 		reg = (fdt32_t *)fdt_getprop(blob, device, "reg", 0);
 		if (reg) {
 			address = fdt_translate_address(blob, device, reg);
-			printf("\taddress: 0x%lx\n", address);
+			debug("\taddress: 0x%lx\n", address);
 			reg += 2;
 			size = fdt_translate_address(blob, device, reg);
-			printf("\tsize: 0x%lx\n", size);
+			debug("\tsize: 0x%lx\n", size);
 			if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
 				return -EINVAL;
 
 			if (!strncmp(name, "mbox", 4)) {
 				reg += 2;
 				address = fdt_translate_address(blob, device, reg);
-				printf("\taddress: 0x%lx\n", address);
+				debug("\taddress: 0x%lx\n", address);
 				reg += 2;
 				size = fdt_translate_address(blob, device, reg);
-				printf("\tsize: 0x%lx\n", size);
+				debug("\tsize: 0x%lx\n", size);
 				if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
 					return -EINVAL;
 
 				reg += 2;
 				address = fdt_translate_address(blob, device, reg);
-				printf("\taddress: 0x%lx\n", address);
+				debug("\taddress: 0x%lx\n", address);
 				reg += 2;
 				size = fdt_translate_address(blob, device, reg);
-				printf("\tsize: 0x%lx\n", size);
+				debug("\tsize: 0x%lx\n", size);
 				if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
 					return -EINVAL;
 
 				reg += 2;
 				address = fdt_translate_address(blob, device, reg);
-				printf("\taddress: 0x%lx\n", address);
+				debug("\taddress: 0x%lx\n", address);
 				reg += 2;
 				size = fdt_translate_address(blob, device, reg);
-				printf("\tsize: 0x%lx\n", size);
+				debug("\tsize: 0x%lx\n", size);
 				if ((t == NT_DTS) && setup_nt_pmp_array(address, size))
 					return -EINVAL;
 			}
@@ -232,23 +232,23 @@ static int parse_and_set_iopmp(const void *blob, int t)
 	if (node < 0)
 		return -ENOENT;
 
-	printf("%s iopmp ================\n", t == T_DTS ? "T" : "NT");
+	debug("%s iopmp ================\n", t == T_DTS ? "T" : "NT");
 	for (device = fdt_first_subnode(blob, node);
 		device >= 0; device = fdt_next_subnode(blob, device)) {
 		if (device == -FDT_ERR_NOTFOUND)
 			return -ENOENT;
 
-		printf("name: %s\n", fdt_get_name(blob, device, NULL));
+		debug("name: %s\n", fdt_get_name(blob, device, NULL));
 		reg = (fdt32_t *)fdt_getprop(blob, device, "reg", 0);
 		range = (fdt32_t *)fdt_getprop(blob, device, "range", 0);
 		if (reg && range) {
 			base_addr = fdt_translate_address(blob, device, reg);
-			printf("\tbase_addr: 0x%lx\n", base_addr);
+			debug("\tbase_addr: 0x%lx\n", base_addr);
 			start = fdt_translate_address(blob, device, range);
-			printf("\tstart: 0x%lx\n", start);
+			debug("\tstart: 0x%lx\n", start);
 			range += 2;
 			size = fdt_translate_address(blob, device, range);
-			printf("\tsize: 0x%lx\n", size);
+			debug("\tsize: 0x%lx\n", size);
 			end = start + size;
 			if ((t == NT_DTS)) {
 				writel(start >> 12, (void *)(base_addr + 0x280));
@@ -336,29 +336,29 @@ static int parse_cpu(const void *blob, int t)
 
 		reg = (fdt32_t *)fdt_getprop(blob, cpu, "reg", 0);
 		core = fdt_read_number(reg, 1);
-		printf("core %d  ", core);
+		debug("core %d  ", core);
 
 		status = fdt_getprop(blob, cpu, "status", NULL);
 		if (t == T_DTS) {
 			if (!strcmp(status, "okay")) {
-				printf("T world\n");
+				debug("T world\n");
 				boot_addr[core] = (long)&boot_t_core;
 			} else if (!strcmp(status, "disabled")) {
-				printf("NT world\n");
+				debug("NT world\n");
 				boot_addr[core] = (long)&boot_nt_core;
 			} else {
-				printf("Incorrect DTS! Not okay nor disabled\n");
+				debug("Incorrect DTS! Not okay nor disabled\n");
 				return -EINVAL;
 			}
 		} else if (t == NT_DTS) {
 			if (!strcmp(status, "okay")) {
-				printf("NT world\n");
+				debug("NT world\n");
 				boot_addr_chk[core] = (long)&boot_nt_core;
 			} else if (!strcmp(status, "disabled")) {
-				printf("T world\n");
+				debug("T world\n");
 				boot_addr_chk[core] = (long)&boot_t_core;
 			} else {
-				printf("Incorrect DTS! Not okay nor disabled\n");
+				debug("Incorrect DTS! Not okay nor disabled\n");
 				return -EINVAL;
 			}
 		}
@@ -401,10 +401,10 @@ static int parse_dtb(const void *blob_t, const void *blob_nt)
 
 static int __maybe_unused boot_buddies(void)
 {
-	printf("cpu 0 ---0x%lx\n", boot_addr[0]);
-	printf("cpu 1 ---0x%lx\n", boot_addr[1]);
-	printf("cpu 2 ---0x%lx\n", boot_addr[2]);
-	printf("cpu 3 ---0x%lx\n", boot_addr[3]);
+	debug("cpu 0 ---0x%lx\n", boot_addr[0]);
+	debug("cpu 1 ---0x%lx\n", boot_addr[1]);
+	debug("cpu 2 ---0x%lx\n", boot_addr[2]);
+	debug("cpu 3 ---0x%lx\n", boot_addr[3]);
 
 	writel(boot_addr[1] & 0xffffffff, (void *)(0xffff018000 + 0x58));
 	writel(boot_addr[1] >> 32,        (void *)(0xffff018000 + 0x5c));
@@ -423,10 +423,11 @@ static int __maybe_unused boot_buddies(void)
 	return 0;
 }
 
-static int parse_img_verify(ulong *addr, char *const argv[])
+static int parse_img_verify(ulong *addr, char * const argv[])
 {
 	char *env;
 	long sbi_addr = SBI_ENTRY_ADDR;
+	long aon_addr = AON_DDR_ADDR;
 	int header_off = 0;
 	int ret;
 
@@ -443,17 +444,26 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 		return ret;
 	addr[1] += header_off;
 	t_kernel_address = addr[1];
-	printf("linux: 0x%lx\n", addr[1]);
+	sprintf(argv[1], "0x%lx", addr[1]);
+	debug("linux: 0x%lx\n", addr[1]);
 
 	addr[2] = simple_strtoul(argv[2], NULL, 16);
-	printf("rootfs: 0x%lx\n", addr[2]);
 #if LIGHT_ROOTFS_SEC_CHECK
-	ret = csi_sec_image_verify(T_ROOTFS, addr[1]);
+	header_off = 0;
+	if (image_have_head(addr[2]) == 1)
+		header_off = HEADER_SIZE;
+	ret = csi_sec_image_verify(T_ROOTFS, addr[2]);
 	if (ret)
 		return ret;
+	addr[2] += header_off;
+	sprintf(argv[2], "0x%lx", addr[2]);
+#else
+	sprintf(argv[2], "-");
 #endif
+	debug("rootfs: 0x%lx\n", addr[2]);
 
 	addr[3] = simple_strtoul(argv[3], NULL, 16);
+	header_off = 0;
 	t_dtb_address = addr[3];
 	if (image_have_head(addr[3]) == 1)
 		header_off = HEADER_SIZE;
@@ -462,16 +472,21 @@ static int parse_img_verify(ulong *addr, char *const argv[])
 		return ret;
 	addr[3] += header_off;
 	t_dtb_address = addr[3];
-	printf("t dtb: 0x%lx\n", addr[3]);
+	sprintf(argv[3], "0x%lx", addr[3]);
+	debug("t dtb: 0x%lx\n", addr[3]);
 
 	addr[4] = simple_strtoul(argv[4], NULL, 16);
 	nt_dtb_address = addr[4];
-	printf("nt dtb: 0x%lx\n", addr[4]);
+	debug("nt dtb: 0x%lx\n", addr[4]);
 
 	env = env_get("t_opensbi_addr");
 	if (env)
 		sbi_addr = simple_strtol(env, NULL, 0);
 	ret = csi_sec_image_verify(T_SBI, sbi_addr);
+	if (ret)
+		return ret;
+
+	ret = csi_sec_image_verify(T_AON, aon_addr);
 	if (ret)
 		return ret;
 
@@ -483,38 +498,28 @@ char tee_bootcode[BOOTCODE_SIZE] = {0x73, 0x50, 0x40, 0x7f};
 int light_boot(int argc, char * const argv[])
 {
 	ulong addr[5] = {0};
-	void (*entry)(int, long);
 
 	if (argc < 2) {
-		printf("argc: %d\n", argc);
-		printf("args not match!\n");
+		debug("args not match!\n");
 		return CMD_RET_USAGE;
 	}
 
 	if (parse_img_verify(addr, argv) < 0) {
-		printf("parse args failed!\n");
+		debug("parse args failed!\n");
 		return CMD_RET_USAGE;
 	}
 
 	if (parse_dtb((const void *)addr[3], (const void *)addr[4]) < 0) {
-		printf("parse dtb failed!\n");
+		debug("parse dtb failed!\n");
 		return CMD_RET_USAGE;
 	}
 
 	setup_t_plic((const void *)addr[3]);
 
-	dump_nt_pmp_array();
-
 	if (nt_start_address)
 		memcpy((void *)nt_start_address, tee_bootcode, BOOTCODE_SIZE);
 
-	//boot_buddies();
-
-	/* Set cpu 0's start address */
-	addr[0] = boot_addr[0];
-
-	entry = (void (*)(int, long))addr[0];
-	entry(0, addr[3]);
+	run_command("bootslave", 0);
 
 	return 0;
 }
