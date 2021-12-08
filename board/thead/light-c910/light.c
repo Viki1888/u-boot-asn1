@@ -216,6 +216,10 @@ enum {
 #define USB3_DRD_SWRST		0xFFEC02C014
 #define SOC_OM_ADDRBASE		0xFFEF018010
 
+#define ISO7816_CARD_ADDRBASE	0xFFF7F30000
+#define REG_CONFIG_OFF		0x10
+#define MIE			(1<<7)
+
 #define LIGHT_IOPMP_DEFAULT_ATTR	0xffffffff
 #define LIGHT_IOPMP_DEFAULT_OFF		0xc0
 #ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910
@@ -285,6 +289,11 @@ struct pinmux_addr_t g_soc_pin_grp_addr[] = {
 	PIN_GRP_ADDR_DEF(SOC_PIN_AP_LEFT_TOP,       0xFFE7F3C000,0xFFE7F3C400),
 	PIN_GRP_ADDR_DEF(SOC_PIN_AON,               0xFFFFF4A000,0xFFFFF4A400),
 };
+
+static void iso7816_card_glb_interrupt_disable(void)
+{
+	writel(readl((void *)(ISO7816_CARD_ADDRBASE + REG_CONFIG_OFF))  & (~MIE), (void *)(ISO7816_CARD_ADDRBASE + REG_CONFIG_OFF));
+}
 
 static int  light_pinmx_get_cfg_base(pin_name_t pin_name, uint32_t** cfg_base)
 {
@@ -738,7 +747,7 @@ int board_init(void)
 
 	usb_clk_config();
 	gmac_hw_init();
-
+	iso7816_card_glb_interrupt_disable();
 	return 0;
 }
 
