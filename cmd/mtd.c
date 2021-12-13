@@ -637,7 +637,6 @@ static int do_mtd_erase(cmd_tbl_t *cmdtp, int flag, int argc,
 	erase_op.scrub = scrub;
 	while (erase_op.len) {
 		ret = mtd_erase(mtd, &erase_op);
-                printf("erase ret:%d \n",ret);
 		/* Abort if its not a bad block error */
 		if (ret != -EIO)
 			break;
