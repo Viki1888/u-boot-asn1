@@ -712,12 +712,12 @@ static void light_iopin_init(void)
 
 	/*qspi0 cs0 gpio2-3, pad strength and pin-pull mode  */
 	light_pin_mux(QSPI0_CSN0,3);
-	light_pin_cfg(QSPI0_CSN0,PIN_SPEED_NORMAL,PIN_PU,8);
-	light_pin_cfg(QSPI0_SCLK,PIN_SPEED_NORMAL,PIN_PN,8);
-	light_pin_cfg(QSPI0_D0_MOSI,PIN_SPEED_NORMAL,PIN_PU,8);
-	light_pin_cfg(QSPI0_D1_MISO,PIN_SPEED_NORMAL,PIN_PU,8);
-	light_pin_cfg(QSPI0_D2_WP,PIN_SPEED_NORMAL,PIN_PU,8);
-	light_pin_cfg(QSPI0_D3_HOLD,PIN_SPEED_NORMAL,PIN_PU,8);
+	light_pin_cfg(QSPI0_CSN0,PIN_SPEED_NORMAL,PIN_PN,0xA);
+	light_pin_cfg(QSPI0_SCLK,PIN_SPEED_NORMAL,PIN_PN,0xA);
+	light_pin_cfg(QSPI0_D0_MOSI,PIN_SPEED_NORMAL,PIN_PU,0xA);
+	light_pin_cfg(QSPI0_D1_MISO,PIN_SPEED_NORMAL,PIN_PU,0xA);
+	light_pin_cfg(QSPI0_D2_WP,PIN_SPEED_NORMAL,PIN_PU,0xA);
+	light_pin_cfg(QSPI0_D3_HOLD,PIN_SPEED_NORMAL,PIN_PU,0xA);
 
 	/* GMAC0 pad drive strength configurate to 0xF */
 	light_pin_cfg(GMAC0_TX_CLK, PIN_SPEED_NORMAL, PIN_PN, 0xF);
