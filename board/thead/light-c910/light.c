@@ -20,9 +20,12 @@
 #define PAD_INDEX(x)                  (x & 0xFFF)
 
 #define LIGHT_GPIO1_BADDR	0xffec006000
+#define LIGHT_GPIO2_BADDR	0xffe7f34000
 #define LIGHT_GPIO3_BADDR	0xffe7f38000
 #define LIGHT_GPIO1_13		(0x1 << 13)
 #define LIGHT_GPIO3_21		(0x1 << 21)
+#define LIGHT_GPIO2_26		(0x1 << 26)
+#define LIGHT_GPIO2_28		(0x1 << 28)
 
 #define GMAC0_APB3S_BADDR	0xffec003000
 #define GMAC1_APB3S_BADDR	0xffec004000
@@ -581,6 +584,19 @@ void gmac_hw_init(void)
 	gmac_glue_init(apb3s_baddr);
 }
 
+static void wifi_en(void)
+{
+	uint32_t val;
+
+	writel(readl((void *)(LIGHT_GPIO2_BADDR + 0x4)) | LIGHT_GPIO2_26 | LIGHT_GPIO2_28,
+	       (void *)(LIGHT_GPIO2_BADDR + 0x4));
+
+	/* kernel driver will reset wifi module */
+	val = readl((void *)LIGHT_GPIO2_BADDR);
+	val |= LIGHT_GPIO2_26 | LIGHT_GPIO2_28;
+	writel(val, (void *)LIGHT_GPIO2_BADDR);
+}
+
 static void usb_clk_config(void)
 {
 	writel(readl((void *)SYSCLK_USB_CTRL) | 0xf, (void *)SYSCLK_USB_CTRL);
@@ -747,7 +763,9 @@ int board_init(void)
 
 	usb_clk_config();
 	gmac_hw_init();
+	wifi_en();
 	iso7816_card_glb_interrupt_disable();
+
 	return 0;
 }
 
