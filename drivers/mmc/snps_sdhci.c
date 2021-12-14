@@ -10,7 +10,9 @@
 #include <sdhci.h>
 #include "snps_sdhci.h"
 
-volatile int DELAY_LANE = 30;
+#define HS400_DELAY_LANE	24
+
+volatile int DELAY_LANE = 50;
 
 static void sdhci_phy_1_8v_init_no_pull(struct sdhci_host *host)
 {
@@ -98,9 +100,14 @@ static void sdhci_phy_1_8v_init(struct sdhci_host *host)
     val = (1 << RXSEL) | (2 << WEAKPULL_EN) | (3 << TXSLEW_CTRL_P) | (3 << TXSLEW_CTRL_N);
     sdhci_writew(host, val, PHY_STBPAD_CNFG_R);
 
+    /* enable data strobe mode */
+    sdhci_writeb(host, 0, PHY_DLL_CTRL_R);
+    sdhci_writew(host, 0, SDHCI_CLOCK_CONTROL);
+    sdhci_writew(host, 0x8000, PHY_DLLBT_CNFG_R);
+    sdhci_writeb(host, 3 << SLV_INPSEL, PHY_DLLDL_CNFG_R);
+    sdhci_writeb(host, 0x25, PHY_DLL_CNFG1_R);
+    sdhci_writew(host, 0x7, SDHCI_CLOCK_CONTROL);
     sdhci_writeb(host, (1 << DLL_EN),  PHY_DLL_CTRL_R);
-    /*set i wait*/
-    sdhci_writeb(host, 0x5, PHY_DLL_CNFG1_R);
 }
 
 static void sdhci_phy_3_3v_init(struct sdhci_host *host)
@@ -164,6 +171,7 @@ void snps_set_uhs_timing(struct sdhci_host *host)
 		reg |= SDHCI_CTRL_UHS_SDR104;
 		break;
 	case MMC_HS_400:
+		DELAY_LANE = HS400_DELAY_LANE;
 		sdhci_phy_1_8v_init(host);
 		reg |= SNPS_SDHCI_CTRL_HS400;
 		break;
@@ -188,8 +196,6 @@ void snps_set_uhs_timing(struct sdhci_host *host)
         reg = sdhci_readl(host, AT_CTRL_R);
         reg &= ~1;
         sdhci_writel(host, reg, AT_CTRL_R);
-        //used ds clock
-        sdhci_writeb(host, 3 << SLV_INPSEL, PHY_DLLDL_CNFG_R);
     } else {
         sdhci_writeb(host, 0, PHY_DLLDL_CNFG_R);
     }
