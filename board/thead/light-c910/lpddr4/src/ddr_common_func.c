@@ -276,13 +276,16 @@ void enable_auto_refresh() {
   udelay(2);
   ddr_sysreg_wr(DDR_CFG0+0xc,0x0b000000);
  } else {
+#ifdef CONFIG_DDR_MSG
  printf("Reserved Pll setting\n");
+#endif
   ddr_sysreg_wr(DDR_CFG0+0xc,0x4b000000);
   ddr_sysreg_wr(DDR_CFG0+0x8,0x01606601);
   ddr_sysreg_wr(DDR_CFG0+0xc,0x0b000000);
 }
-
+#ifdef CONFIG_DDR_MSG
   printf("Freq    is %0x \n",ddr_sysreg_rd(DDR_CFG0+0x8));
+#endif
   while((ddr_sysreg_rd(DDR_CFG0+0x18)&1)!=0x1); //pll lock
   ddr_sysreg_wr(DDR_CFG0+0x18,0x10000);// core clock cg off
  }
@@ -314,13 +317,14 @@ if(bits==64) {
   while(rd(SWSTAT)!=0x00000001);
   //wr(PWRCTL,0x0000000b);
   //wr(DCH1_PWRCTL,0x0000000b);
+#ifdef CONFIG_DDR_MSG
   printf("DFIPHYMSTR is %0x \n",rd(DFIPHYMSTR));
   printf("DFIUPD0    is %0x \n",rd(DFIUPD0));
   printf("DFIUPD1    is %0x \n",rd(DFIUPD1));
   printf("ZQCTL0     is %0x \n",rd(ZQCTL0));
   printf("ADDRMAP0     is %0x \n",rd(ADDRMAP0));
   printf("ADDRMAP1     is %0x \n",rd(ADDRMAP1));
-
+#endif
  }
 
  void deassert_pwrok_apb (enum DDR_BITWIDTH bits) {
@@ -343,7 +347,9 @@ if(bits==64) {
   wr(PWRCTL,0x00000001);
   while(rd(STAT)!=0x00000000);
   if(rank_num==2) {
+#ifdef CONFIG_DDR_MSG
   printf("Ctrl in dual rank mode \n");
+#endif
   wr(MSTR,0x03080020);
   } else {
   wr(MSTR,0x01080020);
@@ -352,7 +358,9 @@ if(bits==64) {
   wr(MRCTRL1,0x0002d90f);
 
  if(speed==4266) {
+#ifdef CONFIG_DDR_MSG
   printf("Enter LP4 4266 init\n");
+#endif
   wr(DERATEEN,0x000014f5); //[0] dereate enable  [7:4] derate byte input
   wr(DERATEINT,0x40000000);
   wr(DERATECTL,0x00000001);
@@ -449,7 +457,9 @@ if(bits==64) {
   wr(ADDRMAP11,0x00000008);
   wr(ODTCFG,0x060a0c44);
  } else if(speed==3733) {
+#ifdef CONFIG_DDR_MSG
   printf("Enter LP4 3733 init\n");
+#endif
   //wr(DERATEEN,0x00001302);// 3733 disable derate
   wr(DERATEEN,0x000013f3);// derate enable
   wr(DERATEINT,0x40000000);
@@ -548,7 +558,9 @@ if(bits==64) {
   wr(ODTCFG,0x06090b40);
 
  } else if(speed==3200) {
+#ifdef CONFIG_DDR_MSG
   printf("Enter LP4 3200 init\n");
+#endif
   wr(DERATEEN,0x000012f3);
   wr(DERATEINT,0x726d4ada);
   wr(DERATECTL,0x00000001);
@@ -633,7 +645,9 @@ if(bits==64) {
   wr(ADDRMAP11,0x00000008);
   wr(ODTCFG,0x06080a38);
  } else if(speed==2133){
+#ifdef CONFIG_DDR_MSG
   printf("Enter LP4 2133 init\n");
+#endif
   wr(DERATEEN,0x000011f1);
   wr(DERATEINT,0x726d4ada);
   wr(DERATECTL,0x00000001);
@@ -815,16 +829,20 @@ if(bits==64) {
   wr(DBG1,0x00000002);
   wr(DCH1_DBG1,0x00000002);
    //while(rd(MSTR)!=0x01080020);
+#ifdef CONFIG_DDR_MSG
   printf("RankCTL   is %0x \n",rd(RANKCTL));
   printf("DRAMTMG2   is %0x \n",rd(DRAMTMG2));
   printf("DFITMG0   is %0x \n",rd(DFITMG0));
   printf("DFITMG1   is %0x \n",rd(DFITMG1));
   printf("DRAMTMG4  is %0x \n",rd(DRAMTMG4));//[19:16] tCCD
+#endif
  }
 
  void addrmap (int rank_num, enum DDR_BITWIDTH bits) {
  if(bits==DDR_BITWIDTH_16) {
+#ifdef CONFIG_DDR_MSG
   printf("DDR 16bit mode\n");
+#endif
   wr(MSTR,0x01080020|0x1000);
   wr(ADDRMAP0,0x001f1f16);  //
   wr(ADDRMAP1,0x00070707); //bank +2
@@ -838,7 +856,9 @@ if(bits==64) {
   wr(ADDRMAP10,0x06060606);
   wr(ADDRMAP11,0x00000006);
  } else if(bits==DDR_BITWIDTH_32){
+#ifdef CONFIG_DDR_MSG
  printf("DDR 32bit mode\n");
+#endif
   wr(ADDRMAP0,0x001f001f);  //
   if(rank_num==2) {
   wr(ADDRMAP0,0x001f0017);//4GB
@@ -854,7 +874,9 @@ if(bits==64) {
   wr(ADDRMAP10,0x07070707);
   wr(ADDRMAP11,0x00000007);
  } else if(bits==DDR_BITWIDTH_64){
+#ifdef CONFIG_DDR_MSG
  printf("DDR 64bit mode, 256B interleaving\n");
+#endif
   wr(ADDRMAP0,0x0004001f);  // +2
   if(rank_num==2) {
   wr(ADDRMAP0,0x00040018);//8GB
@@ -948,8 +970,9 @@ umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWCTL);
   while( umctl2_reg.dwc_ddr_umctl2_c_struct_swstat.sw_done_ack == 0) {
     umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWSTAT);
   }
+#ifdef CONFIG_DDR_MSG
   printf("[dfi_init]: dfi_init end\n");
-  
+#endif  
 }
   //put sdram into selfrefresh state, pwden_en=1 enable selfrefresh power-down, otherwise stay in selfrefresh
 void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk) {
@@ -974,7 +997,9 @@ void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk) {
     while( umctl2_reg.dwc_ddr_umctl2_c_struct_stat.selfref_state != 1) //wait sdram enter selfrefresh state
         umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32 = rd(STAT);
     }
+#ifdef CONFIG_DDR_MSG
     printf("[lpddr4_enter_selfrefresh]: STAT is :%x after enter selfrefresh state\n",umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32);
+#endif
 }
     void lpddr4_selfrefresh_en(int pwdn_en) {
     DWC_DDR_UMCTL2_C_STRUCT_REG_S umctl2_reg;
@@ -991,17 +1016,23 @@ void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk) {
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.en_dfi_dram_clk_disable = 1;
   wr(PWRCTL,umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.u32);
   wr(PWRCTL_DCH1,umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.u32);
+#ifdef CONFIG_DDR_MSG
   printf("[lpddr4_selfrefresh_en] wait lpddr4 enter selfrefresh by slefref_en \n");
+#endif
   rdata = rd(STAT);
   while(rdata !=0x233)
   rdata = rd(STAT);
+#ifdef CONFIG_DDR_MSG
   printf("[lpddr4_selfrefresh_en] end:lpddr4 entered selfrefresh \n");
+#endif
     }
 
 
 //de_assert umctl2_reset, phy_crst, and all areset
   void de_assert_other_reset_ddr() {
+#ifdef CONFIG_DDR_MSG
     printf("de-assert areset and ctrl_crst_n,ddr_phy_crst_n by sysreg or tb \n");
+#endif
     //wr(0xf0000000,0xf);
     //ddr_sysreg_wr(DDR_CFG0,0x1ff0);
     //ddr_sysreg_wr(DDR_CFG0,0x1ff0);

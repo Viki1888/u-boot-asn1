@@ -151,6 +151,8 @@ config FW_MSG_L1
         def_bool n if !FW_MSG_L3 && !FW_MSG_L2
 config FW_MSG_TRAIN_1D
         def_bool n if FW_MSG_L2
+config DDR_MSG
+	def_bool y if FW_MSG_L1 || FW_MSG_L2 || FW_MSG_L3
 
 config DDR_DUAL_RANK
 	def_bool y if DDR_LP4X_4266_DUALRANK || DDR_LP4X_3733_DUALRANK || DDR_LP4X_3200_DUALRANK || DDR_LP4X_2133_DUALRANK \

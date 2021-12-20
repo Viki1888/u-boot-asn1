@@ -12,8 +12,9 @@ void init_ddr(void)
     enum DDR_BITWIDTH bits = DDR_BITWIDTH_64;
     bool dbi_off = false;
     int board_ver = 1;
+#ifdef CONFIG_DDR_MSG
     printf("enter init_ddr\n");
-
+#endif
 #ifdef CONFIG_DDR_H32_MODE
     bits = DDR_BITWIDTH_32;
 #elif CONFIG_DDR_H16_MODE
@@ -60,5 +61,7 @@ void init_ddr(void)
     lpddr4_init(type, rank_num, freq, bits);
 #endif
 
+#ifdef CONFIG_DDR_MSG
     printf("exit init_ddr\n");
+#endif
 }
