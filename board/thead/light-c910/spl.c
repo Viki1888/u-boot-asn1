@@ -15,13 +15,20 @@
 #include <asm/spl.h>
 #include <asm/arch-thead/boot_mode.h>
 #include <string.h>
+#include <asm/global_data.h>
+#include <linux/libfdt.h>
+#include <fdt_support.h>
+#include <fdtdec.h>
 #include "../common/uart.h"
 #include "../common/mini_printf.h"
+
+DECLARE_GLOBAL_DATA_PTR;
 
 extern void init_ddr(void);
 extern void cpu_clk_config(int cpu_freq);
 extern void ddr_clk_config(int ddr_freq);
 extern void show_sys_clk(void);
+extern int riscv_get_time(u64 *time);
 
 struct light_reset_list {
         u32 val;
@@ -79,6 +86,210 @@ void setup_ddr_pmp(void)
 	writel(0, (void *)(PMP_BASE_ADDR + 0x000));
 
 	sync_is();
+}
+
+int get_rng(unsigned int *rng, int cnt)
+{
+	int i;
+	u64 seed;
+	riscv_get_time(&seed);
+	srand((unsigned int)seed);
+	for (i = 0; i < cnt; i++)
+		rng[i] = rand();
+	return 0;
+}
+struct axiscr_region {
+	long start;
+	long end;
+};
+#define AXISCR_MAX_REGION_CNT 8
+#define OFFSET_AXISCR_LOCK 0x4
+#define OFFSET_AXISCR_MISC 0x8
+#define OFFSET_AXISCR_CYPHER 0x14
+#define OFFSET_AXISCR_REGION 0x40
+#define OFFSET_AXISCR_TRNG 0x100
+void setup_ddr_scramble(void)
+{
+	int node, scr;
+	unsigned int i, tmp;
+	long base_addr, start, size, end;
+	const fdt32_t *reg;
+	const char *status;
+	int lock_r, lock_w;
+	const void *blob = (const void *)gd->fdt_blob;
+	const char path[] = "/soc/axiscr";
+	struct axiscr_region region[AXISCR_MAX_REGION_CNT] = {0};
+	unsigned int rng[AXISCR_MAX_REGION_CNT*2] = {0}; // dual word per region
+	int cnt = 0;
+
+	node = fdt_path_offset(blob, path);
+	if (node < 0) {
+		printf("found no %s node in fdt\n", path);
+		return;
+	}
+
+	reg = fdt_getprop(blob, node, "reg", NULL);
+	if (!reg) {
+		printf("Warning: device tree node '%s' has no address.\n", path);
+		return;
+	}
+	base_addr = fdt_translate_address(blob, node, reg);
+
+	status = fdt_getprop(blob, node, "lock-read", NULL);
+	lock_r = (!strcmp(status, "okay")) ? 1:0;
+	status = fdt_getprop(blob, node, "lock-write", NULL);
+	lock_w = (!strcmp(status, "okay")) ? 1:0;
+
+	for (scr = fdt_first_subnode(blob, node);
+		scr >= 0; scr = fdt_next_subnode(blob, scr)) {
+		if (!strcmp("okay", fdt_getprop(blob, scr, "status", NULL))) {
+			reg = fdt_getprop(blob, scr, "region", NULL);
+			start = fdt_translate_address(blob, scr, reg);
+			reg += 2;
+			size = fdt_translate_address(blob, scr, reg);
+			end = start + size;
+
+			region[cnt].start = start;
+			region[cnt++].end = end;
+			// TODO, check overlap
+		}
+	}
+
+	if (cnt > 0) {
+		if (cnt > AXISCR_MAX_REGION_CNT) {
+			printf("failed to setup ddr scramble, since illegal axiscr region cnt<%d>", cnt);
+			return;
+		}
+
+		get_rng(rng, cnt*2);
+		for (i=0; i< cnt; i++) {
+			// config region
+			writel(region[i].start >> 12, (void *)(base_addr + OFFSET_AXISCR_REGION + i*8));
+			writel(region[i].end >> 12, (void *)(base_addr + OFFSET_AXISCR_REGION + i*8+4));
+
+			// config rng
+			writel(rng[i*2], (void *)(base_addr + OFFSET_AXISCR_TRNG + i*8));
+			writel(rng[i*2+1], (void *)(base_addr + OFFSET_AXISCR_TRNG + i*8+4));
+		}
+		// enable axi scramble
+		tmp = readl((void *)(base_addr + OFFSET_AXISCR_MISC));
+		tmp |= 1 << 18;
+		writel(tmp, (void *)(base_addr + OFFSET_AXISCR_MISC));
+
+		writel(1 << 0, (void *)(base_addr + OFFSET_AXISCR_CYPHER));
+
+		tmp = readl((void *)(base_addr + OFFSET_AXISCR_MISC));
+		tmp &= ~(0xff << 24);
+		tmp |= 1 << 24;
+		writel(tmp, (void *)(base_addr + OFFSET_AXISCR_MISC));
+
+		// lock r/w
+		tmp = readl((void *)(base_addr + OFFSET_AXISCR_LOCK));
+		if (lock_r) {
+			tmp |= 1 << 7;
+			writel(tmp, (void *)(base_addr + OFFSET_AXISCR_LOCK));
+		}
+		if (lock_w) {
+			tmp |= 1 << 8;
+			writel(tmp, (void *)(base_addr + OFFSET_AXISCR_LOCK));
+		}
+		sync_is();
+	}
+}
+
+struct axiparity_region {
+	long start;
+	long size;
+};
+#define AXIPARITY_MAX_REGION_CNT 8
+#define OFFSET_AXIPARITY_CFG 0x0
+#define OFFSET_AXIPARITY_REGION_CFG0 0x4
+#define OFFSET_AXIPARITY_REGION_CFG1 0x8
+#define OFFSET_AXIPARITY_SLFT_CFG0 0x44
+#define OFFSET_AXIPARITY_SLFT_CFG1 0x48
+#define OFFSET_AXIPARITY_SLFT_CFG2 0x4C
+void setup_ddr_parity(void)
+{
+	int node, parity;
+	unsigned int i, tmp;
+	long base_addr, start, size;
+	const fdt32_t *reg;
+	const char *status;
+	int lock;
+	const void *blob = (const void *)gd->fdt_blob;
+	const char path[] = "/soc/axiparity";
+	struct axiparity_region region[AXIPARITY_MAX_REGION_CNT] = {0};
+	int cnt = 0;
+
+	node = fdt_path_offset(blob, path);
+	if (node < 0) {
+		printf("found no %s node in fdt\n", path);
+		return;
+	}
+
+	reg = fdt_getprop(blob, node, "reg", NULL);
+	if (!reg) {
+		printf("Warning: device tree node '%s' has no address.\n", path);
+		return;
+	}
+	base_addr = fdt_translate_address(blob, node, reg);
+
+	status = fdt_getprop(blob, node, "lock", NULL);
+	lock = (!strcmp(status, "okay")) ? 1:0;
+
+	for (parity = fdt_first_subnode(blob, node);
+		parity >= 0; parity = fdt_next_subnode(blob, parity)) {
+		if (!strcmp("okay", fdt_getprop(blob, parity, "status", NULL))) {
+			reg = fdt_getprop(blob, parity, "region", NULL);
+			start = fdt_translate_address(blob, parity, reg);
+			reg += 2;
+			size = fdt_translate_address(blob, parity, reg);
+
+			region[cnt].start = start;
+			region[cnt++].size = size;
+			// TODO, check overlap
+		}
+	}
+
+	if (cnt > 0) {
+		if (cnt > AXIPARITY_MAX_REGION_CNT) {
+			printf("failed to setup ddr parity, since illegal axiparity region cnt<%d>", cnt);
+			return;
+		}
+
+		for (i=0; i< cnt; i++) {
+			// config region
+			writel(region[i].start >> 12, (void *)(base_addr + OFFSET_AXIPARITY_REGION_CFG0 + i*8));
+			writel(region[i].size >> 12, (void *)(base_addr + OFFSET_AXIPARITY_REGION_CFG1 + i*8));
+		}
+
+		// parity region number
+		tmp = readl((void *)(base_addr + OFFSET_AXIPARITY_CFG));
+		tmp |= cnt << 0;
+		writel(tmp, (void *)(base_addr + OFFSET_AXIPARITY_CFG));
+
+		for (i=0; i< cnt; i++) {
+			// selftest config
+			writel((region[i].start >> 12) << 8, (void *)(base_addr + OFFSET_AXIPARITY_SLFT_CFG0 + i*0xc));
+			writel((region[i].size >> 12) << 8, (void *)(base_addr + OFFSET_AXIPARITY_SLFT_CFG1 + i*0xc));
+			writel(1 << 0, (void *)(base_addr + OFFSET_AXIPARITY_SLFT_CFG2 + i*0xc));
+		}
+		mdelay(10); //4ms for 4GB SLFT
+
+		// enable axi parity
+		tmp = readl((void *)(base_addr + OFFSET_AXIPARITY_CFG));
+		tmp &= ~(0xff << 24);
+		tmp |= 1 << 24;
+		writel(tmp, (void *)(base_addr + OFFSET_AXIPARITY_CFG));
+
+		// lock
+		if (lock) {
+			tmp = readl((void *)(base_addr + OFFSET_AXIPARITY_CFG));
+			tmp |= 1 << 8;
+			writel(tmp, (void *)(base_addr + OFFSET_AXIPARITY_CFG));
+		}
+		sync_is();
+	}
 }
 
 void cpu_performance_enable(void)
@@ -154,6 +365,8 @@ void board_init_f(ulong dummy)
 	ddr_clk_config(0);
 
 	init_ddr();
+	setup_ddr_scramble();
+	setup_ddr_parity();
 	setup_ddr_pmp();
 
 	printf("ddr initialized, jump to uboot\n");

@@ -313,6 +313,65 @@
 				reg = <0>;
 			};
 		};
+
+		axiscr {
+			compatible = "thead,axiscr";
+			reg = <0xff 0xff004000 0x0 0x1000>;
+			lock-read = "okay";
+			lock-write = "okay";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			u-boot,dm-pre-reloc;
+			axiscr0: axisrc@0 {
+				device_type = "axiscr";
+				region = <0x00 0x00000000 0x00 0x80000000>; // 4KB align
+				status = "disabled";
+				#address-cells = <2>;
+				#size-cells = <2>;
+				u-boot,dm-pre-reloc;
+			};
+			axiscr1: axisrc@1 {
+				device_type = "axiscr";
+				region = <0x00 0x80000000 0x00 0x80000000>; // 4KB align
+				status = "disabled";
+				#address-cells = <2>;
+				#size-cells = <2>;
+				u-boot,dm-pre-reloc;
+			};
+			axiscr2: axisrc@2 {
+				device_type = "axiscr";
+				region = <0x01 0x00000000 0x00 0x80000000>; // 4KB align
+				status = "disabled";
+				#address-cells = <2>;
+				#size-cells = <2>;
+				u-boot,dm-pre-reloc;
+			};
+		};
+
+		axiparity {
+			compatible = "thead,axiparity";
+			reg = <0xff 0xff00c000 0x0 0x1000>;
+			lock = "okay";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			u-boot,dm-pre-reloc;
+			axiparity0: axiparity@0 {
+				device_type = "axiparity";
+				region = <0x00 0x00000000 0x01 0x0000000>; // 4KB align
+				status = "disabled";
+				#address-cells = <2>;
+				#size-cells = <2>;
+				u-boot,dm-pre-reloc;
+			};
+			axiparity1: axiparity@1 {
+				device_type = "axiparity";
+				region = <0x01 0x00000000 0x01 0x00000000>; // 4KB align
+				status = "disabled";
+				#address-cells = <2>;
+				#size-cells = <2>;
+				u-boot,dm-pre-reloc;
+			};
+		};
 	};
 
 	chosen {
