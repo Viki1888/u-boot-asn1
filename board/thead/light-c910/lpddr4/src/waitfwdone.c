@@ -1160,7 +1160,9 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
     msg_display(train_result,0x0);
     #else
     if((train_result&0xff)==0x7){
+#ifdef CONFIG_DDR_MSG
        printf("PHY0 DDR_INIT_OK\n");
+#endif
     }
     else{
     if((train_result&0xff)==0xff){
@@ -1209,7 +1211,9 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
     msg_display(train_result,0x1);
     #else
     if((train_result&0xff)==0x7) {
+#ifdef CONFIG_DDR_MSG
        printf("PHY1 DDR_INIT_OK\n");
+#endif
      }
     else{
     if((train_result&0xff)==0xff) {

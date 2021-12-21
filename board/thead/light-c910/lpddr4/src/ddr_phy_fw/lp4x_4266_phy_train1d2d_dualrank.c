@@ -34323,7 +34323,9 @@ const short int dccm_array1[702] = {
 };
 void lp4x_4266_phy_train1d2d() {
 int i;
+#ifdef CONFIG_DDR_MSG
 printf("entered lp4x_4266_phy_train1d2d \n");
+#endif
 ddr_phy_reg_wr(0x1005f,0x55f);
 ddr_phy_reg_wr(0x1015f,0x55f);
 ddr_phy_reg_wr(0x1105f,0x55f);
