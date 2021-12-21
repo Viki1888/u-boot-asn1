@@ -154,7 +154,6 @@ void board_init_f(ulong dummy)
 	ddr_clk_config(0);
 
 	init_ddr();
-	mdelay(1000);
 	setup_ddr_pmp();
 
 	printf("ddr initialized, jump to uboot\n");
