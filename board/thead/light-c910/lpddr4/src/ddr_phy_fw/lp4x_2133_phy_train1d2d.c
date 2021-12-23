@@ -16409,7 +16409,7 @@ const short int dccm_array[830] = {
 0x14,
 0x0,
 0x131f,
-0x4,
+0xff,
 0x0,
 0x3,
 0x0,
@@ -33627,7 +33627,7 @@ const short int dccm_array1[702] = {
 0x14,
 0x0,
 0x61,
-0x4,
+0xff,
 0x0,
 0x3,
 0x0,
@@ -34323,7 +34323,9 @@ const short int dccm_array1[702] = {
 };
 void lp4x_2133_phy_train1d2d() {
 int i;
+#ifdef CONFIG_DDR_MSG
 printf("entered lp4x_2133_phy_train1d2d \n");
+#endif
 ddr_phy_reg_wr(0x1005f,0x55f);
 ddr_phy_reg_wr(0x1015f,0x55f);
 ddr_phy_reg_wr(0x1105f,0x55f);
@@ -34407,6 +34409,9 @@ for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array[i]);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 for(i=0;i<830;i++) ddr_phy_reg_wr(0x54000+i,dccm_array[i]); 
+#ifdef CONFIG_DDR_MSG
+ddr_phy_reg_wr(0x54009,0x4);
+#endif
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0099,0x9);
@@ -34428,6 +34433,9 @@ for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array1[i]);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 for(i=0;i<702;i++) ddr_phy_reg_wr(0x54000+i,dccm_array1[i]); 
+#ifdef CONFIG_DDR_MSG
+ddr_phy_reg_wr(0x54009,0x4);
+#endif
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0099,0x9);
@@ -35005,10 +35013,20 @@ ddr_phy_reg_wr(0x138b4,0x1);
 ddr_phy_reg_wr(0x20089,0x1);
 ddr_phy_reg_wr(0x20088,0x16);
 ddr_phy_reg_wr(0xc0080,0x2);
+ddr_phy_reg_wr(0xd0000,0x1);
+#ifdef CONFIG_DDR_MSG
+ddr_phy0_reg_wr(0xd0000,0x0);
+ddr_phy1_reg_wr(0xd0000,0x0);
+ddr_phy0_reg_wr(0xc0080,0x3);
+ddr_phy1_reg_wr(0xc0080,0x3);
+printf("PHY0 P Code %0x\n",ddr_phy0_reg_rd(0x20014));
+printf("PHY0 N Code %0x\n",ddr_phy0_reg_rd(0x20015));
+printf("PHY1 P Code %0x\n",ddr_phy1_reg_rd(0x20014));
+printf("PHY1 N Code %0x\n",ddr_phy1_reg_rd(0x20015));
 printf("Trained DB0 DFIMRL is %0x \n",ddr_phy_reg_rd(0x10020));
 printf("Trained DB1 DFIMRL is %0x \n",ddr_phy_reg_rd(0x11020));
 printf("Trained DB2 DFIMRL is %0x \n",ddr_phy_reg_rd(0x12020));
 printf("Trained DB3 DFIMRL is %0x \n",ddr_phy_reg_rd(0x13020));
-ddr_phy_reg_wr(0xd0000,0x1);
+#endif
 #endif //#ifndef CONFIG_LPDDR_EYE
  }

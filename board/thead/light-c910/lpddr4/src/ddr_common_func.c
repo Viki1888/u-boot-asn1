@@ -302,8 +302,8 @@ if(bits==64) {
  // wr(SWCTL,0x00000000);
   wr(DFIMISC,0x00000010);
   wr(DFIMISC,0x00000011);
-  wr(PWRCTL,0x00000000);
-  wr(DCH1_PWRCTL,0x00000000);
+  wr(PWRCTL,0x0000000a); //[3] dfi_dram_clk_disable [1] powerdown_en
+  wr(DCH1_PWRCTL,0x0000000a);
   wr(SWCTL,0x00000001);
    while(rd(SWSTAT)!=0x00000001);
    while(rd(STAT)!=0x00000001);
@@ -395,16 +395,18 @@ if(bits==64) {
   wr(INIT6,0x0000004d);
   wr(INIT7,0x0000004d);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000ab9f);//RANKCTL
-  wr(RANKCTL1,0x00000020);
+  wr(RANKCTL,0x0000a55f);//RANKCTL
+  wr(RANKCTL1,0x0000001a);
   wr(DRAMTMG0,0x2221482d);
   wr(DRAMTMG1,0x00090941);
 #ifdef CONFIG_DDR_DBI_OFF
   wr(DRAMTMG2,0x09121219);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
+#ifdef CONFIG_DDR_MSG
   printf("Enter LP4 DBI OFF mode\n");
+#endif
 #else
   //wr(DRAMTMG2,0x09141619);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
-  wr(DRAMTMG2,0x09142320);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
+  wr(DRAMTMG2,0x09141f1a);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
 #endif
   wr(DRAMTMG3,0x00f0f000);
   wr(DRAMTMG4,0x14040914);//[19:16] tCCD
@@ -493,8 +495,8 @@ if(bits==64) {
   wr(INIT6,0x00440012);
   wr(INIT7,0x0004001a);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000ab9f);
-  wr(RANKCTL1,0x00000019);
+  wr(RANKCTL,0x0000a55f);
+  wr(RANKCTL1,0x00000017);
   wr(DRAMTMG0,0x1f263f28);//[30:24]-wr2pre 0x1e->0x1f
   wr(DRAMTMG1,0x00080839);//[20:16]-txp [13:8]-rd2pre 0x7->0x8 [6:0] 0x38->0x39
 #ifdef CONFIG_DDR_DBI_OFF
@@ -504,7 +506,7 @@ if(bits==64) {
 //  if(rank_num==2) {
 //  wr(DRAMTMG2,0x08121b1a);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
 //} else {
-  wr(DRAMTMG2,0x0812211a);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
+  wr(DRAMTMG2,0x08121d17);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
 //}
 #endif
   wr(DRAMTMG3,0x00d0e000);
@@ -592,14 +594,14 @@ if(bits==64) {
   wr(INIT6,0x00000012);
   wr(INIT7,0x0000001a);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000ab9f);
+  wr(RANKCTL,0x0000a55f);
   wr(RANKCTL1,0x00000017);
   wr(DRAMTMG0,0x1b203622);
   wr(DRAMTMG1,0x00060630);
 #ifdef CONFIG_DDR_DBI_OFF
   wr(DRAMTMG2,0x070e0f14);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
 #else
-  wr(DRAMTMG2,0x07101817);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
+  wr(DRAMTMG2,0x07101b15);//[29:24] -write latency [21:16] read latency [13:8] rd2wr [5:0] wr2rd
 #endif
   wr(DRAMTMG3,0x00b0c000);
   wr(DRAMTMG4,0x0f04080f);
@@ -680,7 +682,7 @@ if(bits==64) {
   wr(INIT6,0x0000004d);
   wr(INIT7,0x0000004d);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000ab9f);
+  wr(RANKCTL,0x0000a55f);
   wr(RANKCTL1,0x00000012);
   wr(DRAMTMG0,0x14162417);
   wr(DRAMTMG1,0x00040420);
@@ -914,16 +916,20 @@ if(bits==64) {
   }
 
 
-void sdram_selfrefresh_exit() {
+void lpddr4_selfrefresh_exit(int mode) {
     int rdata=0;
     wr(PWRCTL,0x0); // put sdram  into idle state
     wr(PWRCTL_DCH1,0x0); // put sdram  into idle state
     while((rdata & 0x307) != 1) //wait sdram exit selfrefresh sate,wait umctl2 back to normal
         rdata = rd(STAT);
     rdata = 0;
+   if(mode==0) {
     while((rdata & 0x307) != 1) //wait sdram exit selfrefresh sate,wait umctl2 back to normal
         rdata = rd(STAT_DCH1);
+   }
+#ifdef CONFIG_DDR_MSG
     printf("[sdram_selfrefresh_exit] STAT is :%x after selfrefresh exit\n",rdata);
+#endif
 }
 
 
@@ -931,7 +937,9 @@ void sdram_selfrefresh_exit() {
 void dfi_init(int dfi_init_complete_en) {
     DWC_DDR_UMCTL2_C_STRUCT_REG_S umctl2_reg;
     int rdata;
+#ifdef CONFIG_DDR_MSG
     printf("[dfi_init]: start dfi_init \n");
+#endif
 wr(SWCTL, 0x00000000); //sw_done
 if(dfi_init_complete_en)
 wr(DFIMISC, 0x71); // x0~3: Goto PHY P0~3,
@@ -975,7 +983,7 @@ umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWCTL);
 #endif  
 }
   //put sdram into selfrefresh state, pwden_en=1 enable selfrefresh power-down, otherwise stay in selfrefresh
-void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk) {
+void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk,int mode) {
    DWC_DDR_UMCTL2_C_STRUCT_REG_S umctl2_reg;
 
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.u32 = rd(PWRCTL);
@@ -998,34 +1006,40 @@ void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk) {
         umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32 = rd(STAT);
     }
 #ifdef CONFIG_DDR_MSG
-    printf("[lpddr4_enter_selfrefresh]: STAT is :%x after enter selfrefresh state\n",umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32);
+    printf("[lpddr4_enter_selfrefresh]: CH0 STAT is :%x after enter selfrefresh state\n",umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32);
 #endif
+   if(mode==0) {
+    umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32 = rd(STAT_DCH1);
+    if(pwdn_en) {
+    while( umctl2_reg.dwc_ddr_umctl2_c_struct_stat.selfref_state != 2) //wait sdram enter selfrefresh-powerdown state
+        umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32 = rd(STAT);
+    }
+    else {
+    while( umctl2_reg.dwc_ddr_umctl2_c_struct_stat.selfref_state != 1) //wait sdram enter selfrefresh state
+        umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32 = rd(STAT);
+    }
+#ifdef CONFIG_DDR_MSG
+    printf("[lpddr4_enter_selfrefresh]: CH1 STAT is :%x after enter selfrefresh state\n",umctl2_reg.dwc_ddr_umctl2_c_struct_stat.u32);
+#endif
+    }
 }
-    void lpddr4_selfrefresh_en(int pwdn_en) {
-    DWC_DDR_UMCTL2_C_STRUCT_REG_S umctl2_reg;
-    int rdata;
 
+void lpddr4_auto_ps_en(int pwdn_en,int selfref_en,int clock_auto_disable ) {
+  DWC_DDR_UMCTL2_C_STRUCT_REG_S umctl2_reg;
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.u32 = rd(PWRCTL);
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.stay_in_selfref = 0;
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.lpddr4_sr_allowed = pwdn_en;
-  //umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.mpsm_en = 0;
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.deeppowerdown_en = 0;
   umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.selfref_sw = 0;
-  umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.selfref_en = 1;
-  umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.powerdown_en = 0;
-  umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.en_dfi_dram_clk_disable = 1;
+  umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.selfref_en = selfref_en;
+  umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.powerdown_en = pwdn_en;
+  umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.en_dfi_dram_clk_disable = clock_auto_disable;
   wr(PWRCTL,umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.u32);
   wr(PWRCTL_DCH1,umctl2_reg.dwc_ddr_umctl2_c_struct_pwrctl.u32);
 #ifdef CONFIG_DDR_MSG
   printf("[lpddr4_selfrefresh_en] wait lpddr4 enter selfrefresh by slefref_en \n");
 #endif
-  rdata = rd(STAT);
-  while(rdata !=0x233)
-  rdata = rd(STAT);
-#ifdef CONFIG_DDR_MSG
-  printf("[lpddr4_selfrefresh_en] end:lpddr4 entered selfrefresh \n");
-#endif
-    }
+}
 
 
 //de_assert umctl2_reset, phy_crst, and all areset
@@ -1044,8 +1058,74 @@ void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk) {
 
 //assert umctl2_reset, and all areset
   void assert_ddrc_and_areset_sysreg() {
+#ifdef CONFIG_DDR_MSG
     printf("assert areset and ctrl_rst by sysreg \n");
+#endif
     ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.u32 = ddr_sysreg_rd(DDR_CFG0);
     ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.rg_ctl_ddr_usw_rst_reg &= 0xd;
     ddr_sysreg_wr(DDR_CFG0,ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.u32);
   }
+
+void dfi_freq_change(int dfi_freq,int skip_dram_init) {
+  DWC_DDR_UMCTL2_C_STRUCT_REG_S umctl2_reg;
+  int rdata;
+#ifdef CONFIG_DDR_MSG
+  printf("[dfi_freq_change]: start dfi_freq_change, target dfi_freq is %x \n",dfi_freq);
+#endif
+  wr(DBG1,3);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWCTL);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.sw_done = 0;
+  wr(SWCTL,umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32);
+
+  umctl2_reg.dwc_ddr_umctl2_c_struct_init0.u32 = rd(INIT0);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_init0.skip_dram_init = skip_dram_init;
+  wr(INIT0,umctl2_reg.dwc_ddr_umctl2_c_struct_init0.u32);
+
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.u32 = rd(DFIMISC);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.dfi_frequency = dfi_freq;
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.dfi_init_start = 0x1;
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.dfi_init_complete_en = 0;
+  wr(DFIMISC,umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.u32);
+
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWCTL);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.sw_done = 1;
+  wr(SWCTL,umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWSTAT);
+  while( umctl2_reg.dwc_ddr_umctl2_c_struct_swstat.sw_done_ack == 0)
+    umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWSTAT);
+
+  rdata = rd(DFISTAT);
+  while((rdata & 0x1) != 0) //wait dfi_init_complete = 0
+  rdata = rd(DFISTAT);
+  //change dfi clk freq here
+  //pull down dfi_init_start
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWCTL);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.sw_done = 0;
+  wr(SWCTL,umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32);
+
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.u32 = rd(DFIMISC);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.dfi_init_start = 0;
+  wr(DFIMISC,umctl2_reg.dwc_ddr_umctl2_c_struct_dfimisc.u32);
+
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWCTL);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.sw_done = 1;
+  wr(SWCTL,umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWSTAT);
+  while( umctl2_reg.dwc_ddr_umctl2_c_struct_swstat.sw_done_ack == 0)
+    umctl2_reg.dwc_ddr_umctl2_c_struct_swctl.u32 = rd(SWSTAT);
+  umctl2_reg.dwc_ddr_umctl2_c_struct_dfistat.u32 = rd(DFISTAT);
+  while(umctl2_reg.dwc_ddr_umctl2_c_struct_dfistat.dfi_init_complete == 0)
+    umctl2_reg.dwc_ddr_umctl2_c_struct_dfistat.u32 = rd(DFISTAT);
+  wr(DBG1,0);
+#ifdef CONFIG_DDR_MSG
+  printf("[dfi_freq_change]: dfi_freq_change, end \n",dfi_freq);
+#endif
+}
+
+void ddr_soc_pll_disable () {
+  ddr_sysreg_wr(DDR_CFG0+0x18,0x00000);   //core clock gating enable
+  ddr_sysreg_wr(DDR_CFG0+0xc,0x4b000000); //Reset SOC PLL
+#ifdef CONFIG_DDR_MSG
+  printf("DDR SOC PLL PowerDown \n");
+#endif
+}

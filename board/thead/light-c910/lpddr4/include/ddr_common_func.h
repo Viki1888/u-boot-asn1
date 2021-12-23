@@ -33,11 +33,12 @@ void delay_through_apb_rd(int loop_num);
 void disable_axi_port(int port);
 void enable_axi_port(int port);
 void quasi_reg_write(unsigned long int reg,int wdata);
-void sdram_selfrefresh_exit(void);
+void lpddr4_selfrefresh_exit(int mode);
 void dfi_freq_change(int dfi_freq,int skip_dram_init);
 void dfi_init(int dfi_init_complete_en);
-void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk);
-void lpddr4_selfrefresh_en(int pwdn_en);
+void lpddr4_enter_selfrefresh(int pwdn_en,int dis_dram_clk,int mode);
+void lpddr4_auto_ps_en(int pwdn_en,int selfref_en,int clock_auto_disable);
+void ddr_soc_pll_disable(void);
 void de_assert_other_reset_ddr(void);
 void assert_ddrc_and_areset_sysreg(void);
 

@@ -16400,7 +16400,7 @@ const short int iccm_array[16384] = {
 0x0,
 };
 const short int dccm_array[830] = {
-0x2060,
+0x60,
 0x0,
 0x0,
 0xc80,
@@ -16409,7 +16409,7 @@ const short int dccm_array[830] = {
 0x14,
 0x0,
 0x131f,
-0x4,
+0xff,
 0x0,
 0x3,
 0x0,
@@ -16427,14 +16427,14 @@ const short int dccm_array[830] = {
 0x0,
 0x2d54,
 0xf2,
-0x1223,
-0x1808,
+0x1224,
+0x1e08,
 0x0,
 0x4,
 0x2d54,
 0xf2,
-0x1223,
-0x1808,
+0x1224,
+0x1e08,
 0x0,
 0x4,
 0x0,
@@ -16452,15 +16452,15 @@ const short int dccm_array[830] = {
 0x0,
 0x5400,
 0xf22d,
-0x2300,
+0x2400,
 0x812,
-0x18,
+0x1e,
 0x400,
 0x5400,
 0xf22d,
-0x2300,
+0x2400,
 0x812,
-0x18,
+0x1e,
 0x400,
 0x0,
 0x0,
@@ -33618,7 +33618,7 @@ const short int iccm_array1[16384] = {
 0x0,
 };
 const short int dccm_array1[702] = {
-0x2060,
+0x60,
 0x0,
 0x0,
 0xc80,
@@ -33627,7 +33627,7 @@ const short int dccm_array1[702] = {
 0x14,
 0x0,
 0x61,
-0x4,
+0xff,
 0x0,
 0x3,
 0x0,
@@ -33645,14 +33645,14 @@ const short int dccm_array1[702] = {
 0x0,
 0x2d54,
 0xf2,
-0x1223,
-0x1808,
+0x1224,
+0x1e08,
 0x0,
 0x4,
 0x2d54,
 0xf2,
-0x1223,
-0x1808,
+0x1224,
+0x1e08,
 0x0,
 0x4,
 0x0,
@@ -33670,15 +33670,15 @@ const short int dccm_array1[702] = {
 0x0,
 0x5400,
 0xf22d,
-0x2300,
+0x2400,
 0x812,
-0x18,
+0x1e,
 0x400,
 0x5400,
 0xf22d,
-0x2300,
+0x2400,
 0x812,
-0x18,
+0x1e,
 0x400,
 0x0,
 0x0,
@@ -34323,7 +34323,9 @@ const short int dccm_array1[702] = {
 };
 void lp4x_3200_phy_train1d2d() {
 int i;
+#ifdef CONFIG_DDR_MSG
 printf("entered lp4x_3200_phy_train1d2d \n");
+#endif
 ddr_phy_reg_wr(0x1005f,0x55f);
 ddr_phy_reg_wr(0x1015f,0x55f);
 ddr_phy_reg_wr(0x1105f,0x55f);
@@ -34373,7 +34375,7 @@ ddr_phy_reg_wr(0x20075,0x4);
 ddr_phy_reg_wr(0x20050,0x0);
 ddr_phy_reg_wr(0x2009b,0x2);
 ddr_phy_reg_wr(0x20008,0x320);
-ddr_phy_reg_wr(0x20088,0x6);
+ddr_phy_reg_wr(0x20088,0x9);
 ddr_phy_reg_wr(0x200b2,0x104);
 ddr_phy_reg_wr(0x10043,0x5a1);
 ddr_phy_reg_wr(0x10143,0x5a1);
@@ -34403,6 +34405,12 @@ for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array[i]);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 for(i=0;i<830;i++) ddr_phy_reg_wr(0x54000+i,dccm_array[i]); 
+#ifdef CONFIG_DDR_MSG
+ddr_phy_reg_wr(0x54009,0x4);
+#endif
+#ifdef CONFIG_DDR_HARD_2D
+ddr_phy_reg_wr(0x54007,0x18);
+#endif
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0099,0x9);
@@ -34420,10 +34428,33 @@ ddr_phy_reg_wr(0xd0099,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
+#ifdef CONFIG_DDR_MSG
+printf("CHA CDD RR01 %0x, RR10 %0x\n",0xff&ddr_phy_reg_rd(0x54013),0xff&(ddr_phy_reg_rd(0x54013)>>8));
+printf("CHA CDD RW11 %0x, RW10 %0x\n",0xff&ddr_phy_reg_rd(0x54014),0xff&(ddr_phy_reg_rd(0x54014)>>8));
+printf("CHA CDD RW01 %0x, RW00 %0x\n",0xff&ddr_phy_reg_rd(0x54015),0xff&(ddr_phy_reg_rd(0x54015)>>8));
+printf("CHA CDD WR11 %0x, WR10 %0x\n",0xff&ddr_phy_reg_rd(0x54016),0xff&(ddr_phy_reg_rd(0x54016)>>8));
+printf("CHA CDD WR01 %0x, WR00 %0x\n",0xff&ddr_phy_reg_rd(0x54017),0xff&(ddr_phy_reg_rd(0x54017)>>8));
+printf("CHA CDD WW01 %0x, WW10 %0x\n",0xff&ddr_phy_reg_rd(0x54018),0xff&(ddr_phy_reg_rd(0x54018)>>8));
+
+printf("CHB CDD RR01 %0x, RR10 %0x\n",0xff&ddr_phy_reg_rd(0x5402d),0xff&(ddr_phy_reg_rd(0x5402c)>>8));
+printf("CHB CDD RW11 %0x, RW10 %0x\n",0xff&ddr_phy_reg_rd(0x5402e),0xff&(ddr_phy_reg_rd(0x5402d)>>8));
+printf("CHB CDD RW01 %0x, RW00 %0x\n",0xff&ddr_phy_reg_rd(0x5402f),0xff&(ddr_phy_reg_rd(0x5402e)>>8));
+printf("CHB CDD WR11 %0x, WR10 %0x\n",0xff&ddr_phy_reg_rd(0x54030),0xff&(ddr_phy_reg_rd(0x5402f)>>8));
+printf("CHB CDD WR01 %0x, WR00 %0x\n",0xff&ddr_phy_reg_rd(0x54031),0xff&(ddr_phy_reg_rd(0x54030)>>8));
+printf("CHB CDD WW01 %0x, WW10 %0x\n",0xff&ddr_phy_reg_rd(0x54032),0xff&(ddr_phy_reg_rd(0x54031)>>8));
+#endif
+
+
 for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array1[i]); 
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 for(i=0;i<702;i++) ddr_phy_reg_wr(0x54000+i,dccm_array1[i]); 
+#ifdef CONFIG_DDR_MSG
+ddr_phy_reg_wr(0x54009,0x4);
+#endif
+#ifdef CONFIG_DDR_HARD_2D
+ddr_phy_reg_wr(0x54007,0x18);
+#endif
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0099,0x9);
@@ -34442,7 +34473,7 @@ ddr_phy_reg_wr(0xd0000,0x0);
 #ifndef CONFIG_LPDDR_EYE
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
-
+#ifdef CONFIG_DDR_MSG
 printf("TrainedVREFDQ_RANK0 is %0x \n",0xff&(ddr_phy_reg_rd(0x54026)>>8));
 printf("TrainedVREFDQ_RANK1 is %0x \n",0xff&(ddr_phy_reg_rd(0x54027)));
 printf("RxClkDly_Margin_A0   is %0x \n",0xff&(ddr_phy_reg_rd(0x54027)>>8));
@@ -34464,6 +34495,7 @@ printf("RxClkDly_Margin_A1   is %0x \n",0xff&(ddr_phy_reg_rd(0x54043)));
 printf("VrefDac_Margin_A1    is %0x \n",0xff&(ddr_phy_reg_rd(0x54043)>>8));
 printf("TxDqDly_Margin_A1    is %0x \n",0xff&(ddr_phy_reg_rd(0x54044)));
 printf("DeviceVref_Margin_A1 is %0x \n",0xff&(ddr_phy_reg_rd(0x54044)>>8));
+#endif
 
 ddr_phy_reg_wr(0x90000,0x10);
 ddr_phy_reg_wr(0x90001,0x400);
@@ -34956,7 +34988,7 @@ ddr_phy_reg_wr(0x90010,0x2152);
 ddr_phy_reg_wr(0x90011,0xdfbd);
 ddr_phy_reg_wr(0x90012,0x2060);
 ddr_phy_reg_wr(0x90013,0x6152);
-ddr_phy_reg_wr(0x20010,0x57);
+ddr_phy_reg_wr(0x20010,0x5a);
 ddr_phy_reg_wr(0x20011,0x3);
 ddr_phy_reg_wr(0x40080,0xe0);
 ddr_phy_reg_wr(0x40081,0x12);
@@ -35022,14 +35054,34 @@ ddr_phy_reg_wr(0x136b4,0x1);
 ddr_phy_reg_wr(0x137b4,0x1);
 ddr_phy_reg_wr(0x138b4,0x1);
 ddr_phy_reg_wr(0x20089,0x1);
-ddr_phy_reg_wr(0x20088,0x16);
-ddr_phy_reg_wr(0xc0080,0x3);
+ddr_phy_reg_wr(0x20088,0x19);
+ddr_phy_reg_wr(0xc0080,0x2);
+ddr_phy_reg_wr(0xd0000,0x1);
+ddr_phy_broadcast_en(0);
+#ifdef CONFIG_DDR_MSG
+ddr_phy0_reg_wr(0xd0000,0x0);
+ddr_phy1_reg_wr(0xd0000,0x0);
+ddr_phy0_reg_wr(0xc0080,0x3);
+ddr_phy1_reg_wr(0xc0080,0x3);
+printf("PHY0 P Code %0x\n",ddr_phy0_reg_rd(0x20014));
+printf("PHY0 N Code %0x\n",ddr_phy0_reg_rd(0x20015));
+printf("PHY1 P Code %0x\n",ddr_phy1_reg_rd(0x20014));
+printf("PHY1 N Code %0x\n",ddr_phy1_reg_rd(0x20015));
 printf("Trained DFIMRL is %0x \n",ddr_phy_reg_rd(0x10020));
 printf("Trained DB1 DFIMRL is %0x \n",ddr_phy_reg_rd(0x11020));
 printf("Trained DB2 DFIMRL is %0x \n",ddr_phy_reg_rd(0x12020));
 printf("Trained DB3 DFIMRL is %0x \n",ddr_phy_reg_rd(0x13020));
 printf("DQS Preamble is %0x \n",ddr_phy_reg_rd(0x20024));
 printf("ARdPintVal is %0x \n",ddr_phy_reg_rd(0x2002e));
+printf("PHY0 DB0 VREF        is %0x \n",ddr_phy_reg_rd(0x10140));
+printf("PHY0 DB1 VREF        is %0x \n",ddr_phy_reg_rd(0x11140));
+printf("PHY0 DB2 VREF        is %0x \n",ddr_phy_reg_rd(0x12140));
+printf("PHY0 DB3 VREF        is %0x \n",ddr_phy_reg_rd(0x13140));
+printf("PHY1 DB0 VREF        is %0x \n",ddr_phy1_reg_rd(0x10140));
+printf("PHY1 DB1 VREF        is %0x \n",ddr_phy1_reg_rd(0x11140));
+printf("PHY1 DB2 VREF        is %0x \n",ddr_phy1_reg_rd(0x12140));
+printf("PHY1 DB3 VREF        is %0x \n",ddr_phy1_reg_rd(0x13140));
+#endif
 //printf("DB0 Trained Rank0 Lower RxEnDly is   %0x \n",ddr_phy_reg_rd(0x10080));
 //printf("DB0 Trained Rank0 Upper RxEnDly is   %0x \n",ddr_phy_reg_rd(0x10180));
 //printf("DB0 Trained Rank1 Lower RxEnDly is   %0x \n",ddr_phy_reg_rd(0x10081));
@@ -35108,15 +35160,5 @@ printf("ARdPintVal is %0x \n",ddr_phy_reg_rd(0x2002e));
 //printf("DB3 Trained Rank0 Upper RxClkcDly is %0x \n",ddr_phy_reg_rd(0x13190));
 //printf("DB3 Trained Rank1 Lower RxClkcDly is %0x \n",ddr_phy_reg_rd(0x13091));
 //printf("DB3 Trained Rank1 Upper RxClkcDly is %0x \n",ddr_phy_reg_rd(0x13191));
-ddr_phy_broadcast_en(0);
-//printf("PHY0 DB0 VREF        is %0x \n",ddr_phy_reg_rd(0x10140));
-//printf("PHY0 DB1 VREF        is %0x \n",ddr_phy_reg_rd(0x11140));
-//printf("PHY0 DB2 VREF        is %0x \n",ddr_phy_reg_rd(0x12140));
-//printf("PHY0 DB3 VREF        is %0x \n",ddr_phy_reg_rd(0x13140));
-//printf("PHY1 DB0 VREF        is %0x \n",ddr_phy1_reg_rd(0x10140));
-//printf("PHY1 DB1 VREF        is %0x \n",ddr_phy1_reg_rd(0x11140));
-//printf("PHY1 DB2 VREF        is %0x \n",ddr_phy1_reg_rd(0x12140));
-//printf("PHY1 DB3 VREF        is %0x \n",ddr_phy1_reg_rd(0x13140));
-ddr_phy_reg_wr(0xd0000,0x1);
 #endif //#ifndef CONFIG_LPDDR_EYE
  }

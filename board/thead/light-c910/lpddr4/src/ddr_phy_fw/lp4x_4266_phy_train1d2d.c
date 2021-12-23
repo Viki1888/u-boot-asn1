@@ -16407,9 +16407,9 @@ const short int dccm_array[830] = {
 0x2,
 0x0,
 0x14,
-0x18,
+0x0,
 0x131f,
-0x4,
+0xff,
 0x0,
 0x3,
 0x0,
@@ -33625,9 +33625,9 @@ const short int dccm_array1[702] = {
 0x2,
 0x0,
 0x14,
-0x18,
+0x0,
 0x61,
-0x4,
+0xff,
 0x0,
 0x3,
 0x0,
@@ -34405,6 +34405,12 @@ for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array[i]);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 for(i=0;i<830;i++) ddr_phy_reg_wr(0x54000+i,dccm_array[i]); 
+#ifdef CONFIG_DDR_MSG
+ddr_phy_reg_wr(0x54009,0x4);
+#endif
+#ifdef CONFIG_DDR_HARD_2D
+ddr_phy_reg_wr(0x54007,0x18);
+#endif
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0099,0x9);
@@ -34442,6 +34448,12 @@ for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array1[i]);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
 for(i=0;i<702;i++) ddr_phy_reg_wr(0x54000+i,dccm_array1[i]); 
+#ifdef CONFIG_DDR_MSG
+ddr_phy_reg_wr(0x54009,0x4);
+#endif
+#ifdef CONFIG_DDR_HARD_2D
+ddr_phy_reg_wr(0x54007,0x18);
+#endif
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0099,0x9);
@@ -35031,8 +35043,18 @@ ddr_phy_reg_wr(0x137b4,0x1);
 ddr_phy_reg_wr(0x138b4,0x1);
 ddr_phy_reg_wr(0x20089,0x1);
 ddr_phy_reg_wr(0x20088,0x19);
+ddr_phy_reg_wr(0xc0080,0x2);
+ddr_phy_reg_wr(0xd0000,0x1);
+ddr_phy_broadcast_en(0);
 #ifdef CONFIG_DDR_MSG
-ddr_phy_reg_wr(0xc0080,0x3);
+ddr_phy0_reg_wr(0xd0000,0x0);
+ddr_phy1_reg_wr(0xd0000,0x0);
+ddr_phy0_reg_wr(0xc0080,0x3);
+ddr_phy1_reg_wr(0xc0080,0x3);
+printf("PHY0 P Code %0x\n",ddr_phy0_reg_rd(0x20014));
+printf("PHY0 N Code %0x\n",ddr_phy0_reg_rd(0x20015));
+printf("PHY1 P Code %0x\n",ddr_phy1_reg_rd(0x20014));
+printf("PHY1 N Code %0x\n",ddr_phy1_reg_rd(0x20015));
 printf("Trained DB0 DFIMRL is %0x \n",ddr_phy_reg_rd(0x10020));
 printf("Trained DB1 DFIMRL is %0x \n",ddr_phy_reg_rd(0x11020));
 printf("Trained DB2 DFIMRL is %0x \n",ddr_phy_reg_rd(0x12020));
@@ -35049,7 +35071,5 @@ printf("DB2 Trained dq0 RxPBDly is %0x \n",ddr_phy_reg_rd(0x12068));
 printf("DB2 Trained dq8 RxPBDly is %0x \n",ddr_phy_reg_rd(0x12868));
 printf("DQS Preamble is %0x \n",ddr_phy_reg_rd(0x20024));
 #endif
-ddr_phy_reg_wr(0xc0080,0x2);
-ddr_phy_reg_wr(0xd0000,0x1);
 #endif //#ifndef CONFIG_LPDDR_EYE
  }
