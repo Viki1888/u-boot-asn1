@@ -1165,8 +1165,9 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
 #endif
     }
     else{
-    if((train_result&0xff)==0xff){
-       printf("PHY0 DDR_INIT_ERR\n");
+       if((train_result&0xff)==0xff){
+          printf("PHY0 %s DDR_INIT_ERR\n", train2d?"train2d":"");
+          while(1);
 	} else {	
        //printf("PHY0 DDR_INIT_STAGE is %x \n",train_result&&0xff);
 	}
@@ -1216,11 +1217,12 @@ while(((train_result&0xffff)!=0x7) & ((train_result&0xffff)!=0xff))
 #endif
      }
     else{
-    if((train_result&0xff)==0xff) {
-       printf("PHY1 DDR_INIT_ERR\n");
-	} else {
-       //printf("PHY1 DDR_INIT_STAGE is %x \n",train_result&&0xff);
-	}
+       if((train_result&0xff)==0xff) {
+          printf("PHY1 %s DDR_INIT_ERR\n", train2d?"train2d":"");
+          while(1);
+       } else {
+          //printf("PHY1 DDR_INIT_STAGE is %x \n",train_result&&0xff);
+       }
     }
     #endif
 
