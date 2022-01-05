@@ -66,6 +66,13 @@
 #define LIGHT_DTB_ADDR_CMD	"0x1f00000"
 //#define LIGHT_IMAGE_WRITER	1
 
+/* Video configs */
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_VIDEO_BMP_LOGO
+#define CONFIG_SPLASH_SCREEN
+#define CONFIG_SPLASH_SCREEN_ALIGN
+#define CONFIG_BMP_32BPP
+
 #ifdef CONFIG_LIGHT_SEC_BOOT
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"t_opensbi_addr=0x100000\0" \
@@ -109,6 +116,8 @@
         "\0"
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
+	"splashimage=0xd0000000\0" \
+	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
 	"dtb_addr=0x01f00000\0" \
