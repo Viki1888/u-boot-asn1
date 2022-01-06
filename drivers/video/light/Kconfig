@@ -1,0 +1,9 @@
+#
+# Light Video configuration
+#
+
+config VIDEO_VS_DPU
+	bool "Verisilicon DPU(DC8200) video support"
+	depends on DM_VIDEO && TARGET_LIGHT_C910
+	help
+	  Support for Verisilicon DPU controller on Light platform

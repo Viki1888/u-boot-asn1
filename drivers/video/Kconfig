@@ -571,6 +571,8 @@ source "drivers/video/bridge/Kconfig"
 
 source "drivers/video/imx/Kconfig"
 
+source "drivers/video/light/Kconfig"
+
 config VIDEO
 	bool "Enable legacy video support"
 	depends on !DM_VIDEO
