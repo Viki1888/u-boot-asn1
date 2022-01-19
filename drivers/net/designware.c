@@ -24,6 +24,8 @@
 #include <power/regulator.h>
 #include "designware.h"
 
+static struct mii_dev *g_mii_bus = NULL;
+
 static int dw_mdio_read(struct mii_dev *bus, int addr, int devad, int reg)
 {
 #ifdef CONFIG_DM_ETH
@@ -799,8 +801,13 @@ int designware_eth_probe(struct udevice *dev)
 		err = ret;
 		goto mdio_err;
 	}
-	priv->bus = miiphy_get_dev_by_name(dev->name);
 
+	if (!g_mii_bus) {
+		priv->bus = miiphy_get_dev_by_name(dev->name);
+		g_mii_bus = priv->bus;
+	} else {
+		priv->bus = g_mii_bus;
+	}
 	ret = dw_phy_init(priv, dev);
 	debug("%s, ret=%d\n", __func__, ret);
 	if (!ret)
