@@ -7,3 +7,11 @@ config VIDEO_VS_DPU
 	depends on DM_VIDEO && TARGET_LIGHT_C910
 	help
 	  Support for Verisilicon DPU controller on Light platform
+
+config VIDEO_DW_DSI_LIGHT
+	bool "Synopsys Designware MIPI DSI support on Light"
+	depends on DM_VIDEO && TARGET_LIGHT_C910
+	select VIDEO_DW_DSI_HOST
+	help
+	  support for Synopsys Designware MIPI DSI on Thead
+	  Light platform.
