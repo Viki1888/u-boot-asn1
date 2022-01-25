@@ -870,10 +870,12 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO2_31,1);
 	light_pin_mux(GPIO3_0,1);
 	light_pin_mux(GPIO3_1,1);
+	light_pin_mux(GPIO3_2,1);
 	light_pin_cfg(GPIO2_30, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 	light_pin_cfg(GPIO2_31, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 	light_pin_cfg(GPIO3_0, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 	light_pin_cfg(GPIO3_1, PIN_SPEED_NORMAL, PIN_PN, 0xF);
+	light_pin_cfg(GPIO3_2, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 
 	light_pin_mux(GMAC0_COL,3);
 	light_pin_mux(GMAC0_CRS,3);
@@ -914,6 +916,14 @@ static void light_iopin_init(void)
 
 #endif
 
+static void light_pwm_config(void)
+{
+	/* pwm0 */
+	writel(0x4b0, (void *)0xFFEC01C008);
+	writel(0x258, (void *)0xFFEC01C00c);
+	writel(0x328, (void *)0xFFEC01C000);
+}
+
 int board_init(void)
 {
 	light_iopmp_config();
@@ -928,6 +938,8 @@ int board_init(void)
 	usb_clk_config();
 	wifi_en();
 	iso7816_card_glb_interrupt_disable();
+
+	light_pwm_config();
 
 	return 0;
 }
