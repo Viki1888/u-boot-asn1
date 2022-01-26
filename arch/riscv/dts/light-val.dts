@@ -87,6 +87,22 @@
 			u-boot,dm-pre-reloc;
 		};
 
+		dummy_dpu_pixclk: dpu-pix-clock {
+			compatible = "fixed-clock";
+			clock-frequency = <74250000>;
+			clock-output-names = "dummy_dpu_pixclk";
+			#clock-cells = <0>;
+			u-boot,dm-pre-reloc;
+		};
+
+		dummy_dphy_refclk: dphy-ref-clock {
+			compatible = "fixed-clock";
+			clock-frequency = <24000000>;
+			clock-output-names = "dummy_dpu_refclk";
+			#clock-cells = <0>;
+			u-boot,dm-pre-reloc;
+		};
+
 		i2c0: i2c@ffe7f20000 {
 			compatible = "snps,designware-i2c";
 			reg = <0xff 0xe7f20000 0x0 0x4000>;
@@ -135,6 +151,13 @@
 
 			#address-cells = <1>;
 			#size-cells = <0>;
+
+			pcal6408ahk_a: gpio@20 {
+				compatible = "nxp,pca9554";
+				reg = <0x20>;
+				gpio-controller;
+				#gpio-cells = <2>;
+			};
 		};
 
 		i2c5: i2c@fff7f2c000{
@@ -314,6 +337,45 @@
 			};
 		};
 
+		gpio1: gpio@ffec006000 {
+			compatible = "snps,dw-apb-gpio";
+			reg = <0xff 0xec006000 0x0 0x1000>;
+			clocks = <&dummy_apb>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			gpio1_porta: gpio-controller@0 {
+				compatible = "snps,dw-apb-gpio-port";
+				gpio-controller;
+				#gpio-cells = <2>;
+				snps,nr-gpios = <32>;
+				reg = <0>;
+			};
+		};
+
+		pwm: pwm@ffec01c000 {
+			compatible = "thead,pwm-light";
+			reg = <0xff 0xec01c000 0x0 0x4000>;
+			#pwm-cells = <2>;
+		};
+
+		dsi_regs: dsi-controller@ffef500000 {
+			compatible = "thead,light-dsi-regs", "syscon";
+			reg = <0xff 0xef500000 0x0 0x10000>;
+			status = "okay";
+		};
+
+		vosys_regs: vosys@ffef528000 {
+			compatible = "thead,light-vo-subsys", "syscon";
+			reg = <0xff 0xef528000 0x0 0x1000>;
+			status = "okay";
+		};
+
+		dpu: dc8200@ffef600000 {
+			compatible = "verisilicon,dc8200";
+			reg = <0xff 0xef600000 0x0 0x100>;
+		};
+
 		axiscr {
 			compatible = "thead,axiscr";
 			reg = <0xff 0xff004000 0x0 0x1000>;
@@ -371,6 +433,45 @@
 				#size-cells = <2>;
 				u-boot,dm-pre-reloc;
 			};
+		};
+
+		dsi_bridge: dsi-bridge {
+			compatible = "thead,light-dsi-bridge";
+			clocks = <&dummy_dpu_pixclk>;
+			clock-names = "pix-clk";
+			phys = <&dsi_dphy>;
+			phy-names = "dphy";
+		};
+
+		dsi_host: dsi-host {
+			compatible = "synopsys,dw-mipi-dsi";
+			regmap = <&dsi_regs>;
+			status = "okay";
+		};
+
+		dsi_dphy: dsi-dphy {
+			compatible = "synopsys,dw-dphy";
+			regmap = <&dsi_regs>;
+			vosys-regmap = <&vosys_regs>;
+			clocks = <&dummy_dpu_pixclk>, <&dummy_dphy_refclk>;
+			clock-names = "pix-clk", "ref-clk";
+			#phy-cells = <0>;
+			status = "okay";
+		};
+
+		lcd_backlight: pwm-backlight {
+			compatible = "pwm-backlight";
+			pwms = <&pwm 0 5000000>;
+			brightness-levels = <0 4 8 16 32 64 128 255>;
+			default-brightness-level = <7>;
+		};
+
+		ili9881c_panel {
+			compatible      = "ilitek,ili9881c";
+			backlight       = <&lcd_backlight>;
+			reset-gpios     = <&gpio1_porta 5 1>;   /* active low  */
+			lcd-en-gpios    = <&pcal6408ahk_a 2 0>; /* active high */
+			lcd-bias-en-gpios = <&pcal6408ahk_a 4 0>;/* active high */
 		};
 	};
 
