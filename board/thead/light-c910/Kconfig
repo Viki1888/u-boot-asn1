@@ -22,6 +22,10 @@ config LIGHT_SEC_BOOT
     bool "light security boot"
     default n
 
+config LIGHT_SEC_BOOT_NO_VERIFY
+	bool "light security boot without verification"
+	default n
+
 config LIGHT_BOARD_EVB
     bool "light evb board"
     default n
