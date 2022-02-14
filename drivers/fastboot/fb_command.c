@@ -303,11 +303,16 @@ static void flash(char *cmd_parameter, char *response)
 		memcpy((void *)LIGHT_ROOTFS_ADDR, fastboot_buf_addr, image_size);
 	} else if ((strcmp(cmd_parameter, "aon") == 0)) {
 		memcpy((void *)LIGHT_AON_FW_ADDR, fastboot_buf_addr, image_size);
+	} else if ((strcmp(cmd_parameter, "tf") == 0)) {
+		memcpy((void *)LIGHT_TF_FW_ADDR, fastboot_buf_addr, image_size);
+	} else if ((strcmp(cmd_parameter, "tee") == 0)) {
+		memcpy((void *)LIGHT_TEE_FW_ADDR, fastboot_buf_addr, image_size);
 	}
 
 	if(strcmp(cmd_parameter, "uboot") == 0 || (strcmp(cmd_parameter, "fw") == 0) ||
 	   (strcmp(cmd_parameter, "uImage") == 0) || (strcmp(cmd_parameter, "dtb") == 0) ||
-	   (strcmp(cmd_parameter, "rootfs") == 0) || (strcmp(cmd_parameter, "aon") == 0)) {
+	   (strcmp(cmd_parameter, "rootfs") == 0) || (strcmp(cmd_parameter, "aon") == 0) ||
+	   (strcmp(cmd_parameter, "tf") == 0) || (strcmp(cmd_parameter, "tee") == 0)) {
 		fastboot_okay(NULL, response);
 		return;
 	}

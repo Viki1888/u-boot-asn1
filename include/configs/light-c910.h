@@ -60,6 +60,8 @@
 #define LIGHT_DTB_ADDR		0x1f00000
 #define LIGHT_ROOTFS_ADDR	0x2000000
 #define LIGHT_AON_FW_ADDR	0xffffef8000
+#define LIGHT_TEE_FW_ADDR	0xff000000
+#define LIGHT_TF_FW_ADDR	LIGHT_FW_ADDR
 #define LIGHT_KERNEL_ADDR_CMD	"0x200000"
 #define LIGHT_DTB_ADDR_CMD	"0x1f00000"
 //#define LIGHT_IMAGE_WRITER	1
@@ -98,7 +100,7 @@
 	"mmcpart=3\0" \
 	"fdt_file=light-val-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=100MiB,type=boot;name=tee,size=100MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
