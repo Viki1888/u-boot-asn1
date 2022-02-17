@@ -671,10 +671,10 @@ static void light_iopin_init(void)
 	light_pin_cfg(QSPI1_D2_WP,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(QSPI1_D3_HOLD,PIN_SPEED_NORMAL,PIN_PN,2);
 
-	light_pin_cfg(I2C0_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
-	light_pin_cfg(I2C0_SDA,PIN_SPEED_NORMAL,PIN_PN,4);
-	light_pin_cfg(I2C1_SCL,PIN_SPEED_NORMAL,PIN_PN,4);
-	light_pin_cfg(I2C1_SDA,PIN_SPEED_NORMAL,PIN_PN,4);
+	light_pin_cfg(I2C0_SCL,PIN_SPEED_NORMAL,PIN_PN,5);
+	light_pin_cfg(I2C0_SDA,PIN_SPEED_NORMAL,PIN_PN,5);
+	light_pin_cfg(I2C1_SCL,PIN_SPEED_NORMAL,PIN_PN,5);
+	light_pin_cfg(I2C1_SDA,PIN_SPEED_NORMAL,PIN_PN,5);
 
 	light_pin_mux(UART3_TXD,1);
 	light_pin_mux(UART3_RXD,1);
