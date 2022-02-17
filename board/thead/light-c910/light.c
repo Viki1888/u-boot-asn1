@@ -214,6 +214,9 @@ enum {
 
 #define PIN_DRV_MAX             (15)
 
+#define USBPHY_TEST_CTRL2   0xFFEC03F02C
+#define USBPHY_TEST_CTRL3   0xFFEC03F030
+
 #define SYSCLK_USB_CTRL		0xFFFC02D104
 #define REF_SSP_EN		0xFFEC03F034
 #define USB3_DRD_SWRST		0xFFEC02C014
@@ -596,6 +599,12 @@ static void wifi_en(void)
 	writel(val, (void *)LIGHT_GPIO2_BADDR);
 }
 
+static void usb_phy_test_config(void)
+{
+	writel(0x77F, (void *)USBPHY_TEST_CTRL3);
+	writel(0x15150F0, (void *)USBPHY_TEST_CTRL2);
+}
+
 static void usb_clk_config(void)
 {
 	writel(readl((void *)SYSCLK_USB_CTRL) | 0xf, (void *)SYSCLK_USB_CTRL);
@@ -936,6 +945,7 @@ int board_init(void)
 
 	gmac_hw_init();
 	usb_clk_config();
+	usb_phy_test_config();
 	wifi_en();
 	iso7816_card_glb_interrupt_disable();
 
