@@ -116,6 +116,24 @@ U_BOOT_CMD(
 	"boot application image from memory, run 'sboot $kernel_addr $rootfs_addr $dtb_addr'",
 	""
 );
+
+extern int light_vimage(int argc, char *const argv[]);
+int do_vimage(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	printf("do vimage command \n");
+
+	if (light_vimage(argc, argv) < 0)
+		return -1;
+
+	return 0;
+}
+
+U_BOOT_CMD(
+	vimage, CONFIG_SYS_MAXARGS, 1, do_vimage, 
+	"verify a image!", 
+	""
+);
+
 #endif
 
 #ifdef CONFIG_SYS_LONGHELP

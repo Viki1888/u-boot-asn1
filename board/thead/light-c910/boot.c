@@ -523,3 +523,9 @@ int light_boot(int argc, char * const argv[])
 
 	return 0;
 }
+
+int light_vimage(int argc, char *const argv[])
+{
+
+	return 0;
+}
