@@ -311,14 +311,14 @@ static void flash(char *cmd_parameter, char *response)
 
 	if(strcmp(cmd_parameter, "uboot") == 0 || (strcmp(cmd_parameter, "fw") == 0) ||
 	   (strcmp(cmd_parameter, "uImage") == 0) || (strcmp(cmd_parameter, "dtb") == 0) ||
-	   (strcmp(cmd_parameter, "rootfs") == 0) || (strcmp(cmd_parameter, "aon") == 0) ||
-	   (strcmp(cmd_parameter, "tf") == 0) || (strcmp(cmd_parameter, "tee") == 0)) {
+	   (strcmp(cmd_parameter, "rootfs") == 0) || (strcmp(cmd_parameter, "aon") == 0)) {
 		fastboot_okay(NULL, response);
 		return;
 	}
 #endif
 
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
+	printf("cmd_parameter: %s, imagesize: %d\n", cmd_parameter, image_size);
 	fastboot_mmc_flash_write(cmd_parameter, fastboot_buf_addr, image_size,
 				 response);
 #endif

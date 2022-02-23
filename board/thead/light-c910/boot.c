@@ -523,3 +523,28 @@ int light_boot(int argc, char * const argv[])
 
 	return 0;
 }
+
+int light_vimage(int argc, char *const argv[])
+{
+	int ret = 0;
+	int vimage_addr = 0;
+	int header_offset = 0;
+	int image_version = 0;
+	
+	vimage_addr = simple_strtoul(argv[1], NULL, 16);
+	printf("vimage_addr address: 0x%x\n", vimage_addr);
+	
+	if (image_have_head(vimage_addr) == 1)
+		header_offset = HEADER_SIZE;
+
+	image_version = get_image_version(vimage_addr);
+	printf("image version: %x\n", image_version);
+
+	if (csi_sec_init())
+		return ret;
+
+	ret = csi_sec_image_verify(T_TF, vimage_addr);
+	if (ret)
+		return ret;
+	return 0;
+}

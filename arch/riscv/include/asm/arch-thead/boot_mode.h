@@ -27,10 +27,12 @@ typedef struct __attribute__ ((__packed__)) {
 
 typedef enum image_type {
 	T_DTB = 0,
-	T_KRLIMG,
-	T_SBI,
-	T_AON,
-	T_ROOTFS,
+	T_KRLIMG = 1,
+	T_SBI = 2,
+	T_AON = 3,
+	T_ROOTFS = 4,
+	T_TF = 2,
+	T_TEE = 5
 } img_type_t;
 
 static const char header_magic[4] = {'T', 'H', 'E', 'D'};
@@ -38,5 +40,5 @@ static const char header_magic[4] = {'T', 'H', 'E', 'D'};
 int csi_sec_init(void);
 int csi_sec_image_verify(img_type_t type, long addr);
 int image_have_head(unsigned long img_src_addr);
-
+int get_image_version(unsigned long img_src_addr);
 #endif
