@@ -944,6 +944,7 @@ static void light_usb_boot_check(void)
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	env_set("usb_fastboot", "yes");
 #endif
+
 	run_command("env default -a -f", 0);
 	run_command("run gpt_partition", 0);
 	run_command("fastboot usb 0", 0);

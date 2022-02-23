@@ -121,10 +121,9 @@ extern int light_vimage(int argc, char *const argv[]);
 int do_vimage(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	printf("do vimage command \n");
-
 	if (light_vimage(argc, argv) < 0)
 		return -1;
-
+	printf("do vimage command done \n");
 	return 0;
 }
 

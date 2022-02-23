@@ -28,6 +28,22 @@ int image_have_head(unsigned long img_src_addr)
     return 0;
 }
 
+int get_image_version(unsigned long img_src_addr)
+{
+	img_header_t *img = (img_header_t *)img_src_addr;
+	uint8_t magiccode[4] = {0};
+	
+	magiccode[3] = img->magic_num & 0xff;
+	magiccode[2] = (img->magic_num & 0xff00) >> 8;
+	magiccode[1] = (img->magic_num & 0xff0000) >> 16;
+	magiccode[0] = (img->magic_num & 0xff000000) >> 24;
+	if (memcmp(header_magic, magiccode, 4) == 0) {
+		return 0;
+	}
+	
+	return img->image_version;
+}
+
 int csi_sec_init(void)
 {
 	int ret;
@@ -62,7 +78,7 @@ int csi_sec_image_verify(img_type_t type, long addr)
 	if (image_have_head(addr) == 0)
 		return 0;
 
-	if (type == T_SBI || type == T_AON) {
+	if (type == T_SBI || type == T_AON || type == T_TF) {
 		img_header_t *phead = (img_header_t *)addr;
 		secimg_size = phead->image_size;
 	}
