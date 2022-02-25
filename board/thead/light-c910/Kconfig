@@ -136,6 +136,11 @@ config DDR_LP4_2133_SINGLERANK
         help
           Enabling this will support lpddr4 2133 singlerank configuration.
 
+config DDR_H32_MODE
+        bool "LPDDR4/4X 32bit mode configuration"
+        help
+          Enabling this will support ddr 32bit mode configuration.
+
 config LPDDR4X
         def_bool y if DDR_LP4X_4266_DUALRANK || DDR_LP4X_4266_SINGLERANK || DDR_LP4X_3733_DUALRANK || DDR_LP4X_3733_SINGLERANK \
                         || DDR_LP4X_3200_DUALRANK || DDR_LP4X_3200_SINGLERANK || DDR_LP4X_2133_DUALRANK || DDR_LP4X_2133_SINGLERANK
@@ -172,8 +177,6 @@ config DDR_DUAL_RANK
 	def_bool y if DDR_LP4X_4266_DUALRANK || DDR_LP4X_3733_DUALRANK || DDR_LP4X_3200_DUALRANK || DDR_LP4X_2133_DUALRANK \
 			|| DDR_LP4_4266_DUALRANK || DDR_LP4_3733_DUALRANK || DDR_LP4_3200_DUALRANK || DDR_LP4_2133_DUALRANK
 
-config DDR_H32_MODE
-        def_bool n
 config DDR_CHBIT_256B
         def_bool y if !DDR_H32_MODE
 
