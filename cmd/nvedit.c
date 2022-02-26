@@ -103,6 +103,10 @@ static int env_print(char *name, int flag)
 		if (ep == NULL)
 			return 0;
 		len = printf("%s=%s\n", ep->key, ep->data);
+#if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
+		extern unsigned int sec_upgrade_flag;
+		sec_upgrade_flag = simple_strtoul(ep->data, NULL, 16);
+#endif
 		return len;
 	}
 

@@ -315,6 +315,19 @@ static void flash(char *cmd_parameter, char *response)
 		fastboot_okay(NULL, response);
 		return;
 	}
+
+#if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
+	if (strcmp(cmd_parameter, "tf") == 0 ) {
+		printf("current upgrade image is tf image \n");
+		/* set secure upgrade flag to indicate it is TF image upgrade*/
+		run_command("env set sec_upgrade_mode 0x5555aaaa", 0);
+		run_command("saveenv", 0);
+		run_command("reset", 0);
+	} else if (strcmp(cmd_parameter, "tee") == 0) {
+
+	} 
+
+#endif
 #endif
 
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
