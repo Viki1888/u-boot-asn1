@@ -974,7 +974,6 @@ static void light_usb_boot_check(void)
 #endif
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
-
 static void sec_upgrade_thread(void)
 {
 	unsigned int sec_upgrade_flag = 0;
@@ -987,10 +986,12 @@ static void sec_upgrade_thread(void)
 	
 	printf("bootstrap: sec_upgrade_flag: %x\n", sec_upgrade_flag);
 	if (sec_upgrade_flag == TF_SEC_UPGRADE_FLAG) {
-		unsigned long temp_addr=0x10000000;
+		const unsigned long temp_addr=0x10000000;
+		char runcmd[80];
 		/* read upgrade image (trust_firmware.bin) from stashtf partition */
 		printf("read upgrade image (trust_firmware.bin) from stashtf partition ");
-		run_command("ext4load mmc 0:4 0x10000000 trust_firmware.bin", 0);
+		sprintf(runcmd, "ext4load mmc 0:4 0x%x trust_firmware.bin", temp_addr);
+		run_command(runcmd, 0);
 
 		upgrade_file_size = env_set_hex("filesize", 0);
 		printf("upgrade file size: %d\n", upgrade_file_size);
@@ -998,7 +999,8 @@ static void sec_upgrade_thread(void)
 
 		/* update tf partition */
 		printf("read upgrade image (trust_firmware.bin) into tf partition ");
-		run_command("ext4write mmc 0:3 0x10000000 trust_firmware.bin 850000", 0);
+		sprintf(runcmd, "ext4write mmc 0:3 0x%x trust_firmware.bin %d", temp_addr, upgrade_file_size);
+		run_command(runcmd, 0);
 		/* set secure upgrade flag to 0 that indicate upgrade over */
 		run_command("env set sec_upgrade_mode 0", 0);
 		run_command("saveenv", 0);
