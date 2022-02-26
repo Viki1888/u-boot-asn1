@@ -36,6 +36,7 @@ static void download(char *, char *);
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH)
 static void flash(char *, char *);
 static void erase(char *, char *);
+static void upgrade(char *, char *);
 #endif
 static void reboot_bootloader(char *, char *);
 #if CONFIG_IS_ENABLED(FASTBOOT_CMD_OEM_FORMAT)
@@ -315,19 +316,22 @@ static void flash(char *cmd_parameter, char *response)
 		fastboot_okay(NULL, response);
 		return;
 	}
+#endif
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
-	if (strcmp(cmd_parameter, "tf") == 0 ) {
-		printf("current upgrade image is tf image \n");
+	if(strcmp(cmd_parameter, "stashtf") == 0) {
+		fastboot_okay(NULL, response);
+		#if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
+		printf("cmd_parameter: %s, imagesize: %d\n", cmd_parameter, image_size);
+		fastboot_mmc_flash_write(cmd_parameter, fastboot_buf_addr, image_size,
+					response);
+		#endif
+		
 		/* set secure upgrade flag to indicate it is TF image upgrade*/
 		run_command("env set sec_upgrade_mode 0x5555aaaa", 0);
 		run_command("saveenv", 0);
 		run_command("reset", 0);
-	} else if (strcmp(cmd_parameter, "tee") == 0) {
-
-	} 
-
-#endif
+	}
 #endif
 
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
