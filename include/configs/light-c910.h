@@ -114,11 +114,11 @@
 	"mmcpart=3\0" \
 	"fdt_file=light-val-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=100MiB,type=boot;name=tee,size=100MiB,type=boot;name=secupgrade,size=100MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=50MiB,type=boot;name=stashtf,size=50MiB,type=boot;name=tee,size=50MiB,type=boot;name=stashtee,size=50MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
-	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:3 $opensbi_addr trust_firmware.bin; ext4load mmc 0:4 $tee_addr tee.bin;ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
+	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:3 $opensbi_addr trust_firmware.bin; ext4load mmc 0:5 $tee_addr tee.bin;ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
 #else
