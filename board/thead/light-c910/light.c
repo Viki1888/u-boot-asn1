@@ -973,8 +973,27 @@ static void light_usb_boot_check(void)
 }
 #endif
 
+#if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
+	unsigned int sec_upgrade_flag = 0;
+#endif
+
 int board_late_init(void)
 {
+
+#if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
+	sec_upgrade_flag = 0;
+	run_command("env print sec_upgrade_mode", 0);
+	printf("bootstrap: sec_upgrade_flag: %x\n", sec_upgrade_flag);
+	if (sec_upgrade_flag == TF_SEC_UPGRADE_FLAG) {
+		
+	} else if (sec_upgrade_flag == TEE_SEC_UPGRADE_FLAG) {
+ 
+	} else {
+		printf("normal bootstrap\n");
+	}
+
+#endif
+
 #ifdef LIGHT_IMAGE_WRITER
 	light_usb_boot_check();
 #endif
