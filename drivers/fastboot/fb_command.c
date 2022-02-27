@@ -36,7 +36,6 @@ static void download(char *, char *);
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH)
 static void flash(char *, char *);
 static void erase(char *, char *);
-static void upgrade(char *, char *);
 #endif
 static void reboot_bootloader(char *, char *);
 #if CONFIG_IS_ENABLED(FASTBOOT_CMD_OEM_FORMAT)
