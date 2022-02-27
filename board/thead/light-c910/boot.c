@@ -524,12 +524,26 @@ int light_boot(int argc, char * const argv[])
 	return 0;
 }
 
+
+int hal_get_image_current_version(unsigned int *ver)
+{
+	*ver = env_get_hex("tf_version", 0);
+	return 0;
+}
+
+int hal_set_image_current_version(unsigned int ver)
+{
+	env_set_hex("tf_version", ver);
+	return 0;
+}
+
 int light_vimage(int argc, char *const argv[])
 {
 	int ret = 0;
 	int vimage_addr = 0;
-	int header_offset = 0;
-	int image_version = 0;
+	int code_offset = 0;
+	int new_img_version = 0;
+	int cur_img_version = 0;
 
 	if (argc < 2) 
 		return CMD_RET_USAGE;
@@ -537,17 +551,38 @@ int light_vimage(int argc, char *const argv[])
 	vimage_addr = simple_strtoul(argv[1], NULL, 16);
 	
 	if (image_have_head(vimage_addr) == 1)
-		header_offset = HEADER_SIZE;
+		code_offset = HEADER_SIZE;
 
-	image_version = get_image_version(vimage_addr);
-	printf("image version: %x\n", image_version);
+	new_img_version = get_image_version(vimage_addr);
+	if (new_img_version == 0) {
+		printf("get new img version fail\n");
+		return -1;
+	}
+	printf("new image version: %4x\n", new_img_version);
+
 	/* Check image version for ROLLBACK resisance */ 
+	ret = hal_get_image_current_version(&cur_img_version);
+	if (ret != 0) {
+		printf("Get cure img version fail\n");
+		return -1;
+	}
+	printf("cur image version: %4x\n", cur_img_version);
+	
+	/* Get secure version X from image version X.Y */
+	cur_img_version = cur_img_version >> 8;
+	new_img_version = new_img_version >> 8;
+	/* According the version rule, the X value must increase by 1 */
+	if ((new_img_version - cur_img_version) != 1) {
+		printf("upgrade version is not defined against the rule\n");
+		return -1;
+	}
 
-	if (csi_sec_init())
+	ret = csi_sec_init();
+	if (ret != 0)
 		return ret;
 
 	ret = csi_sec_image_verify(T_TF, vimage_addr);
-	if (ret)
+	if (ret != 0)
 		return ret;
 	return 0;
 }
