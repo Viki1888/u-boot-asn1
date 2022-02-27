@@ -128,7 +128,7 @@ int do_vimage(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 U_BOOT_CMD(
 	vimage, CONFIG_SYS_MAXARGS, 1, do_vimage, 
 	"verify image file with known pubkey which reside in father image or itself!", 
-	"vimage addr	- verify one image resides in addr\n"
+	"vimage addr imgname[[tee/tf]	- verify specifed image resides in addr\n"
 );
 
 #endif

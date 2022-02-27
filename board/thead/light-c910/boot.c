@@ -525,15 +525,27 @@ int light_boot(int argc, char * const argv[])
 }
 
 
-int hal_get_image_current_version(unsigned int *ver)
+int hal_get_tf_current_version(unsigned int *ver)
 {
 	*ver = env_get_hex("tf_version", 0);
 	return 0;
 }
 
-int hal_set_image_current_version(unsigned int ver)
+int hal_set_tf_current_version(unsigned int ver)
 {
 	env_set_hex("tf_version", ver);
+	return 0;
+}
+
+int hal_get_tee_current_version(unsigned int *ver)
+{
+	*ver = env_get_hex("tee_version", 0);
+	return 0;
+}
+
+int hal_set_tee_current_version(unsigned int ver)
+{
+	env_set_hex("tee_version", ver);
 	return 0;
 }
 
@@ -544,11 +556,13 @@ int light_vimage(int argc, char *const argv[])
 	int code_offset = 0;
 	int new_img_version = 0;
 	int cur_img_version = 0;
+	char imgname[32] = {0};
 
-	if (argc < 2) 
+	if (argc < 3) 
 		return CMD_RET_USAGE;
 	
 	vimage_addr = simple_strtoul(argv[1], NULL, 16);
+	strcpy(imgname, &argv[2]);
 	
 	if (image_have_head(vimage_addr) == 1)
 		code_offset = HEADER_SIZE;
@@ -561,9 +575,20 @@ int light_vimage(int argc, char *const argv[])
 	printf("new image version: %4x\n", new_img_version);
 
 	/* Check image version for ROLLBACK resisance */ 
-	ret = hal_get_image_current_version(&cur_img_version);
-	if (ret != 0) {
-		printf("Get cure img version fail\n");
+	if (strcmp(imgname, "tf") == 0) {
+		ret = hal_get_tf_current_version(&cur_img_version);
+		if (ret != 0) {
+			printf("Get tf img version fail\n");
+			return -1;
+		}
+	} else if (strcmp(imgname, "tee") == 0){
+		ret = hal_get_tee_current_version(&cur_img_version);
+		if (ret != 0) {
+			printf("Get tee img version fail\n");
+			return -1;
+		}
+	} else {
+		printf("unsupport image file\n");
 		return -1;
 	}
 	printf("cur image version: %4x\n", cur_img_version);

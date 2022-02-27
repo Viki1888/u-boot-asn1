@@ -330,6 +330,18 @@ static void flash(char *cmd_parameter, char *response)
 		run_command("env set sec_upgrade_mode 0x5555aaaa", 0);
 		run_command("saveenv", 0);
 		run_command("reset", 0);
+	} else if (strcmp(cmd_parameter, "stashtee") == 0) {
+		fastboot_okay(NULL, response);
+		#if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
+		printf("cmd_parameter: %s, imagesize: %d\n", cmd_parameter, image_size);
+		fastboot_mmc_flash_write(cmd_parameter, fastboot_buf_addr, image_size,
+					response);
+		#endif
+		
+		/* set secure upgrade flag to indicate it is TF image upgrade*/
+		run_command("env set sec_upgrade_mode 0x5a5aa5a5", 0);
+		run_command("saveenv", 0);
+		run_command("reset", 0);
 	}
 #endif
 
