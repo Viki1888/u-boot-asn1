@@ -1197,7 +1197,7 @@ static void sec_upgrade_thread(void)
 		printf("upgrade file size: %d\n", upgrade_file_size);
 		/* verify its authentiticy here */
 
-		sprintf(runcmd, "vimage 0x%x", temp_addr);
+		sprintf(runcmd, "vimage 0x%x tf", temp_addr);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
@@ -1236,7 +1236,7 @@ _upgrade_tf_exit:
 		printf("upgrade file size: %d\n", upgrade_file_size);
 		/* verify its authentiticy here */
 
-		sprintf(runcmd, "vimage 0x%x", temp_addr);
+		sprintf(runcmd, "vimage 0x%x tee", temp_addr);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
