@@ -111,7 +111,9 @@
 	"tee_addr=0xff000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"tf_version=0x0000\0"\
+	"tf_new_version=0x0000\0"\
 	"tee_version=0x0000\0"\
+	"tee_new_version=0x0000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
 	"fdt_file=light-val-sec.dtb\0" \

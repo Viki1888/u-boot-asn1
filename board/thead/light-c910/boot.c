@@ -524,28 +524,39 @@ int light_boot(int argc, char * const argv[])
 	return 0;
 }
 
-
-int hal_get_tf_current_version(unsigned int *ver)
+int csi_get_tf_image_version(unsigned int *ver)
 {
 	*ver = env_get_hex("tf_version", 0);
 	return 0;
 }
 
-int hal_set_tf_current_version(unsigned int ver)
+int csi_set_tf_image_version(unsigned int ver)
 {
 	env_set_hex("tf_version", ver);
 	return 0;
 }
 
-int hal_get_tee_current_version(unsigned int *ver)
+int csi_get_tf_image_new_version(unsigned int *ver)
+{
+	*ver = env_get_hex("tf_new_version", 0);
+	return 0;
+}
+
+int csi_get_tee_image_version(unsigned int *ver)
 {
 	*ver = env_get_hex("tee_version", 0);
 	return 0;
 }
 
-int hal_set_tee_current_version(unsigned int ver)
+int csi_set_tee_image_version(unsigned int ver)
 {
 	env_set_hex("tee_version", ver);
+	return 0;
+}
+
+int csi_get_tee_image_new_version(unsigned int *ver)
+{
+	*ver = env_get_hex("tee_new_version", 0);
 	return 0;
 }
 
@@ -562,8 +573,9 @@ int light_vimage(int argc, char *const argv[])
 		return CMD_RET_USAGE;
 	
 	vimage_addr = simple_strtoul(argv[1], NULL, 16);
-	strcpy(imgname, &argv[2]);
-	
+	strcpy(imgname, argv[2]);
+
+#if 0	
 	if (image_have_head(vimage_addr) == 1)
 		code_offset = HEADER_SIZE;
 
@@ -573,16 +585,27 @@ int light_vimage(int argc, char *const argv[])
 		return -1;
 	}
 	printf("new image version: %4x\n", new_img_version);
-
+#endif
 	/* Check image version for ROLLBACK resisance */ 
 	if (strcmp(imgname, "tf") == 0) {
-		ret = hal_get_tf_current_version(&cur_img_version);
+		ret = csi_get_tf_image_new_version(&new_img_version);
+		if (ret != 0) {
+			printf("Get tf img new ersion fail\n");
+			return -1;
+		}
+		ret = csi_get_tf_image_version(&cur_img_version);
 		if (ret != 0) {
 			printf("Get tf img version fail\n");
 			return -1;
 		}
 	} else if (strcmp(imgname, "tee") == 0){
-		ret = hal_get_tee_current_version(&cur_img_version);
+		ret = csi_get_tee_image_new_version(&new_img_version);
+		if (ret != 0) {
+			printf("Get tee img new ersion fail\n");
+			return -1;
+		}
+
+		ret = csi_get_tee_image_version(&cur_img_version);
 		if (ret != 0) {
 			printf("Get tee img version fail\n");
 			return -1;
@@ -591,17 +614,37 @@ int light_vimage(int argc, char *const argv[])
 		printf("unsupport image file\n");
 		return -1;
 	}
-	printf("cur image version: %4x\n", cur_img_version);
 	
+
 	/* Get secure version X from image version X.Y */
-	cur_img_version = cur_img_version >> 8;
-	new_img_version = new_img_version >> 8;
+	printf("cur image version: %d.%d\n", cur_img_version >> 8, cur_img_version & 0xff);
+	printf("new image version: %d.%d\n", new_img_version >> 8, new_img_version & 0xff);
+
 	/* According the version rule, the X value must increase by 1 */
-	if ((new_img_version - cur_img_version) != 1) {
+	if (((new_img_version >> 8) - (cur_img_version >> 8)) != 1) {
 		printf("upgrade version is not defined against the rule\n");
 		return -1;
 	}
-
+	printf("check image verison rule pass\n");
+	if (strcmp(imgname, "tf") == 0) {
+		/* update tf image version */
+		ret = csi_set_tf_image_version(new_img_version);
+		if (ret != 0) {
+			printf("Get tf img version fail\n");
+			return -1;
+		}
+	} else if (strcmp(imgname, "tee") == 0){
+		/* update tee image version */
+		ret = csi_set_tee_image_version(new_img_version);
+		if (ret != 0) {
+			printf("Get tee img version fail\n");
+			return -1;
+		}
+	} else {
+		printf("unsupport image file\n");
+		return -1;
+	}
+#if 0
 	ret = csi_sec_init();
 	if (ret != 0)
 		return ret;
@@ -609,5 +652,6 @@ int light_vimage(int argc, char *const argv[])
 	ret = csi_sec_image_verify(T_TF, vimage_addr);
 	if (ret != 0)
 		return ret;
+#endif
 	return 0;
 }
