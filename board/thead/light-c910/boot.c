@@ -524,6 +524,7 @@ int light_boot(int argc, char * const argv[])
 	return 0;
 }
 
+#define TF_TEE_KEY_IN_RPMB_CASE
 /* the sample rpmb key is only used for testing */
 const unsigned char emmc_rpmb_key_sample[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,\
 												0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff};
@@ -532,7 +533,17 @@ const unsigned char emmc_rpmb_key_sample[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x
 
 int csi_get_tf_image_version(unsigned int *ver)
 {
+#ifdef TF_TEE_KEY_IN_RPMB_CASE
+	char runcmd[64] = {0};
+	unsigned long blkdata_addr = 0x80000000;
+
+	/* tee version reside in RPMB block#0, offset#16*/
+	sprintf(runcmd, "mmc rpmb read 0x%x 0 1", blkdata_addr);
+	run_command(runcmd, 0);
+	*ver = *(unsigned short *)(blkdata_addr+16);
+#else 
 	*ver = env_get_hex("tf_version", 0);
+#endif
 	return 0;
 }
 
@@ -550,7 +561,17 @@ int csi_get_tf_image_new_version(unsigned int *ver)
 
 int csi_get_tee_image_version(unsigned int *ver)
 {
+#ifdef TF_TEE_KEY_IN_RPMB_CASE
+	char runcmd[64] = {0};
+	unsigned long blkdata_addr = 0x80000000;
+
+	/* tee version reside in RPMB block#0, offset#0*/
+	sprintf(runcmd, "mmc rpmb read 0x%x 0 1", blkdata_addr);
+	run_command(runcmd, 0);
+	*ver = *(unsigned short *)blkdata_addr;
+#else 
 	*ver = env_get_hex("tee_version", 0);
+#endif
 	return 0;
 }
 
