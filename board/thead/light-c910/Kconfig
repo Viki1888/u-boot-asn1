@@ -30,10 +30,6 @@ config LIGHT_SEC_BOOT_NO_VERIFY
 	bool "light security boot without verification"
 	default n
 
-config LIGHT_BOARD_EVB
-    bool "light evb board-a"
-    default n
-
 config TARGET_LIGHT_FPGA_FM_C910
     bool "light fullmask FPGA board"
     default n
@@ -42,7 +38,11 @@ config TARGET_LIGHT_FM_C910_VAL_SV
     bool "light fullmask VAL board for system validation"
     default n
 
-config TARGET_LIGHT_FM_C910_VAL_SV_B
+config TARGET_LIGHT_FM_C910_VAL_A
+    bool "light fullmask VAL board-a for system validation"
+    default n
+
+config TARGET_LIGHT_FM_C910_VAL_B
     bool "light fullmask VAL board-b for system validation"
     default n
 
