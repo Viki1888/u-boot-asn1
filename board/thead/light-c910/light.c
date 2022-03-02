@@ -495,6 +495,9 @@ static struct light_iopmp_list {
         {IOPMP_TEE_DMAC, 0xFFFF250000},
 	{IOPMP_DSP0, 0xFFFF058000},
 	{IOPMP_DSP1, 0xFFFF059000},
+	{IOPMP_AUDIO, 0xFFFFC22000},
+	{IOPMP_AUDIO0, 0xFFCB02E000},
+	{IOPMP_AUDIO1, 0xFFCB02F000},
 };
 
 static void light_iopmp_config(void)
@@ -514,6 +517,7 @@ void board_lmb_reserve(struct lmb *lmb)
 {
 	lmb_add(lmb, (phys_addr_t)0x0, (phys_addr_t)0x20000000);
 	lmb_add(lmb, (phys_addr_t)0xffffef8000, (phys_addr_t)(64*1024));
+	lmb_add(lmb, (phys_addr_t)0xffc0000000, (phys_addr_t)(128 * 1024));
 }
 
 int dw_txclk_set_rate(u32 rate)
