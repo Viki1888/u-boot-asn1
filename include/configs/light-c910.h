@@ -79,7 +79,7 @@
 
 #ifdef CONFIG_LIGHT_SEC_BOOT
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"splashimage=0xd0000000\0" \
+	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
 	"t_opensbi_addr=0x100000\0" \
 	"t_kernel_addr=0x1ff800\0" \
@@ -128,7 +128,7 @@
 #else
 #if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_A)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"splashimage=0xd0000000\0" \
+	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
@@ -148,7 +148,7 @@
         "\0"
 #elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"splashimage=0xd0000000\0" \
+	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
@@ -168,7 +168,7 @@
         "\0"
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"splashimage=0xd0000000\0" \
+	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
