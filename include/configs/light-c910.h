@@ -125,7 +125,8 @@
 	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:3 $opensbi_addr trust_firmware.bin; ext4load mmc 0:5 $tee_addr tee.bin;ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
-#elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_A)
+#else
+#if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_A)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0xd0000000\0" \
 	"splashpos=m,m\0" \
@@ -185,6 +186,7 @@
 	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin; ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
+#endif
 #endif
 #endif
 #endif /* __CONFIG_H */
