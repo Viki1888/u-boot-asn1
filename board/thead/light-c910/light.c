@@ -793,8 +793,8 @@ static void light_iopin_init(void)
 	light_pin_cfg(AOGPIO_9,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_10,PIN_SPEED_NORMAL,PIN_PD,2);
 	light_pin_cfg(AOGPIO_11,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(AOGPIO_12,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(AOGPIO_13,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(AOGPIO_12,PIN_SPEED_NORMAL,PIN_PN,4);
+	light_pin_cfg(AOGPIO_13,PIN_SPEED_NORMAL,PIN_PN,4);
 	light_pin_cfg(AOGPIO_14,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_15,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_mux(AOGPIO_7,3);
@@ -802,12 +802,14 @@ static void light_iopin_init(void)
 	light_pin_mux(AOGPIO_9,3);
 	light_pin_mux(AOGPIO_10,3);
 	light_pin_mux(AOGPIO_11,0);
-	light_pin_mux(AOGPIO_12,0);
-	light_pin_mux(AOGPIO_13,0);
+	light_pin_mux(AOGPIO_12,1);
+	light_pin_mux(AOGPIO_13,1);
 	light_pin_mux(AOGPIO_14,0);
 	light_pin_mux(AOGPIO_15,0);
 	light_pin_mux(AUDIO_PA9,3);
 	light_pin_cfg(AUDIO_PA9,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_mux(AUDIO_PA10,3);
+	light_pin_mux(AUDIO_PA12,3);
 	light_pin_mux(AUDIO_PA13,0);
 
 	/*ap-padmux on left/top */
@@ -956,14 +958,6 @@ static void light_iopin_init(void)
 	light_pin_cfg(GMAC0_COL,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GMAC0_CRS,PIN_SPEED_NORMAL,PIN_PU,2);
 
-	/*spi0 cs0 gpio2-15 pad strength and pin-pull mode*/
-	light_pin_mux(SPI_CSN,3);
-	light_pin_cfg(SPI_CSN,PIN_SPEED_NORMAL,PIN_PN,5);
-	light_pin_cfg(SPI_SCLK,PIN_SPEED_NORMAL,PIN_PN,5);
-	light_pin_cfg(SPI_MISO,PIN_SPEED_NORMAL,PIN_PU,5);
-	light_pin_cfg(SPI_MOSI,PIN_SPEED_NORMAL,PIN_PU,5);
-
-
 	/* GMAC0 pad drive strength configurate to 0xF */
 	light_pin_cfg(GMAC0_TX_CLK, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 	light_pin_cfg(GMAC0_RX_CLK, PIN_SPEED_NORMAL, PIN_PN, 0xF);
@@ -1053,6 +1047,7 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO2_24,1);
 	light_pin_mux(GPIO2_25,1);
 
+	light_pin_cfg(GPIO2_13,PIN_SPEED_NORMAL,PIN_PD,2);
 	light_pin_cfg(GPIO2_18,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_19,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_20,PIN_SPEED_NORMAL,PIN_PN,2);
