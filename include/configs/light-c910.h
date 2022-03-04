@@ -115,7 +115,7 @@
 	"tee_version=0x0000\0"\
 	"tee_new_version=0x0000\0"\
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=7\0" \
 	"fdt_file=light-val-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=50MiB,type=boot;name=stashtf,size=50MiB,type=boot;name=tee,size=50MiB,type=boot;name=stashtee,size=50MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
