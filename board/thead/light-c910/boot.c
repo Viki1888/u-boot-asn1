@@ -524,7 +524,7 @@ int light_boot(int argc, char * const argv[])
 	return 0;
 }
 
-#define TF_TEE_KEY_IN_RPMB_CASE
+//#define TF_TEE_KEY_IN_RPMB_CASE
 /* the sample rpmb key is only used for testing */
 const unsigned char emmc_rpmb_key_sample[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,\
 												0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff};
@@ -648,6 +648,10 @@ int light_vimage(int argc, char *const argv[])
 	printf("new image version: %d.%d\n", new_img_version >> 8, new_img_version & 0xff);
 
 	/* According the version rule, the X value must increase by 1 */
+	if (((new_img_version >> 8) - (cur_img_version >> 8)) == 0) {
+		/* This is unsecure function */
+		printf("This is unsecure function upgrade, going on uprade anyway\n");
+	}
 	if (((new_img_version >> 8) - (cur_img_version >> 8)) != 1) {
 		printf("upgrade version is not defined against the rule\n");
 		return -1;
