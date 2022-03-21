@@ -35061,12 +35061,8 @@ ddr_phy_broadcast_en(0);
 #ifdef CONFIG_DDR_MSG
 ddr_phy0_reg_wr(0xd0000,0x0);
 ddr_phy0_reg_wr(0xc0080,0x3);
-ddr_phy1_reg_wr(0xd0000,0x0);
-ddr_phy1_reg_wr(0xc0080,0x3);
 printf("PHY0 P Code %0x\n",ddr_phy0_reg_rd(0x20014));
 printf("PHY0 N Code %0x\n",ddr_phy0_reg_rd(0x20015));
-printf("PHY1 P Code %0x\n",ddr_phy1_reg_rd(0x20014));
-printf("PHY1 N Code %0x\n",ddr_phy1_reg_rd(0x20015));
 printf("PllCtrl1 is %0x\n",ddr_phy_reg_rd(0x200c7));
 printf("PllCtrl2 is %0x\n",ddr_phy_reg_rd(0x200c5));
 printf("PllCtrl4 is %0x\n",ddr_phy_reg_rd(0x200cc));
@@ -35085,6 +35081,12 @@ printf("R0 TxDQSDly        is %0x \n",ddr_phy_reg_rd(0x100d0));
 printf("R0 TxDQSDly        is %0x \n",ddr_phy_reg_rd(0x101d0));
 printf("R1 TxDQSDly        is %0x \n",ddr_phy_reg_rd(0x100d1));
 printf("R1 TxDQSDly        is %0x \n",ddr_phy_reg_rd(0x101d1));
+#ifndef CONFIG_DDR_H32_MODE
+ddr_phy1_reg_wr(0xd0000,0x0);
+ddr_phy1_reg_wr(0xc0080,0x3);
+printf("PHY1 P Code %0x\n",ddr_phy1_reg_rd(0x20014));
+printf("PHY1 N Code %0x\n",ddr_phy1_reg_rd(0x20015));
+#endif
 #endif
 //ddr_phy_reg_wr(0xd0000,0x1);
 //ddr_phy_reg_wr(0xd0000,0x0);
