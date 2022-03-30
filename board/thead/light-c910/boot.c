@@ -523,7 +523,7 @@ int light_boot(int argc, char * const argv[])
 
 	return 0;
 }
-
+#if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
 //#define TF_TEE_KEY_IN_RPMB_CASE
 /* the sample rpmb key is only used for testing */
 const unsigned char emmc_rpmb_key_sample[16] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,\
@@ -686,3 +686,4 @@ int light_vimage(int argc, char *const argv[])
 #endif
 	return 0;
 }
+#endif
