@@ -793,15 +793,15 @@ static void light_iopin_init(void)
 	light_pin_cfg(I2C_AON_SCL,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(I2C_AON_SDA,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(AOGPIO_7,PIN_SPEED_NORMAL,PIN_PU,2);
-	//light_pin_cfg(AOGPIO_8,PIN_SPEED_NORMAL,PIN_PU,2);
-	//light_pin_cfg(AOGPIO_9,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(AOGPIO_8,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_cfg(AOGPIO_9,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_10,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_11,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_14,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(AOGPIO_15,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_mux(AOGPIO_7,3);
-	//light_pin_mux(AOGPIO_8,3);
-	//light_pin_mux(AOGPIO_9,3);
+	light_pin_mux(AOGPIO_8,3);
+	light_pin_mux(AOGPIO_9,3);
 	light_pin_mux(AOGPIO_10,3);
 	light_pin_mux(AOGPIO_11,0);
 	light_pin_mux(AOGPIO_12,1);
@@ -926,7 +926,7 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO2_18,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_19,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_20,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO2_21,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(GPIO2_21,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GPIO2_22,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_23,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_24,PIN_SPEED_NORMAL,PIN_PN,2);
