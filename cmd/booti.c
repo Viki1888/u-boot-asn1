@@ -117,20 +117,6 @@ U_BOOT_CMD(
 	""
 );
 
-extern int light_vimage(int argc, char *const argv[]);
-int do_vimage(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
-{
-	if (light_vimage(argc, argv) < 0)
-		return -1;
-	return 0;
-}
-
-U_BOOT_CMD(
-	vimage, CONFIG_SYS_MAXARGS, 1, do_vimage, 
-	"verify image file with known pubkey which reside in father image or itself!", 
-	"vimage addr imgname[[tee/tf]	- verify specifed image resides in addr\n"
-);
-
 #endif
 
 #ifdef CONFIG_SYS_LONGHELP
