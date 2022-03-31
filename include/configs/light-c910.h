@@ -60,7 +60,7 @@
 #define LIGHT_DTB_ADDR		0x1f00000
 #define LIGHT_ROOTFS_ADDR	0x2000000
 #define LIGHT_AON_FW_ADDR	0xffffef8000
-#define LIGHT_TEE_FW_ADDR	0xff000000
+#define LIGHT_TEE_FW_ADDR	0x1c000000
 #define LIGHT_TF_FW_ADDR	LIGHT_FW_ADDR
 #define LIGHT_KERNEL_ADDR_CMD	"0x200000"
 #define LIGHT_DTB_ADDR_CMD	"0x1f00000"
@@ -110,7 +110,7 @@
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0xffc0000000\0" \
-	"tee_addr=0xff000000\0" \
+	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"tf_version=0x0000\0"\
 	"tf_new_version=0x0000\0"\
