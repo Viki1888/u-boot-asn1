@@ -34500,6 +34500,7 @@ printf("VrefDac_Margin_A1    is %0x \n",0xff&(ddr_phy0_reg_rd(0x54043)>>8));
 printf("TxDqDly_Margin_A1    is %0x \n",0xff&(ddr_phy0_reg_rd(0x54044)));
 printf("DeviceVref_Margin_A1 is %0x \n",0xff&(ddr_phy0_reg_rd(0x54044)>>8));
 
+#ifndef CONFIG_DDR_H32_MODE
 printf("TrainedVREFDQ_RANK0 is %0x \n",0xff&(ddr_phy1_reg_rd(0x54026)>>8));
 printf("TrainedVREFDQ_RANK1 is %0x \n",0xff&(ddr_phy1_reg_rd(0x54027)));
 printf("RxClkDly_Margin_A0   is %0x \n",0xff&(ddr_phy1_reg_rd(0x54027)>>8));
@@ -34521,6 +34522,7 @@ printf("RxClkDly_Margin_A1   is %0x \n",0xff&(ddr_phy1_reg_rd(0x54043)));
 printf("VrefDac_Margin_A1    is %0x \n",0xff&(ddr_phy1_reg_rd(0x54043)>>8));
 printf("TxDqDly_Margin_A1    is %0x \n",0xff&(ddr_phy1_reg_rd(0x54044)));
 printf("DeviceVref_Margin_A1 is %0x \n",0xff&(ddr_phy1_reg_rd(0x54044)>>8));
+#endif
 #endif
 ddr_phy_reg_wr(0x90000,0x10);
 ddr_phy_reg_wr(0x90001,0x400);
