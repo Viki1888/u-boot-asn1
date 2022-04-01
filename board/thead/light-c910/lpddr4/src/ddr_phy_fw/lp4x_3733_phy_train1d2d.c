@@ -35047,7 +35047,9 @@ ddr_phy_reg_wr(0x20089,0x1);
 ddr_phy_reg_wr(0x20088,0x19);
 ddr_phy_reg_wr(0xc0080,0x2);
 ddr_phy_reg_wr(0xd0000,0x1);
+#ifndef CONFIG_DDR_H32_MODE
 ddr_phy_broadcast_en(0);
+#endif
 #ifdef CONFIG_DDR_MSG
 ddr_phy0_reg_wr(0xd0000,0x0);
 ddr_phy0_reg_wr(0xc0080,0x3);

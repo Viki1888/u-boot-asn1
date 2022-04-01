@@ -5,10 +5,15 @@
 DDR_SYSREG_REG_SW_REG_S ddr_sysreg;
 
 unsigned long get_ddr_density() {
+    int div =1;
+#ifdef CONFIG_DDR_H32_MODE
+    div = 2;
+#endif
+
 #ifdef CONFIG_DDR_DUAL_RANK
-	return 0x200000000;
+	return 0x200000000/div;
 #else
-	return 0x100000000;
+	return 0x100000000/div;
 #endif
 }
 

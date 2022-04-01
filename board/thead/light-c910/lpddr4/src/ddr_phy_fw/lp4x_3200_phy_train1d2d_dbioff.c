@@ -1,16 +1,16 @@
 #include "../../include/common_lib.h" 
 #include "../../include/ddr_common_func.h" 
-#include "../../include/lp4x_4266_phy_train1d2d.h" 
+#include "../../include/lp4x_3200_phy_train1d2d.h" 
 #include "../../include/waitfwdone.h" 
 
 void lp4_phy_train1d2d (enum DDR_TYPE type, int speed, enum DDR_BITWIDTH bits) {
-    if(type != DDR_TYPE_LPDDR4X || speed != 4266)
+    if(type != DDR_TYPE_LPDDR4X || speed != 3200)
     {
         printf("unsupport ddr type<lpddr4%c>, speed<%d>\n", (type==DDR_TYPE_LPDDR4X?'x':' '), speed);
         return;
     }
 
-    lp4x_4266_phy_train1d2d();
+    lp4x_3200_phy_train1d2d();
 }
 
 const short int iccm_array[16384] = {
@@ -16403,13 +16403,13 @@ const short int dccm_array[830] = {
 0x60,
 0x0,
 0x0,
-0x10aa,
+0xc80,
 0x2,
 0x0,
 0x14,
-0x0,
+0x18,
 0x131f,
-0xff,
+0x4,
 0x0,
 0x3,
 0x0,
@@ -16425,14 +16425,14 @@ const short int dccm_array[830] = {
 0x0,
 0x0,
 0x0,
-0x3f74,
-0xf2,
+0x2d54,
+0x32,
 0x1243,
 0x1a08,
 0x0,
 0x4,
-0x3f74,
-0xf2,
+0x2d54,
+0x32,
 0x1243,
 0x1a08,
 0x0,
@@ -16450,14 +16450,14 @@ const short int dccm_array[830] = {
 0x0,
 0x0,
 0x0,
-0x7400,
-0xf23f,
+0x5400,
+0x322d,
 0x4300,
 0x812,
 0x1a,
 0x400,
-0x7400,
-0xf23f,
+0x5400,
+0x322d,
 0x4300,
 0x812,
 0x1a,
@@ -33621,13 +33621,13 @@ const short int dccm_array1[702] = {
 0x60,
 0x0,
 0x0,
-0x10aa,
+0xc80,
 0x2,
 0x0,
 0x14,
-0x0,
+0x18,
 0x61,
-0xff,
+0x4,
 0x0,
 0x3,
 0x0,
@@ -33643,14 +33643,14 @@ const short int dccm_array1[702] = {
 0x0,
 0x0,
 0x0,
-0x3f74,
-0xf2,
+0x2d54,
+0x32,
 0x1243,
 0x1a08,
 0x0,
 0x4,
-0x3f74,
-0xf2,
+0x2d54,
+0x32,
 0x1243,
 0x1a08,
 0x0,
@@ -33668,14 +33668,14 @@ const short int dccm_array1[702] = {
 0x0,
 0x0,
 0x0,
-0x7400,
-0xf23f,
+0x5400,
+0x322d,
 0x4300,
 0x812,
 0x1a,
 0x400,
-0x7400,
-0xf23f,
+0x5400,
+0x322d,
 0x4300,
 0x812,
 0x1a,
@@ -34321,10 +34321,10 @@ const short int dccm_array1[702] = {
 0x0,
 0x0,
 };
-void lp4x_4266_phy_train1d2d() {
+void lp4x_3200_phy_train1d2d() {
 int i;
 #ifdef CONFIG_DDR_MSG
-printf("entered lp4x_4266_phy_train1d2d \n");
+printf("entered lp4x_3200_phy_train1d2d \n");
 #endif
 ddr_phy_reg_wr(0x1005f,0x55f);
 ddr_phy_reg_wr(0x1015f,0x55f);
@@ -34340,8 +34340,8 @@ ddr_phy_reg_wr(0x2055,0x19f);
 ddr_phy_reg_wr(0x3055,0x19f);
 ddr_phy_reg_wr(0x4055,0x19f);
 ddr_phy_reg_wr(0x5055,0x19f);
-ddr_phy_reg_wr(0x200c5,0x18);
-ddr_phy_reg_wr(0x2002e,0x5);
+ddr_phy_reg_wr(0x200c5,0x19);
+ddr_phy_reg_wr(0x2002e,0x2);
 ddr_phy_reg_wr(0x90204,0x0);
 ddr_phy_reg_wr(0x20024,0x1e3);
 ddr_phy_reg_wr(0x2003a,0x2);
@@ -34374,7 +34374,7 @@ ddr_phy_reg_wr(0x20018,0x3);
 ddr_phy_reg_wr(0x20075,0x4);
 ddr_phy_reg_wr(0x20050,0x0);
 ddr_phy_reg_wr(0x2009b,0x2);
-ddr_phy_reg_wr(0x20008,0x42b);
+ddr_phy_reg_wr(0x20008,0x320);
 ddr_phy_reg_wr(0x20088,0x9);
 ddr_phy_reg_wr(0x200b2,0x104);
 ddr_phy_reg_wr(0x10043,0x5a1);
@@ -34395,8 +34395,12 @@ ddr_phy_reg_wr(0x200f4,0x5555);
 ddr_phy_reg_wr(0x200f5,0x0);
 ddr_phy_reg_wr(0x200f6,0x0);
 ddr_phy_reg_wr(0x200f7,0xf000);
+ddr_phy_reg_wr(0x1004a,0x500);
+ddr_phy_reg_wr(0x1104a,0x500);
+ddr_phy_reg_wr(0x1204a,0x500);
+ddr_phy_reg_wr(0x1304a,0x500);
 ddr_phy_reg_wr(0x20025,0x0);
-ddr_phy_reg_wr(0x2002d,0x1);
+ddr_phy_reg_wr(0x2002d,0x0);
 ddr_phy_reg_wr(0x20021,0x0);
 ddr_phy_reg_wr(0x2002c,0x0);
 ddr_phy_reg_wr(0x20060,0x2);
@@ -34444,6 +34448,7 @@ printf("CHB CDD WR01 %0x, WR00 %0x\n",0xff&ddr_phy_reg_rd(0x54031),0xff&(ddr_phy
 printf("CHB CDD WW01 %0x, WW10 %0x\n",0xff&ddr_phy_reg_rd(0x54032),0xff&(ddr_phy_reg_rd(0x54031)>>8));
 #endif
 
+
 for(i=0;i<16384;i++) ddr_phy_reg_wr(0x50000+i,iccm_array1[i]); 
 ddr_phy_reg_wr(0xd0000,0x1);
 ddr_phy_reg_wr(0xd0000,0x0);
@@ -34485,6 +34490,7 @@ printf("VrefDac_Margin_A0    is %0x \n",0xff&(ddr_phy_reg_rd(0x54041)>>8));
 printf("TxDqDly_Margin_A0    is %0x \n",0xff&(ddr_phy_reg_rd(0x54042)));
 printf("DeviceVref_Margin_A0 is %0x \n",0xff&(ddr_phy_reg_rd(0x54042)>>8));
 #endif
+
 ddr_phy_reg_wr(0x90000,0x10);
 ddr_phy_reg_wr(0x90001,0x400);
 ddr_phy_reg_wr(0x90002,0x10e);
@@ -34964,9 +34970,9 @@ ddr_phy_reg_wr(0x400d6,0x20a);
 ddr_phy_reg_wr(0x400d7,0x20b);
 ddr_phy_reg_wr(0x2003a,0x2);
 ddr_phy_reg_wr(0x200be,0x3);
-ddr_phy_reg_wr(0x2000b,0x85);
-ddr_phy_reg_wr(0x2000c,0x10a);
-ddr_phy_reg_wr(0x2000d,0xa6a);
+ddr_phy_reg_wr(0x2000b,0x64);
+ddr_phy_reg_wr(0x2000c,0xc8);
+ddr_phy_reg_wr(0x2000d,0x7d0);
 ddr_phy_reg_wr(0x2000e,0x2c);
 ddr_phy_reg_wr(0x9000c,0x0);
 ddr_phy_reg_wr(0x9000d,0x173);
@@ -35067,12 +35073,23 @@ printf("DB1 Trained dq0 RxPBDly is %0x \n",ddr_phy_reg_rd(0x11068));
 printf("DB1 Trained dq8 RxPBDly is %0x \n",ddr_phy_reg_rd(0x11868));
 printf("DB2 Trained dq0 RxPBDly is %0x \n",ddr_phy_reg_rd(0x12068));
 printf("DB2 Trained dq8 RxPBDly is %0x \n",ddr_phy_reg_rd(0x12868));
+printf("ARdPtrInitVal is %0x \n",ddr_phy_reg_rd(0x2002e));
 printf("DQS Preamble is %0x \n",ddr_phy_reg_rd(0x20024));
+printf("PPTrain is %0x \n",ddr_phy_reg_rd(0x20010));
+printf("DQS Preamble is %0x \n",ddr_phy_reg_rd(0x20024));
+printf("PHY0 DB0 VREF        is %0x \n",ddr_phy0_reg_rd(0x10140));
+printf("PHY0 DB1 VREF        is %0x \n",ddr_phy0_reg_rd(0x11140));
+printf("PHY0 DB2 VREF        is %0x \n",ddr_phy0_reg_rd(0x12140));
+printf("PHY0 DB3 VREF        is %0x \n",ddr_phy0_reg_rd(0x13140));
 #ifndef CONFIG_DDR_H32_MODE
 ddr_phy1_reg_wr(0xd0000,0x0);
 ddr_phy1_reg_wr(0xc0080,0x3);
 printf("PHY1 P Code %0x\n",ddr_phy1_reg_rd(0x20014));
 printf("PHY1 N Code %0x\n",ddr_phy1_reg_rd(0x20015));
+printf("PHY1 DB0 VREF        is %0x \n",ddr_phy1_reg_rd(0x10140));
+printf("PHY1 DB1 VREF        is %0x \n",ddr_phy1_reg_rd(0x11140));
+printf("PHY1 DB2 VREF        is %0x \n",ddr_phy1_reg_rd(0x12140));
+printf("PHY1 DB3 VREF        is %0x \n",ddr_phy1_reg_rd(0x13140));
 #endif
 #endif
 #endif //#ifndef CONFIG_LPDDR_EYE

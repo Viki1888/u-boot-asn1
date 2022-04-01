@@ -21,10 +21,12 @@ obj-$(CONFIG_LPDDR) += $(DDR_SRC_PATH)/lpddr4_init.o
 ifdef CONFIG_DDR_DBI_OFF
 obj-$(CONFIG_DDR_LP4X_4266_DUALRANK) += $(DDR_FW_PATH)/lp4x_4266_phy_train1d2d_dualrank_dbioff.o
 obj-$(CONFIG_DDR_LP4X_3733_DUALRANK) += $(DDR_FW_PATH)/lp4x_3733_phy_train1d2d_dualrank_dbioff.o
+obj-$(CONFIG_DDR_LP4X_3200_DUALRANK) += $(DDR_FW_PATH)/lp4x_3200_phy_train1d2d_dualrank_dbioff.o
 obj-$(CONFIG_DDR_LP4_4266_DUALRANK) += $(DDR_FW_PATH)/lp4_4266_phy_train1d2d_dualrank_dbioff.o
 obj-$(CONFIG_DDR_LP4_3733_DUALRANK) += $(DDR_FW_PATH)/lp4_3733_phy_train1d2d_dualrank_dbioff.o
 obj-$(CONFIG_DDR_LP4X_4266_SINGLERANK) += $(DDR_FW_PATH)/lp4x_4266_phy_train1d2d_dbioff.o
 obj-$(CONFIG_DDR_LP4X_3733_SINGLERANK) += $(DDR_FW_PATH)/lp4x_3733_phy_train1d2d_dbioff.o
+obj-$(CONFIG_DDR_LP4X_3200_SINGLERANK) += $(DDR_FW_PATH)/lp4x_3200_phy_train1d2d_dbioff.o
 obj-$(CONFIG_DDR_LP4_4266_SINGLERANK) += $(DDR_FW_PATH)/lp4_4266_phy_train1d2d_dbioff.o
 obj-$(CONFIG_DDR_LP4_3733_SINGLERANK) += $(DDR_FW_PATH)/lp4_3733_phy_train1d2d_dbioff.o
 else # // CONFIG_DDR_DBI_OFF
