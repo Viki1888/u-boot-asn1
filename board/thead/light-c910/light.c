@@ -1177,110 +1177,15 @@ static void light_usb_boot_check(void)
 }
 #endif
 
-#if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
-static void sec_upgrade_thread(void)
-{
-	const unsigned long temp_addr=0x10000000;
-	char runcmd[80];
-	int ret = 0;
-	unsigned int sec_upgrade_flag = 0;
-	unsigned int upgrade_file_size = 0;
-
-	sec_upgrade_flag = env_get_hex("sec_upgrade_mode", 0);
-
-	if (sec_upgrade_flag == 0)
-		return;
-	
-	printf("bootstrap: sec_upgrade_flag: %x\n", sec_upgrade_flag);
-	if (sec_upgrade_flag == TF_SEC_UPGRADE_FLAG) {
-		/* read upgrade image (trust_firmware.bin) from stashtf partition */
-		printf("read upgrade image (trust_firmware.bin) from stashtf partition \n");
-		sprintf(runcmd, "ext4load mmc 0:4 0x%x trust_firmware.bin", temp_addr);
-		printf("runcmd:%s\n", runcmd);
-		ret = run_command(runcmd, 0);
-		if (ret != 0) {
-			printf("Upgrade process is terminated due to some reason\n");
-			goto _upgrade_tf_exit;
-		}
-
-		upgrade_file_size = env_get_hex("filesize", 0);
-		printf("upgrade file size: %d\n", upgrade_file_size);
-		/* verify its authentiticy here */
-
-		sprintf(runcmd, "vimage 0x%x tf", temp_addr);
-		printf("runcmd:%s\n", runcmd);
-		ret = run_command(runcmd, 0);
-		if (ret != 0) {
-			printf("Upgrade process is terminated due to some reason\n");
-			goto _upgrade_tf_exit;
-		}
-
-		/* update tf partition */
-		printf("read upgrade image (trust_firmware.bin) into tf partition \n");
-		sprintf(runcmd, "ext4write mmc 0:3 0x%x /trust_firmware.bin 0x%x", temp_addr, upgrade_file_size);
-		printf("runcmd:%s\n", runcmd);
-		ret = run_command(runcmd, 0);
-		if (ret != 0) {
-			printf("Upgrade process is terminated due to some reason\n");
-			goto _upgrade_tf_exit;
-		}
-
-_upgrade_tf_exit:
-		/* set secure upgrade flag to 0 that indicate upgrade over */
-		run_command("env set sec_upgrade_mode 0", 0);
-		run_command("saveenv", 0);
-		run_command("reset", 0);
-
-	} else if (sec_upgrade_flag == TEE_SEC_UPGRADE_FLAG) {
- 	/* read upgrade image (tee.bin) from stashtf partition */
-		printf("read upgrade image (tee.bin) from stashtee partition \n");
-		sprintf(runcmd, "ext4load mmc 0:5 0x%x tee.bin", temp_addr);
-		printf("runcmd:%s\n", runcmd);
-		ret = run_command(runcmd, 0);
-		if (ret != 0) {
-			printf("Upgrade process is terminated due to some reason\n");
-			goto _upgrade_tee_exit;
-		}
-
-		upgrade_file_size = env_get_hex("filesize", 0);
-		printf("upgrade file size: %d\n", upgrade_file_size);
-		/* verify its authentiticy here */
-
-		sprintf(runcmd, "vimage 0x%x tee", temp_addr);
-		printf("runcmd:%s\n", runcmd);
-		ret = run_command(runcmd, 0);
-		if (ret != 0) {
-			printf("Upgrade process is terminated due to some reason\n");
-			goto _upgrade_tee_exit;
-		}
-
-		/* update tf partition */
-		printf("read upgrade image (tee.bin) into tf partition \n");
-		sprintf(runcmd, "ext4write mmc 0:6 0x%x /tee.bin 0x%x", temp_addr, upgrade_file_size);
-		printf("runcmd:%s\n", runcmd);
-		ret = run_command(runcmd, 0);
-		if (ret != 0) {
-			printf("Upgrade process is terminated due to some reason\n");
-			goto _upgrade_tee_exit;
-		}
-
-_upgrade_tee_exit:
-		/* set secure upgrade flag to 0 that indicate upgrade over */
-		run_command("env set sec_upgrade_mode 0", 0);
-		run_command("saveenv", 0);
-		run_command("reset", 0);
-
-	} else {
-		printf("normal bootstrap\n");
-	}
-}
-#endif
 
 int board_late_init(void)
 {
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
+	extern void sec_upgrade_thread(void);
+	extern void sec_firmware_version_dump(void);
 	sec_upgrade_thread();
+	sec_firmware_version_dump();
 #endif
 
 #ifdef LIGHT_IMAGE_WRITER

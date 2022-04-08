@@ -18,17 +18,13 @@ config SYS_BOARD
 config SYS_CONFIG_NAME
     default "light-c910"
 
-config LIGHT_SEC_BOOT
-    bool "light security boot"
+config LIGHT_SEC_UPGRADE
+    bool "light secure upgrade"
     default n
 
-config LIGHT_SEC_UPGRADE
-	bool "light secure upgrade"
-	default n
-
-config LIGHT_SEC_BOOT_NO_VERIFY
-	bool "light security boot without verification"
-	default n
+config LIGHT_SEC_BOOT_WITH_VERIFY
+    bool "light security boot with verification"
+    default n
 
 config TARGET_LIGHT_FPGA_FM_C910
     bool "light fullmask FPGA board"
@@ -52,8 +48,8 @@ config SYS_TEXT_BASE
 
 config SPL_TEXT_BASE
     hex
-    default 0xffe0000800 if LIGHT_SEC_BOOT
-    default 0xffe0000000 if !LIGHT_SEC_BOOT
+    default 0xffe0000800 if LIGHT_SEC_BOOT_WITH_VERIFY
+    default 0xffe0000000 if !LIGHT_SEC_BOOT_WITH_VERIFY
 
 config SPL_MAX_SIZE
     hex
