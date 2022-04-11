@@ -697,6 +697,7 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO0_21,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO0_22,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO0_23,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(GPIO0_31,PIN_SPEED_NORMAL,PIN_PU,2);
 
 	light_pin_mux(CLK_OUT_0,1);
 	light_pin_mux(CLK_OUT_1,1);
