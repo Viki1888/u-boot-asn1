@@ -12,6 +12,9 @@
 #include <asm/arch-thead/boot_mode.h>
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
+
+/* the mocro is used to enable NON-COT boot with non-signed image */
+#define  LIGHT_NON_COT_BOOT	1
 /* the sample rpmb key is only used for testing */
 static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0x77, 0x66, 0x55, 0x44, \
 												0xbb, 0xaa, 0x99, 0x88, 0xff, 0xee, 0xdd, 0xcc, \
@@ -309,7 +312,11 @@ int light_secboot(int argc, char * const argv[])
 
 		memmove((void *)tf_addr, (const void *)(LIGHT_TF_FW_TMP_ADDR + HEADER_SIZE), tf_image_size);
 	} else {
-		run_command("ext4load mmc 0:3 0x0 trust_firmware.bin", 0);
+		#ifdef LIGHT_NON_COT_BOOT
+			run_command("ext4load mmc 0:3 0x0 trust_firmware.bin", 0);
+		#else
+			return CMD_RET_FAILURE;
+		#endif
 	}
 
 	/* Step2. Check and verify TEE image */
@@ -328,6 +335,10 @@ int light_secboot(int argc, char * const argv[])
 		}
 
 		memmove((void *)tee_addr, (const void *)(tee_addr + HEADER_SIZE), tee_image_size);
+	} else {
+		#ifndef LIGHT_NON_COT_BOOT
+			return CMD_RET_FAILURE;
+		#endif
 	}
 	return 0;
 }
