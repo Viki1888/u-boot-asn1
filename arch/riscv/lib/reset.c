@@ -18,6 +18,7 @@ static __attribute__((naked))void sys_wdt_reset(void)
         "ret                    \n\r"
     );
 }
+
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	printf("resetting ...\n");
