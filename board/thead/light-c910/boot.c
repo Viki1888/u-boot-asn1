@@ -13,8 +13,13 @@
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
 
-/* the mocro is used to enable NON-COT boot with non-signed image */
-#define  LIGHT_NON_COT_BOOT	1
+/* The micro is used to enable NON-COT boot with non-signed image */
+#define LIGHT_NON_COT_BOOT	1
+
+/* The micro is used to enable uboot version in efuse */
+#define	LIGHT_UBOOT_VERSION_IN_ENV	1
+
+
 /* the sample rpmb key is only used for testing */
 static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0x77, 0x66, 0x55, 0x44, \
 												0xbb, 0xaa, 0x99, 0x88, 0xff, 0xee, 0xdd, 0xcc, \
@@ -101,6 +106,7 @@ int csi_tee_set_upgrade_version(void)
 
 int csi_uboot_get_image_version(unsigned int *ver)
 {
+#ifdef	LIGHT_UBOOT_VERSION_IN_ENV
 	long long uboot_ver = 0;
 	unsigned char ver_x = 1;
 	int i;
@@ -121,12 +127,23 @@ int csi_uboot_get_image_version(unsigned int *ver)
 	} else {
 		*ver = 65 << 8;
 	}
+#else
+	unsigned int ver_x = 0;
+	int ret = 0;
+
+	ret = csi_efuse_get_bl1_version(&ver_x);
+	if (ret) {
+		return -1;
+	}
+	*ver = ver_x + 1;
+#endif
 
 	return 0;
 }
 
 int csi_uboot_set_image_version(unsigned int ver)
 {
+#ifdef	LIGHT_UBOOT_VERSION_IN_ENV
 	//TODO
 	long long uboot_ver = 0;
 	unsigned char ver_x = (ver & 0xff00) >> 8;
@@ -140,7 +157,23 @@ int csi_uboot_set_image_version(unsigned int ver)
 	uboot_ver |= 1 << (ver_x - 2);
 	// To avoid waste efuse resource, we define uboot_version env parameter to standd for BL1_VERSION in efuse
 	env_set_hex("uboot_version", uboot_ver);
+#else
+	unsigned int ver_x = 0;
+	int ret = 0;
+
+	ver_x = ver;
+	if (ver_x == 1) {
+		printf("This is initial version !");
+		return 0;
+	}
 	
+	ver_x = ver_x - 1;
+	ret = csi_efuse_set_bl1_version(ver_x);
+	if (ret) {
+		return -1;
+	}
+
+#endif
 	return 0;
 }
 
