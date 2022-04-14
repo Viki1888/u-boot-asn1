@@ -130,7 +130,11 @@ int csi_uboot_get_image_version(unsigned int *ver)
 #else
 	unsigned int ver_x = 0;
 	int ret = 0;
-
+	ret = csi_efuse_api_int(void);
+	if (ret) {
+		printf("efuse api init fail \n");
+		return -1;
+	}
 	ret = csi_efuse_get_bl1_version(&ver_x);
 	if (ret) {
 		return -1;
@@ -165,6 +169,12 @@ int csi_uboot_set_image_version(unsigned int ver)
 	if (ver_x == 1) {
 		printf("This is initial version !");
 		return 0;
+	}
+
+	ret = csi_efuse_api_int(void);
+	if (ret) {
+		printf("efuse api init fail \n");
+		return -1;
 	}
 	
 	ver_x = ver_x - 1;
