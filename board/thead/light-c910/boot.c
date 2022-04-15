@@ -10,6 +10,7 @@
 #include <opensbi.h>
 #include <asm/csr.h>
 #include <asm/arch-thead/boot_mode.h>
+#include "../../../lib/sec_library/include/csi_efuse_api.h"
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
 
@@ -130,7 +131,8 @@ int csi_uboot_get_image_version(unsigned int *ver)
 #else
 	unsigned int ver_x = 0;
 	int ret = 0;
-	ret = csi_efuse_api_int(void);
+
+	ret = csi_efuse_api_int();
 	if (ret) {
 		printf("efuse api init fail \n");
 		return -1;
@@ -140,6 +142,8 @@ int csi_uboot_get_image_version(unsigned int *ver)
 		return -1;
 	}
 	*ver = ver_x + 1;
+
+	csi_efuse_api_unint();
 #endif
 
 	return 0;
@@ -171,7 +175,7 @@ int csi_uboot_set_image_version(unsigned int ver)
 		return 0;
 	}
 
-	ret = csi_efuse_api_int(void);
+	ret = csi_efuse_api_int();
 	if (ret) {
 		printf("efuse api init fail \n");
 		return -1;
@@ -182,7 +186,7 @@ int csi_uboot_set_image_version(unsigned int ver)
 	if (ret) {
 		return -1;
 	}
-
+	csi_efuse_api_unint();
 #endif
 	return 0;
 }

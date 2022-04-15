@@ -13,6 +13,7 @@
 #include "../../../lib/sec_library/include/csi_sec_img_verify.h"
 
 extern int csi_efuse_api_int(void);
+extern int csi_efuse_api_unint(void);
 extern int csi_efuse_read_raw(uint32_t addr, void *data, uint32_t cnt);
 extern int csi_efuse_write_raw(uint32_t addr, const void *data, uint32_t cnt);
 extern uint32_t rambus_crypto_init(void);
