@@ -143,7 +143,6 @@ int csi_uboot_get_image_version(unsigned int *ver)
 	}
 	*ver = ver_x + 1;
 
-	csi_efuse_api_unint();
 #endif
 
 	return 0;
@@ -186,7 +185,7 @@ int csi_uboot_set_image_version(unsigned int ver)
 	if (ret) {
 		return -1;
 	}
-	csi_efuse_api_unint();
+
 #endif
 	return 0;
 }
