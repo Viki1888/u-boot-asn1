@@ -12,6 +12,8 @@
 #include <asm/arch-thead/boot_mode.h>
 #include "../../../lib/sec_library/include/csi_efuse_api.h"
 
+
+
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
 
 /* The micro is used to enable NON-COT boot with non-signed image */
@@ -20,13 +22,17 @@
 /* The micro is used to enable uboot version in efuse */
 #define	LIGHT_UBOOT_VERSION_IN_ENV	1
 
+/* The micro is used to enble RPMB ACCESS KEY from KDF */
+//#define LIGHT_KDF_RPMB_KEY	1
+
 
 /* the sample rpmb key is only used for testing */
+#ifndef LIGHT_KDF_RPMB_KEY 
 static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0x77, 0x66, 0x55, 0x44, \
 												0xbb, 0xaa, 0x99, 0x88, 0xff, 0xee, 0xdd, 0xcc, \
 												0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, \
 												0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
+#endif
 static unsigned int upgrade_image_version = 0;
 
 int csi_tf_get_image_version(unsigned int *ver)
@@ -55,7 +61,19 @@ int csi_tf_set_image_version(unsigned int ver)
 	blkdata[17] = ver & 0xFF;
 
 	/* tf version reside in RPMB block#0, offset#16*/
+#ifndef LIGHT_KDF_RPMB_KEY 
 	temp_rpmb_key_addr = (unsigned long *)emmc_rpmb_key_sample;
+#else 
+	uint8_t kdf_rpmb_key[32];
+	uint32_t kdf_rpmb_key_length = 0;
+	int ret = 0;
+	ret = csi_kdf_gen_hmac_key(kdf_rpmb_key, &kdf_rpmb_key_length);
+	if (ret != 0) {
+		return -1;
+	}
+	temp_rpmb_key_addr = (unsigned long *)kdf_rpmb_key;
+#endif
+
 	sprintf(runcmd, "mmc rpmb write 0x%lx 0 1 0x%lx", (unsigned long)blkdata, (unsigned long)temp_rpmb_key_addr);
 	run_command(runcmd, 0);
 
@@ -93,7 +111,18 @@ int csi_tee_set_image_version(unsigned int ver)
 	blkdata[1] = ver & 0xFF;
 
 	/* tf version reside in RPMB block#0, offset#16*/
+#ifndef LIGHT_KDF_RPMB_KEY 
 	temp_rpmb_key_addr = (unsigned long *)emmc_rpmb_key_sample;
+#else 
+	uint8_t kdf_rpmb_key[32];
+	uint32_t kdf_rpmb_key_length = 0;
+	int ret = 0;
+	ret = csi_kdf_gen_hmac_key(kdf_rpmb_key, &kdf_rpmb_key_length);
+	if (ret != 0) {
+		return -1;
+	}
+	temp_rpmb_key_addr = (unsigned long *)kdf_rpmb_key;
+#endif
 	sprintf(runcmd, "mmc rpmb write 0x%lx 0 1 0x%lx", (unsigned long)blkdata, (unsigned long)temp_rpmb_key_addr);
 	run_command(runcmd, 0);
 
@@ -588,4 +617,5 @@ _upgrade_uboot_exit:
 	}
 }
 #endif
+
 
