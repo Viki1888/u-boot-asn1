@@ -284,6 +284,9 @@ int light_vimage(int argc, char *const argv[])
 		printf("get new img version fail\n");
 		return CMD_RET_FAILURE;
 	}
+    if (strcmp(imgname, UBOOT_PART_NAME) == 0) {
+        new_img_version = ((new_img_version & 0xff ) << 8) | ((new_img_version & 0xff00)>>8);
+    }
 	printf("Get new image version from image header: v%d.%d\n", (new_img_version & 0xff00)>>8, new_img_version & 0xff);
 
 	/* Check image version for ROLLBACK resisance */ 
