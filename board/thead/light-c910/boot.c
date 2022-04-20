@@ -168,9 +168,16 @@ int csi_uboot_get_image_version(unsigned int *ver)
 	}
 	ret = csi_efuse_get_bl1_version(&ver_x);
 	if (ret) {
+        printf("csi_efuse_get_bl1_version fail\n");
 		return -1;
 	}
-	*ver = ver_x + 1;
+
+    ret = csi_efuse_api_uninit();
+	if (ret) {
+		return -1;
+	}
+
+	*ver = (ver_x + 1) << 8;
 
 #endif
 
@@ -197,7 +204,7 @@ int csi_uboot_set_image_version(unsigned int ver)
 	unsigned int ver_x = 0;
 	int ret = 0;
 
-	ver_x = ver;
+    ver_x = (ver & 0xff00) >> 8;
 	if (ver_x == 1) {
 		printf("This is initial version !");
 		return 0;
@@ -212,9 +219,14 @@ int csi_uboot_set_image_version(unsigned int ver)
 	ver_x = ver_x - 1;
 	ret = csi_efuse_set_bl1_version(ver_x);
 	if (ret) {
+        printf("csi_efuse_set_bl1_version fail \n");
 		return -1;
 	}
 
+    ret = csi_efuse_api_uninit();
+	if (ret) {
+		return -1;
+	}
 #endif
 	return 0;
 }
