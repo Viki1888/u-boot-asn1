@@ -25,7 +25,6 @@
 /* The micro is used to enble RPMB ACCESS KEY from KDF */
 //#define LIGHT_KDF_RPMB_KEY	1
 
-
 /* the sample rpmb key is only used for testing */
 #ifndef LIGHT_KDF_RPMB_KEY 
 static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0x77, 0x66, 0x55, 0x44, \
