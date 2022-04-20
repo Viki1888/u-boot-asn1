@@ -172,11 +172,7 @@ int csi_uboot_get_image_version(unsigned int *ver)
 		return -1;
 	}
 
-    ret = csi_efuse_api_uninit();
-	if (ret) {
-        printf("efuse api uninit fail \n");
-		return -1;
-	}
+    csi_efuse_api_uninit();
 
 	*ver = (ver_x + 1) << 8;
 
@@ -224,11 +220,8 @@ int csi_uboot_set_image_version(unsigned int ver)
 		return -1;
 	}
 
-    ret = csi_efuse_api_uninit();
-	if (ret) {
-        printf("efuse api uninit fail \n");
-		return -1;
-	}
+    csi_efuse_api_uninit();
+
 #endif
 	return 0;
 }
