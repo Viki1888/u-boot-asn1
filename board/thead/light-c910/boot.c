@@ -285,7 +285,7 @@ int light_vimage(int argc, char *const argv[])
 		return CMD_RET_FAILURE;
 	}
     if (strcmp(imgname, UBOOT_PART_NAME) == 0) {
-        new_img_version = ((new_img_version & 0xff ) << 8) | ((new_img_version & 0xff00)>>8);
+        new_img_version = (((new_img_version & 0xff )+1) << 8) | ((new_img_version & 0xff00)>>8);
     }
 	printf("Get new image version from image header: v%d.%d\n", (new_img_version & 0xff00)>>8, new_img_version & 0xff);
 
