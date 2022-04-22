@@ -311,7 +311,7 @@ int light_vimage(int argc, char *const argv[])
 			return CMD_RET_FAILURE;
 		} 
 		
-		// Check uboot maximization version > 65
+		// Check uboot maximization version > 64
 		if (((new_img_version & 0xFF00) >> 8) > UBOOT_MAX_VER) {
 			printf("UBOOT Image version has reached to max-version\n");
 			return CMD_RET_FAILURE;
