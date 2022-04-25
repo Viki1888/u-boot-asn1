@@ -1,20 +1,23 @@
 #include <linux/delay.h>
+#include <linux/sizes.h>
 #include "../include/common_lib.h"
 #include "../include/ddr_common_func.h"
 
 DDR_SYSREG_REG_SW_REG_S ddr_sysreg;
 
+#ifndef CONFIG_DDR_RANK_SIZE
+#define CONFIG_DDR_RANK_SIZE SZ_4G
+#endif
+
 unsigned long get_ddr_density() {
-    int div =1;
+    int div =1, mul=1;
+#ifdef CONFIG_DDR_DUAL_RANK
+	mul = 2;
+#endif
 #ifdef CONFIG_DDR_H32_MODE
     div = 2;
 #endif
-
-#ifdef CONFIG_DDR_DUAL_RANK
-	return 0x200000000/div;
-#else
-	return 0x100000000/div;
-#endif
+	return CONFIG_DDR_RANK_SIZE*mul/div;
 }
 
 enum DDR_TYPE get_ddr_type() {
