@@ -143,7 +143,7 @@ int csi_uboot_get_image_version(unsigned int *ver)
 	// To avoid waste efuse resource, we define uboot_version env parameter to standd for BL1_VERSION in efuse
 	uboot_ver = env_get_hex("uboot_version", 0xffffffffffffffff);
 	// Add getting uboot version here.
-	for (i = 0; i < 64; i++) {
+	for (i = 0; i < (UBOOT_MAX_VER-1); i++) {
 		if ((uboot_ver >> i) & 0x1) {
 			ver_x ++;
 		} else {
@@ -151,10 +151,10 @@ int csi_uboot_get_image_version(unsigned int *ver)
 		}
 	}
 
-	if ( i < 64 ) {
+	if ( i < (UBOOT_MAX_VER-1) ) {
 		*ver = ver_x << 8;
 	} else {
-		*ver = 65 << 8;
+		*ver = 1 << 8;
 	}
 #else
 	unsigned int ver_x = 0;
