@@ -892,6 +892,8 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO1_14,0);
 	light_pin_mux(GPIO1_15,0);
 	light_pin_mux(GPIO1_16,0);
+	light_pin_mux(GPIO1_24,3);
+	light_pin_mux(GPIO1_25,3);
 	light_pin_cfg(GPIO1_0,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_1,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_2,PIN_SPEED_NORMAL,PIN_PN,2);
@@ -905,6 +907,8 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO1_14,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GPIO1_15,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GPIO1_16,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(GPIO1_24,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(GPIO1_25,PIN_SPEED_NORMAL,PIN_PN,2);
 
 	light_pin_mux(CLK_OUT_0,1);
 	light_pin_mux(CLK_OUT_1,1);
@@ -1043,6 +1047,8 @@ static void light_iopin_init(void)
 
 	light_pin_mux(GPIO1_24,3);
 	light_pin_cfg(GPIO1_24,PIN_SPEED_NORMAL,PIN_PD,2);
+	light_pin_mux(GPIO1_25,3);
+	light_pin_cfg(GPIO1_25,PIN_SPEED_NORMAL,PIN_PD,2);
 
 	light_pin_mux(CLK_OUT_0,1);
 	light_pin_mux(CLK_OUT_1,1);
