@@ -151,7 +151,7 @@ int csi_uboot_get_image_version(unsigned int *ver)
 		}
 	}
 
-	if ( i < (UBOOT_MAX_VER-1) ) {
+	if ( i <= (UBOOT_MAX_VER-1) ) {
 		*ver = ver_x << 8;
 	} else {
 		*ver = 1 << 8;
