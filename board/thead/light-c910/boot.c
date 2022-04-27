@@ -184,17 +184,20 @@ int csi_uboot_set_image_version(unsigned int ver)
 {
 #ifdef	LIGHT_UBOOT_VERSION_IN_ENV
 	//TODO
-	long long uboot_ver = 0;
+	unsigned long long uboot_ver = 0;
 	unsigned char ver_x = (ver & 0xff00) >> 8;
+    char ver_str[32] = {0};
 
 	uboot_ver = env_get_hex("uboot_version", 0xffffffffffffffff);
+
 	// Add getting uboot version here.
 	if (ver_x == 1) {
 		printf("This is initial version !");
 		return 0;
 	}
-	uboot_ver |= 1 << (ver_x - 2);
-	// To avoid waste efuse resource, we define uboot_version env parameter to standd for BL1_VERSION in efuse
+	uboot_ver |= ((unsigned long long)1 << (ver_x - 2));
+
+	// To avoid waste efuse resource, we define uboot_version env parameter to stand for BL1_VERSION in efuse
 	env_set_hex("uboot_version", uboot_ver);
 #else
 	unsigned int ver_x = 0;
@@ -270,6 +273,18 @@ int light_vimage(int argc, char *const argv[])
 	unsigned int new_img_version = 0;
 	unsigned int cur_img_version = 0;
 	char imgname[32] = {0};
+
+
+    if (strcmp(argv[1], "get") == 0) {
+        csi_uboot_get_image_version(&new_img_version);
+        printf("Get version: %x\n", new_img_version);
+    } else if (strcmp(argv[1], "set") == 0) {
+        new_img_version = simple_strtoul(argv[2], NULL, 16);
+        printf("Set version: %x\n", new_img_version);
+        csi_uboot_set_image_version(new_img_version);
+    }
+    return 0;
+
 
 	if (argc < 3) 
 		return CMD_RET_USAGE;
