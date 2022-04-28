@@ -158,6 +158,27 @@
 	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:2 $audio_ram_addr light_c906_audio.bin; ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin; ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
+#elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_EVT)
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"splashimage=0x30000000\0" \
+	"splashpos=m,m\0" \
+	"fdt_high=0xffffffffffffffff\0" \
+	"opensbi_addr=0x0\0" \
+	"dtb_addr=0x01f00000\0" \
+	"kernel_addr=0x00200000\0" \
+	"aon_ram_addr=0xffffef8000\0" \
+	"audio_ram_addr=0xffc0000000\0" \
+	"mmcdev=0\0" \
+	"mmcpart=3\0" \
+	"fdt_file=light-val-ant-evt.dtb\0" \
+	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
+	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
+	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr\0" \
+	"bootcmd_load=ext4load mmc 0:2 $aon_ram_addr light_aon_fpga.bin; ext4load mmc 0:2 $audio_ram_addr light_c906_audio.bin; ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin; ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
+	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
+        "\0"
 #else
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
