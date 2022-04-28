@@ -272,19 +272,6 @@ int light_vimage(int argc, char *const argv[])
 	unsigned long vimage_addr = 0;
 	unsigned int new_img_version = 0;
 	unsigned int cur_img_version = 0;
-	char imgname[32] = {0};
-
-
-    if (strcmp(argv[1], "get") == 0) {
-        csi_uboot_get_image_version(&new_img_version);
-        printf("Get version: %x\n", new_img_version);
-    } else if (strcmp(argv[1], "set") == 0) {
-        new_img_version = simple_strtoul(argv[2], NULL, 16);
-        printf("Set version: %x\n", new_img_version);
-        csi_uboot_set_image_version(new_img_version);
-    }
-    return 0;
-
 
 	if (argc < 3) 
 		return CMD_RET_USAGE;
