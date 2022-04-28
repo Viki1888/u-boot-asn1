@@ -272,7 +272,8 @@ int light_vimage(int argc, char *const argv[])
 	unsigned long vimage_addr = 0;
 	unsigned int new_img_version = 0;
 	unsigned int cur_img_version = 0;
-
+    char imgname[32] = {0};
+    
 	if (argc < 3) 
 		return CMD_RET_USAGE;
 	
