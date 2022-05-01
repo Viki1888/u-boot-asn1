@@ -96,16 +96,20 @@ void boot_audio(void)
         writel(0x3f, (volatile void *)C906_RESET_REG);
 }
 
-int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+void boot_aon(void)
 {
 	writel(0xffffffff, (void *)(E902_IOPMP_BASE + 0xc0));
 	disable_slave_cpu();
 	set_slave_cpu_entry(E902_START_ADDRESS);
 	flush_cache((uintptr_t)C910_E902_START_ADDRESS, 0x10000);
 	enable_slave_cpu();
+}
 
+int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+{
+	boot_aon();
+	mdelay(100);
 	boot_audio();
-
 	return 0;
 }
 #endif
