@@ -1017,7 +1017,9 @@ static void light_iopin_init(void)
 	light_pin_mux(AUDIO_PA9,3);
 	light_pin_cfg(AUDIO_PA9,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_mux(AUDIO_PA10,3);
+	light_pin_cfg(AUDIO_PA10,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_mux(AUDIO_PA12,3);
+	light_pin_cfg(AUDIO_PA12,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_mux(AUDIO_PA13,0);
 
 	/*ap-padmux on left/top */
