@@ -342,6 +342,12 @@ static void dwc3_phy_setup(struct dwc3 *dwc)
 	reg = dwc3_readl(dwc->regs, DWC3_GUSB3PIPECTL(0));
 
 	/*
+	 * Make sure UX_EXIT_PX is cleared as that causes issues with some
+	 * PHYs. Also, this bit is not supposed to be used in normal operation.
+	 */
+	reg &= ~DWC3_GUSB3PIPECTL_UX_EXIT_PX;
+
+	/*
 	 * Above 1.94a, it is recommended to set DWC3_GUSB3PIPECTL_SUSPHY
 	 * to '0' during coreConsultant configuration. So default value
 	 * will be '0' when the core is reset. Application needs to set it
@@ -375,7 +381,8 @@ static void dwc3_phy_setup(struct dwc3 *dwc)
 		reg &= ~DWC3_GUSB3PIPECTL_SUSPHY;
 
 	dwc3_writel(dwc->regs, DWC3_GUSB3PIPECTL(0), reg);
-
+	debug("%s DWC3_GUSB3PIPECTL:0x%x\n", __func__,
+			dwc3_readl(dwc->regs, DWC3_GUSB3PIPECTL(0)));
 	mdelay(100);
 
 	reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
