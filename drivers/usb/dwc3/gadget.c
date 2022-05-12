@@ -1487,8 +1487,6 @@ static int dwc3_gadget_start(struct usb_gadget *g,
 	 * STAR#9000525659: Clock Domain Crossing on DCTL in
 	 * USB 2.0 Mode
 	 */
-	debug("%s maximum_speed:%d revision:0x%x\n",__func__,
-			dwc->maximum_speed, dwc->revision);
 	if (dwc->revision < DWC3_REVISION_220A) {
 		reg |= DWC3_DCFG_SUPERSPEED;
 	} else {
@@ -1509,8 +1507,6 @@ static int dwc3_gadget_start(struct usb_gadget *g,
 		}
 	}
 	dwc3_writel(dwc->regs, DWC3_DCFG, reg);
-	debug("%s DWC3_DCFG:0x%x\n",__func__,
-			dwc3_readl(dwc->regs, DWC3_DCFG));
 
 	dwc->start_config_issued = false;
 
@@ -2155,7 +2151,7 @@ static void dwc3_gadget_conndone_interrupt(struct dwc3 *dwc)
 	reg = dwc3_readl(dwc->regs, DWC3_DSTS);
 	speed = reg & DWC3_DSTS_CONNECTSPD;
 	dwc->speed = speed;
-	debug("%s speed:%d dwc3_dsts:0x%x\n",__func__, speed, reg);
+
 	dwc3_update_ram_clk_sel(dwc, speed);
 
 	switch (speed) {
