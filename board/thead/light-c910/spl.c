@@ -42,7 +42,7 @@ static struct light_reset_list light_pre_reset_lists[] = {
 static struct light_reset_list light_post_reset_lists[] = {
 	{0x00000001, 0xFFFF0151B0}, /* AP rst_gen: NPU rst */
 	{0xFFFFFFFF, 0xFFFF041028}, /* DSP sys_reg: DSP rst */
-	{0x00000001, 0xFFFF529000}, /* VO sys_reg: GPU rst */
+	{0x00000002, 0xFFEF528000}, /* VO sys_reg: GPU rst */
 	{0x00000003, 0xFFEF528000}, /* VO sys_reg: GPU rst */
 	{0x00000007, 0xFFFF529004}, /* VO sys_reg: DPU rst */
 };
@@ -71,6 +71,7 @@ static void light_post_reset_config(void)
 
 	while (i < entry_size) {
 		writel(light_post_reset_lists[i].val, (void *)(light_post_reset_lists[i].reg));
+        udelay(2);
 		i++;
 	}
 }
@@ -352,7 +353,6 @@ void board_init_f(ulong dummy)
 
 	light_pre_reset_config();
 	cpu_clk_config(0);
-	light_post_reset_config();
 
 	ret = spl_early_init();
 	if (ret) {
@@ -360,6 +360,7 @@ void board_init_f(ulong dummy)
 		hang();
 	}
 	arch_cpu_init_dm();
+	light_post_reset_config();
 	preloader_console_init();
 
 	ddr_clk_config(0);
