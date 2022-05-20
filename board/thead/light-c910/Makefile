@@ -4,11 +4,18 @@
 # SPDX-License-Identifier: GPL-2.0+
 #
 DDR_SRC_PATH=lpddr4/src
+DDR_REGU_SRC=lpddr-regu
 DDR_FW_PATH=$(DDR_SRC_PATH)/ddr_phy_fw
 
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
 obj-y += sys_clk.o
+
+ifdef CONFIG_PMIC_VOL_INIT
+obj-$(CONFIG_PMIC_VOL_INIT) += $(DDR_REGU_SRC)/ddr_regu.o
+obj-$(CONFIG_PMIC_VOL_INIT) += $(DDR_REGU_SRC)/dw_iic_ll.o
+endif
+
 ifdef CONFIG_TARGET_LIGHT_FPGA_FM_C910
 obj-y += ddr.o
 else # // CONFIG_TARGET_LIGHT_FPGA_FM_C910

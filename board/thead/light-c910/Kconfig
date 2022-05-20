@@ -6,6 +6,22 @@
 
 if TARGET_LIGHT_C910
 
+config PMIC_VOL_INIT
+    bool "tuning light-ddr regulators"
+    default y
+
+config DDR_REGU_0V6
+    int "uint in uv"
+    default 640000
+
+config DDR_REGU_0V8
+    int "uint in uv"
+    default 820000
+
+config DDR_REGU_1V1
+    int "uint in uv"
+    default 1200000
+
 config SYS_CPU
     default "c9xx"
 

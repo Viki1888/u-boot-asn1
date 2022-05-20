@@ -21,14 +21,17 @@
 #include <fdtdec.h>
 #include "../common/uart.h"
 #include "../common/mini_printf.h"
+#include "lpddr-regu/ddr_regu.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
 extern void init_ddr(void);
 extern void cpu_clk_config(int cpu_freq);
+extern void sys_clk_config(void);
 extern void ddr_clk_config(int ddr_freq);
 extern void show_sys_clk(void);
 extern int riscv_get_time(u64 *time);
+extern int pmic_reset_apcpu_voltage(void);
 
 struct light_reset_list {
         u32 val;
@@ -352,18 +355,41 @@ void board_init_f(ulong dummy)
 	int ret;
 
 	light_pre_reset_config();
-	cpu_clk_config(0);
+	sys_clk_config();
+	light_post_reset_config();
 
 	ret = spl_early_init();
 	if (ret) {
 		printf("spl_early_init() failed: %d\n", ret);
 		hang();
 	}
+
 	arch_cpu_init_dm();
 	light_post_reset_config();
 	preloader_console_init();
 
+#ifdef CONFIG_PMIC_VOL_INIT
+	ret = pmic_ddr_regu_init();
+	if (ret) {
+		printf("%s pmic init failed %d \n",__func__,ret);
+		hang();
+	}
+
+	ret = pmic_ddr_set_voltage();
+	if (ret) {
+		printf("%s set ddr voltage failed \n",__func__);
+		hang();
+	}
+
+	ret = pmic_reset_apcpu_voltage();
+	if (ret) {
+		printf("%s set apcpu voltage failed \n",__func__);
+		hang();
+	}
+
+#endif
 	ddr_clk_config(0);
+	cpu_clk_config(0);
 
 	init_ddr();
 	setup_ddr_scramble();
