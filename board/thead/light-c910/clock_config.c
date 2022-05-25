@@ -23,6 +23,11 @@
 #define MISCSYS_TEE_REG_BASE		(0xfffc02d000)
 #define MISCSYS_TEE_CLK_CTRL_TEE	(MISCSYS_TEE_REG_BASE + 0x120)
 
+/* VOSYS_SYREG_R */
+#define VOSYS_SYSREG_BASE	(0xffef528000)
+#define VOSYS_CLK_GATE_REG	(VOSYS_SYSREG_BASE + 0x50)
+#define VOSYS_CLK_GATE1_REG	(VOSYS_SYSREG_BASE + 0x54)
+
 /* AP_PERI_CLK_CFG */
 #define GMAC1_CLK_EN		BIT(26)
 #define PADCTRL1_APSYS_PCLK_EN	BIT(24)
@@ -66,6 +71,31 @@
 
 /* MISCSYS_TEE_CLK_CTRL_TEE */
 #define TEE_DMAC_CLK_EN		BIT(6)
+
+/* VOSYS_CLK_GATE_REG */
+#define CLKCTRL_DPU_PIXELCLK0_EN	BIT(5)
+#define CLKCTRL_DPU_PIXELCLK1_EN        BIT(6)
+#define CLKCTRL_DPU_HCLK_EN		BIT(7)
+#define CLKCTRL_DPU_ACLK_EN             BIT(8)
+#define CLKCTRL_DPU_CCLK_EN             BIT(9)
+
+#define CLKCTRL_HDMI_SFR_CLK_EN		BIT(10)
+#define CLKCTRL_HDMI_PCLK_EN		BIT(11)
+#define CLKCTRL_HDMI_CEC_CLK_EN		BIT(12)
+#define CLKCTRL_HDMI_I2S_CLK_EN		BIT(19)
+
+#define CLKCTRL_MIPI_DSI0_PCLK_EN	BIT(13)
+#define CLKCTRL_MIPI_DSI0_CFG_CLK_EN	BIT(15)
+#define CLKCTRL_MIPI_DSI0_REFCLK_EN     BIT(17)
+#define CLKCTRL_MIPIDSI0_PIXCLK_EN      BIT(30)
+
+#define CLKCTRL_MIPI_DSI1_PCLK_EN	BIT(14)
+#define CLKCTRL_MIPI_DSI1_CFG_CLK_EN	BIT(16)
+#define CLKCTRL_MIPI_DSI1_REFCLK_EN     BIT(18)
+#define CLKCTRL_MIPIDSI1_PIXCLK_EN      BIT(31)
+
+/* VOSYS_CLK_GATE1_REG */
+#define CLKCTRL_HDMI_PIXCLK_EN		BIT(0)
 
 #define C910_CCLK	0
 #define C910_CCLK_I0	1
@@ -981,6 +1011,67 @@ void ap_peri_clk_disable()
 	writel(clk_cfg, MISCSYS_TEE_CLK_CTRL_TEE);
 }
 
+void ap_dpu_clk_endisable(bool en)
+{
+	unsigned int cfg = readl(VOSYS_CLK_GATE_REG);
+
+	if (en)
+		cfg |= (CLKCTRL_DPU_PIXELCLK0_EN | CLKCTRL_DPU_PIXELCLK1_EN | CLKCTRL_DPU_HCLK_EN |
+				CLKCTRL_DPU_ACLK_EN | CLKCTRL_DPU_CCLK_EN);
+	else
+		cfg &= ~(CLKCTRL_DPU_PIXELCLK0_EN | CLKCTRL_DPU_PIXELCLK1_EN | CLKCTRL_DPU_HCLK_EN |
+				CLKCTRL_DPU_ACLK_EN | CLKCTRL_DPU_CCLK_EN);
+
+	writel(cfg, VOSYS_CLK_GATE_REG);
+}
+
+void ap_hdmi_clk_endisable(bool en)
+{
+	unsigned int cfg = readl(VOSYS_CLK_GATE_REG);
+	unsigned int cfg1 = readl(VOSYS_CLK_GATE1_REG);
+
+	if (en) {
+		cfg |= (CLKCTRL_HDMI_SFR_CLK_EN | CLKCTRL_HDMI_PCLK_EN | CLKCTRL_HDMI_CEC_CLK_EN |
+				CLKCTRL_HDMI_I2S_CLK_EN);
+		cfg1 |= CLKCTRL_HDMI_PIXCLK_EN;
+	} else {
+		cfg &= ~(CLKCTRL_HDMI_SFR_CLK_EN | CLKCTRL_HDMI_PCLK_EN | CLKCTRL_HDMI_CEC_CLK_EN |
+				CLKCTRL_HDMI_I2S_CLK_EN);
+		cfg1 &= ~CLKCTRL_HDMI_PIXCLK_EN;
+	}
+
+	writel(cfg, VOSYS_CLK_GATE_REG);
+	writel(cfg1, VOSYS_CLK_GATE1_REG);
+}
+
+void ap_mipi_dsi0_clk_endisable(bool en)
+{
+	unsigned int cfg = readl(VOSYS_CLK_GATE_REG);
+
+	if (en)
+		cfg |= (CLKCTRL_MIPI_DSI0_PCLK_EN | CLKCTRL_MIPI_DSI0_CFG_CLK_EN | CLKCTRL_MIPI_DSI0_REFCLK_EN |
+				CLKCTRL_MIPIDSI0_PIXCLK_EN);
+	else
+		cfg &= ~(CLKCTRL_MIPI_DSI0_PCLK_EN | CLKCTRL_MIPI_DSI0_CFG_CLK_EN | CLKCTRL_MIPI_DSI0_REFCLK_EN |
+				CLKCTRL_MIPIDSI0_PIXCLK_EN);
+
+	writel(cfg, VOSYS_CLK_GATE_REG);
+}
+
+void ap_mipi_dsi1_clk_endisable(bool en)
+{
+	unsigned int cfg = readl(VOSYS_CLK_GATE_REG);
+
+	if (en)
+		cfg |= (CLKCTRL_MIPI_DSI1_PCLK_EN | CLKCTRL_MIPI_DSI1_CFG_CLK_EN | CLKCTRL_MIPI_DSI1_REFCLK_EN |
+				CLKCTRL_MIPIDSI1_PIXCLK_EN);
+	else
+		cfg &= ~(CLKCTRL_MIPI_DSI1_PCLK_EN | CLKCTRL_MIPI_DSI1_CFG_CLK_EN | CLKCTRL_MIPI_DSI1_REFCLK_EN |
+				CLKCTRL_MIPIDSI1_PIXCLK_EN);
+
+	writel(cfg, VOSYS_CLK_GATE_REG);
+}
+
 int clk_config(void)
 {
 	unsigned long rate = clk_light_get_rate("c910_cclk", CLK_DEV_MUX);
@@ -1072,6 +1163,8 @@ int clk_config(void)
 #endif
 
 	ap_peri_clk_disable();
+	ap_hdmi_clk_endisable(false);
+	ap_mipi_dsi1_clk_endisable(false);
 
 	return 0;
 }
