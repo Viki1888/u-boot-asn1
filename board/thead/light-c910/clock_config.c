@@ -1162,7 +1162,6 @@ int clk_config(void)
 		return ret;
 #endif
 
-	ap_peri_clk_disable();
 	ap_hdmi_clk_endisable(false);
 	ap_mipi_dsi1_clk_endisable(false);
 
