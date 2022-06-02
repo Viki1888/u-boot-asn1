@@ -1137,3 +1137,17 @@ void ddr_soc_pll_disable () {
   printf("DDR SOC PLL PowerDown \n");
 #endif
 }
+void lpddr4_auto_selref()
+{
+  ddr_sysreg_wr(DDR_CFG1,0xa0000);   //remove core clock after xx
+  wr(SWCTL,0);
+  wr(SWCTLSTATIC,1);
+  wr(PWRTMG,0x40ae04);
+  wr(HWLPCTL,0x430003);
+  wr(DCH1_HWLPCTL,0x430003);
+  wr(SWCTL,1);
+  wr(SWCTLSTATIC,0);
+
+  wr(PWRCTL,0x0000000b); //[3] dfi_dram_clk_disable [1] powerdown_en [0]serref_en
+  wr(DCH1_PWRCTL,0x0000000b);
+}
