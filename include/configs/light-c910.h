@@ -65,7 +65,6 @@
 #define LIGHT_TF_FW_TMP_ADDR	0x100000
 #define LIGHT_KERNEL_ADDR_CMD	"0x200000"
 #define LIGHT_DTB_ADDR_CMD	"0x1f00000"
-//#define LIGHT_IMAGE_WRITER	1
 
 
 /* trust image name string */

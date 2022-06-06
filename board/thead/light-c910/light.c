@@ -1365,7 +1365,6 @@ int board_init(void)
 	return 0;
 }
 
-#ifdef LIGHT_IMAGE_WRITER
 static void light_usb_boot_check(void)
 {
 	int boot_mode;
@@ -1382,7 +1381,6 @@ static void light_usb_boot_check(void)
 	run_command("run gpt_partition", 0);
 	run_command("fastboot usb 0", 0);
 }
-#endif
 
 
 int board_late_init(void)
@@ -1395,8 +1393,6 @@ int board_late_init(void)
 	sec_firmware_version_dump();
 #endif
 
-#ifdef LIGHT_IMAGE_WRITER
 	light_usb_boot_check();
-#endif
 	return 0;
 }
