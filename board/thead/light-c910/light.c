@@ -912,8 +912,9 @@ static void light_iopin_init(void)
 
 	light_pin_mux(CLK_OUT_0,1);
 	light_pin_mux(CLK_OUT_1,1);
-	light_pin_mux(CLK_OUT_2,1);
+	light_pin_mux(CLK_OUT_2,3);
 	light_pin_mux(CLK_OUT_3,1);
+	light_pin_cfg(CLK_OUT_2,PIN_SPEED_NORMAL,PIN_PU,2);
 
 	/*ap-pdmux on righ/top*/
 	light_pin_mux(QSPI0_SCLK,2);
