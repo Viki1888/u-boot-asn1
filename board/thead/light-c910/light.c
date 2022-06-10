@@ -833,12 +833,7 @@ static void light_iopin_init(void)
 	light_pin_mux(AUDIO_PA13,0);
 
 	/*ap-padmux on left/top */
-	light_pin_mux(QSPI1_SCLK,4);
-	light_pin_mux(QSPI1_CSN0,4);
-	light_pin_mux(QSPI1_D0_MOSI,4);
-	light_pin_mux(QSPI1_D1_MISO,4);
-	light_pin_mux(QSPI1_D2_WP,2);
-	light_pin_mux(QSPI1_D3_HOLD,2);
+	light_pin_mux(QSPI1_CSN0,3);
 	light_pin_cfg(QSPI1_CSN0,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(QSPI1_SCLK,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(QSPI1_D0_MOSI,PIN_SPEED_NORMAL,PIN_PU,8);
@@ -1024,12 +1019,7 @@ static void light_iopin_init(void)
 	light_pin_mux(AUDIO_PA13,0);
 
 	/*ap-padmux on left/top */
-	light_pin_mux(QSPI1_SCLK,4);
-	light_pin_mux(QSPI1_CSN0,4);
-	light_pin_mux(QSPI1_D0_MOSI,4);
-	light_pin_mux(QSPI1_D1_MISO,4);
-	light_pin_mux(QSPI1_D2_WP,2);
-	light_pin_mux(QSPI1_D3_HOLD,2);
+	light_pin_mux(QSPI1_CSN0,3);
 	light_pin_cfg(QSPI1_CSN0,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(QSPI1_SCLK,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(QSPI1_D0_MOSI,PIN_SPEED_NORMAL,PIN_PU,8);
