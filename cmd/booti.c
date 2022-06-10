@@ -119,7 +119,7 @@ U_BOOT_CMD(
 
 #endif
 
-#if CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY)
+#if CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A) || CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B)
 extern int light_secboot(int argc, char * const argv[]);
 int do_secboot(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {

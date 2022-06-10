@@ -189,7 +189,7 @@ U_BOOT_CMD(
 	" several fuse bytes, starting at 'addr'\n"
 );
 
-#if CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY)
+#if CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A) || CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B)
 /* Secure function for image verificaiton here */
 int get_image_version(unsigned long img_src_addr)
 {
