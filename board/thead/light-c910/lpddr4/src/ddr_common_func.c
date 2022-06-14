@@ -248,14 +248,16 @@ unsigned int ddr_phy_reg_rd(unsigned long int addr) {
 
    //wr(0xffff004008,0xff400000);//Full bypass scramble
    //wr(0xffff004008,0xff400000);//Full bypass scramble
-
+    //axi rst->release
+    ddr_sysreg_wr(DDR_CFG0,0x00f0);
+    ddr_sysreg_wr(DDR_CFG0,0x1ff0);
+    wr(DBG1,0);
+    wr(DBG1_DCH1,0);
     if(port & 0x1) wr(PCTRL_0,1);
     if(port & 0x2) wr(PCTRL_1,1);
     if(port & 0x4) wr(PCTRL_2,1);
     if(port & 0x8) wr(PCTRL_3,1);
     if(port & 0x10) wr(PCTRL_4,1);
-    wr(DBG1,0);
-    wr(DBG1_DCH1,0);
   }
 
 void enable_auto_refresh() {
@@ -340,11 +342,22 @@ if(bits==64) {
   ddr_sysreg_wr(DDR_CFG0,0x40);
   ddr_sysreg_wr(DDR_CFG0,0x40);
   ddr_sysreg_wr(DDR_CFG0,0x40);
-  ddr_sysreg_wr(DDR_CFG0,0x50);  // release apb presetn
-  ddr_sysreg_wr(DDR_CFG0,0x50);
-  ddr_sysreg_wr(DDR_CFG0,0x50);
+  ddr_sysreg_wr(DDR_CFG0,0x40);
+  ddr_sysreg_wr(DDR_CFG0,0x40);
+
+  ddr_sysreg_wr(DDR_CFG0,0xc0);  // release Phyrst
+  ddr_sysreg_wr(DDR_CFG0,0xc0);  // release Phyrst
+  ddr_sysreg_wr(DDR_CFG0,0xc0);  // release Phyrst
+  ddr_sysreg_wr(DDR_CFG0,0xc0);  // release Phyrst
+
+  ddr_sysreg_wr(DDR_CFG0,0xd0);  // release apb presetn
+  ddr_sysreg_wr(DDR_CFG0,0xd0);
+  ddr_sysreg_wr(DDR_CFG0,0xd0);
+  ddr_sysreg_wr(DDR_CFG0,0xd0);
+  ddr_sysreg_wr(DDR_CFG0,0xd0);
+  ddr_sysreg_wr(DDR_CFG0,0xd0);
   if(bits==32) {
-  ddr_sysreg_wr(DDR_CFG0,0x52);
+  ddr_sysreg_wr(DDR_CFG0,0xd2);
   }
 
  }
@@ -1060,7 +1073,7 @@ void lpddr4_auto_ps_en(int pwdn_en,int selfref_en,int clock_auto_disable ) {
     //ddr_sysreg_wr(DDR_CFG0,0x1ff0);
     //ddr_sysreg_wr(DDR_CFG0,0x1ff0);
     ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.u32 = ddr_sysreg_rd(DDR_CFG0);
-    ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.rg_ctl_ddr_usw_rst_reg |= 0x1FA;
+    ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.rg_ctl_ddr_usw_rst_reg |= 0x1F2;
     ddr_sysreg_wr(DDR_CFG0,ddr_sysreg.ddr_sysreg_registers_struct_ddr_cfg0.u32);
   }
 

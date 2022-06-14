@@ -8,7 +8,7 @@ if TARGET_LIGHT_C910
 
 config PMIC_VOL_INIT
     bool "tuning light-ddr regulators"
-    default y
+    default n
 
 config DDR_REGU_0V6
     int "uint in uv"
@@ -62,6 +62,10 @@ config TARGET_LIGHT_FM_C910_VAL_B
     default n
 
 config TARGET_LIGHT_FM_C910_VAL_ANT_EVT
+    bool "light fullmask for ant-evt board "
+    default n
+
+config TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE
     bool "light fullmask for ant-evt board "
     default n
 
