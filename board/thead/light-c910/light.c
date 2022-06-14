@@ -1253,9 +1253,9 @@ static void light_iopin_init(void)
 	light_pin_mux(GPIO0_30,0);
 	light_pin_cfg(GPIO0_20,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO0_21,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO0_27,PIN_SPEED_NORMAL,PIN_PU,2);
-	light_pin_cfg(GPIO0_28,PIN_SPEED_NORMAL,PIN_PU,2);
-	light_pin_cfg(GPIO0_29,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_cfg(GPIO0_27,PIN_SPEED_NORMAL,PIN_PD,2);                          ///< NC(not used)
+	light_pin_cfg(GPIO0_28,PIN_SPEED_NORMAL,PIN_PD,2);                          ///<AVDD25_IR_EN
+	light_pin_cfg(GPIO0_29,PIN_SPEED_NORMAL,PIN_PD,2);                          ///<DVDD12_IR_EN
 	light_pin_cfg(GPIO0_30,PIN_SPEED_NORMAL,PIN_PU,2);
 
 	light_pin_mux(GPIO1_0,1);
@@ -1281,20 +1281,20 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO1_2,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_3,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_4,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO1_9,PIN_SPEED_NORMAL,PIN_PU,2);
-	light_pin_cfg(GPIO1_10,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_cfg(GPIO1_9,PIN_SPEED_NORMAL,PIN_PD,2);                          ///<VDD18_LCD0_EN
+	light_pin_cfg(GPIO1_10,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<LCD0_BIAS_EN
 	light_pin_cfg(GPIO1_11,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO1_12,PIN_SPEED_NORMAL,PIN_PU,2);
-	light_pin_cfg(GPIO1_13,PIN_SPEED_NORMAL,PIN_PU,2);
-	light_pin_cfg(GPIO1_14,PIN_SPEED_NORMAL,PIN_PU,2);
-	light_pin_cfg(GPIO1_15,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_cfg(GPIO1_12,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<TOUCH-PANNEL VDD28_TP0_EN
+	light_pin_cfg(GPIO1_13,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<DOVDD18_RGB_EN
+	light_pin_cfg(GPIO1_14,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<DVDD12_RGB_EN
+	light_pin_cfg(GPIO1_15,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<AVDD28_RGB_EN
 	light_pin_cfg(GPIO1_16,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_21,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_22,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO1_23,PIN_SPEED_NORMAL,PIN_PN,2);
+	light_pin_cfg(GPIO1_23,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<LED_PDN
 	light_pin_cfg(GPIO1_24,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO1_25,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO1_26,PIN_SPEED_NORMAL,PIN_PD,2);
+	light_pin_cfg(GPIO1_26,PIN_SPEED_NORMAL,PIN_PD,2);                         ///<DBB2LEDDRIVER_EN
 
 	light_pin_mux(CLK_OUT_0,1);
 	light_pin_mux(CLK_OUT_1,1);
@@ -1334,7 +1334,7 @@ static void light_iopin_init(void)
 	light_pin_cfg(GPIO2_18,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_19,PIN_SPEED_NORMAL,PIN_PN,2);
 	light_pin_cfg(GPIO2_20,PIN_SPEED_NORMAL,PIN_PN,2);
-	light_pin_cfg(GPIO2_21,PIN_SPEED_NORMAL,PIN_PU,2);
+	light_pin_cfg(GPIO2_21,PIN_SPEED_NORMAL,PIN_PD,2);                        ///<NC(not-connected)
 	light_pin_cfg(GPIO2_22,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GPIO2_23,PIN_SPEED_NORMAL,PIN_PU,2);
 	light_pin_cfg(GPIO2_24,PIN_SPEED_NORMAL,PIN_PU,2);
