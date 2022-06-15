@@ -416,7 +416,7 @@ if(bits==64) {
   wr(INIT6,0x0000004d);
   wr(INIT7,0x0000004d);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000a55f);//RANKCTL
+  wr(RANKCTL,0x0000ab9f);//RANKCTL
   wr(RANKCTL1,0x0000001a);
   wr(DRAMTMG0,0x2221482d);
   wr(DRAMTMG1,0x00090941);
@@ -516,7 +516,7 @@ if(bits==64) {
   wr(INIT6,0x00440012);
   wr(INIT7,0x0004001a);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000a55f);
+  wr(RANKCTL,0x0000ab9f);
   wr(RANKCTL1,0x00000017);
   wr(DRAMTMG0,0x1f263f28);//[30:24]-wr2pre 0x1e->0x1f
   wr(DRAMTMG1,0x00080839);//[20:16]-txp [13:8]-rd2pre 0x7->0x8 [6:0] 0x38->0x39
@@ -615,7 +615,7 @@ if(bits==64) {
   wr(INIT6,0x00000012);
   wr(INIT7,0x0000001a);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000a55f);
+  wr(RANKCTL,0x0000ab9f);
   wr(RANKCTL1,0x00000017);
   wr(DRAMTMG0,0x1b203622);
   wr(DRAMTMG1,0x00060630);
@@ -703,7 +703,7 @@ if(bits==64) {
   wr(INIT6,0x0000004d);
   wr(INIT7,0x0000004d);
   wr(DIMMCTL,0x00000000);
-  wr(RANKCTL,0x0000a55f);
+  wr(RANKCTL,0x0000ab9f);
   wr(RANKCTL1,0x00000012);
   wr(DRAMTMG0,0x14162417);
   wr(DRAMTMG1,0x00040420);
@@ -758,12 +758,12 @@ if(bits==64) {
   //wr(DFIUPD1,0x00b700c4);
   //wr(DFIUPD2,0x80000000);
   wr(ODTMAP,0x00000000);
-  wr(SCHED,0x80821f18);
-  wr(SCHED1,0x00002000);
+  wr(SCHED,0x1f829b1c);  //[2]  page-close enable [14:8] 0x1b: lpr entry num=28, hpr entry num=4
+  wr(SCHED1,0x4400b00f); //[7:0] page-close timer
   wr(PERFHPR1,0x0f000001);
   wr(PERFLPR1,0x0f00007f);
   wr(PERFWR1,0x0f00007f);
-  wr(SCHED3,0x04040208);
+  wr(SCHED3,0x00000208);
   wr(SCHED4,0x08400810);
   wr(DBG0,0x00000000);
   wr(DBG1,0x00000000);
@@ -787,47 +787,18 @@ if(bits==64) {
   wr(DCH1_DBG1,0x00000000);
   wr(DCH1_DBGCMD,0x00000000);
    while(rd(RFSHCTL3)!=0x00000001);
-  wr(PCCFG,0x00000000);
-  wr(PCFGR_0,0x0000400f);
-  wr(PCFGR_1,0x0000400f);
-  wr(PCFGR_2,0x0000400f);
-  wr(PCFGR_3,0x0000400f);
-  wr(PCFGR_4,0x0000400f);
-  wr(PCFGR_0,0x0000500f);
-  wr(PCFGR_1,0x0000500f);
-  wr(PCFGR_2,0x0000500f);
-  wr(PCFGR_3,0x0000500f);
-  wr(PCFGR_4,0x0000500f);
-  wr(PCFGR_0,0x0000500f);
-  wr(PCFGR_1,0x0000500f);
-  wr(PCFGR_2,0x0000500f);
-  wr(PCFGR_3,0x0000500f);
-  wr(PCFGR_4,0x0000500f);
-  wr(PCFGR_0,0x0000100f);
-  wr(PCFGR_1,0x0000100f);
-  wr(PCFGR_2,0x0000100f);
-  wr(PCFGR_3,0x0000100f);
-  wr(PCFGR_4,0x0000100f);
-  wr(PCFGW_0,0x0000400f);
-  wr(PCFGW_1,0x0000400f);
-  wr(PCFGW_2,0x0000400f);
-  wr(PCFGW_3,0x0000400f);
-  wr(PCFGW_4,0x0000400f);
-  wr(PCFGW_0,0x0000500f);
-  wr(PCFGW_1,0x0000500f);
-  wr(PCFGW_2,0x0000500f);
-  wr(PCFGW_3,0x0000500f);
-  wr(PCFGW_4,0x0000500f);
-  wr(PCFGW_0,0x0000500f);
-  wr(PCFGW_1,0x0000500f);
-  wr(PCFGW_2,0x0000500f);
-  wr(PCFGW_3,0x0000500f);
-  wr(PCFGW_4,0x0000500f);
-  wr(PCFGW_0,0x0000100f);
-  wr(PCFGW_1,0x0000100f);
-  wr(PCFGW_2,0x0000100f);
-  wr(PCFGW_3,0x0000100f);
-  wr(PCFGW_4,0x0000100f);
+//update by perf sim
+  wr(PCCFG,0x00000010);   //[4] page match limit,limits the number of consecutive same page DDRC transactions that can be granted by the Port Arbiter to four
+  wr(PCFGR_0,0x0000500f); //CPU read
+  wr(PCFGW_0,0x0000500f); //CPU write
+  wr(PCFGR_1,0x00005020); //VI Read   max 32
+  wr(PCFGW_1,0x0000501f); //VI Write, sensor/isp/dw/dsp
+  wr(PCFGR_2,0x0000501f); //VO Read, DPU/GPU
+  wr(PCFGW_2,0x0000503f); //VO Write, GPU
+  wr(PCFGR_3,0x000051ff);
+  wr(PCFGW_3,0x000051ff);
+  wr(PCFGR_4,0x0000503f);
+  wr(PCFGW_4,0x0000503f);
    while(rd(PWRCTL)!=0x00000020);
   wr(PWRCTL,0x00000020);
    while(rd(DCH1_PWRCTL)!=0x00000020);
