@@ -17,6 +17,8 @@
 #define aon_base         ((void __iomem *)0xfffff46000)
 
 #define AP_REE_CLKGEN_BASE	(0xffef010000)
+#define AP_DPU0_PLL_CFG1	(AP_REE_CLKGEN_BASE + 0x44)
+#define AP_DPU1_PLL_CFG1	(AP_REE_CLKGEN_BASE + 0x54)
 #define AP_PERI_CLK_CFG		(AP_REE_CLKGEN_BASE + 0x204)
 #define AP_CTRL_CLK_CFG		(AP_REE_CLKGEN_BASE + 0x208)
 
@@ -27,6 +29,12 @@
 #define VOSYS_SYSREG_BASE	(0xffef528000)
 #define VOSYS_CLK_GATE_REG	(VOSYS_SYSREG_BASE + 0x50)
 #define VOSYS_CLK_GATE1_REG	(VOSYS_SYSREG_BASE + 0x54)
+
+/* AP_DPU0_PLL_CFG1 */
+#define AP_DPU0_PLL_RST		BIT(29)
+
+/* AP_DPU1_PLL_CFG1 */
+#define AP_DPU1_PLL_RST		BIT(29)
 
 /* AP_PERI_CLK_CFG */
 #define GMAC1_CLK_EN		BIT(26)
@@ -1047,29 +1055,39 @@ void ap_hdmi_clk_endisable(bool en)
 void ap_mipi_dsi0_clk_endisable(bool en)
 {
 	unsigned int cfg = readl((void __iomem *)VOSYS_CLK_GATE_REG);
+	unsigned int cfg1 = readl((void __iomem *)AP_DPU0_PLL_CFG1);
 
-	if (en)
+	if (en) {
 		cfg |= (CLKCTRL_MIPI_DSI0_PCLK_EN | CLKCTRL_MIPI_DSI0_CFG_CLK_EN | CLKCTRL_MIPI_DSI0_REFCLK_EN |
 				CLKCTRL_MIPIDSI0_PIXCLK_EN);
-	else
+		cfg1 &= ~AP_DPU0_PLL_RST;
+	} else {
 		cfg &= ~(CLKCTRL_MIPI_DSI0_PCLK_EN | CLKCTRL_MIPI_DSI0_CFG_CLK_EN | CLKCTRL_MIPI_DSI0_REFCLK_EN |
 				CLKCTRL_MIPIDSI0_PIXCLK_EN);
+		cfg1 |= AP_DPU0_PLL_RST;
+	}
 
 	writel(cfg, (void __iomem *)VOSYS_CLK_GATE_REG);
+	writel(cfg1, (void __iomem *)AP_DPU0_PLL_CFG1);
 }
 
 void ap_mipi_dsi1_clk_endisable(bool en)
 {
 	unsigned int cfg = readl((void __iomem *)VOSYS_CLK_GATE_REG);
+	unsigned int cfg1 = readl((void __iomem *)AP_DPU1_PLL_CFG1);
 
-	if (en)
+	if (en) {
 		cfg |= (CLKCTRL_MIPI_DSI1_PCLK_EN | CLKCTRL_MIPI_DSI1_CFG_CLK_EN | CLKCTRL_MIPI_DSI1_REFCLK_EN |
 				CLKCTRL_MIPIDSI1_PIXCLK_EN);
-	else
+		cfg1 &= ~AP_DPU1_PLL_RST;
+	} else {
 		cfg &= ~(CLKCTRL_MIPI_DSI1_PCLK_EN | CLKCTRL_MIPI_DSI1_CFG_CLK_EN | CLKCTRL_MIPI_DSI1_REFCLK_EN |
 				CLKCTRL_MIPIDSI1_PIXCLK_EN);
+		cfg1 |= AP_DPU1_PLL_RST;
+	}
 
 	writel(cfg, (void __iomem *)VOSYS_CLK_GATE_REG);
+	writel(cfg1, (void __iomem *)AP_DPU1_PLL_CFG1);
 }
 
 int clk_config(void)
