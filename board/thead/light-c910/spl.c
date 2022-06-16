@@ -356,7 +356,6 @@ void board_init_f(ulong dummy)
 
 	light_pre_reset_config();
 	sys_clk_config();
-	light_post_reset_config();
 
 	ret = spl_early_init();
 	if (ret) {
