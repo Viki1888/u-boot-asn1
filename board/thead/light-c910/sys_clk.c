@@ -28,10 +28,10 @@ void cpu_clk_config(uint32_t cpu_freq)
 {
 #ifndef CONFIG_TARGET_LIGHT_FPGA_FM_C910 /* for sillicon */
 	unsigned int tmp;
-	/* 4. update c910_cclk to 1500Mhz */
-	/* set cpu_pll1_foutpostdiv to 1500Mhz */
+	/* 4. update c910_cclk to 750Mhz */
+	/* set cpu_pll1_foutpostdiv to 750Mhz */
 	writel(0x20000000, (void *)LIGHT_APCLK_ADDRBASE + 0x14);
-	writel(0x01207d01, (void *)LIGHT_APCLK_ADDRBASE + 0x10);
+	writel(0x01407d01, (void *)LIGHT_APCLK_ADDRBASE + 0x10);
 	writel(0x23000000, (void *)LIGHT_APCLK_ADDRBASE + 0x14);
 	udelay(3);
 	writel(0x03000000, (void *)LIGHT_APCLK_ADDRBASE + 0x14);
@@ -39,6 +39,11 @@ void cpu_clk_config(uint32_t cpu_freq)
 	readl((void *)LIGHT_APCLK_ADDRBASE + 0x80);
 	while(!(readl((void *)LIGHT_APCLK_ADDRBASE + 0x80) & 0x10));
 	udelay(11);
+
+	/* config bus: cpu clk ratio to 1:1 */
+	writel((readl(LIGHT_APCLK_ADDRBASE + 0x100) & (~(0x7<<8))) | (0x0<<8), (void *)(LIGHT_APCLK_ADDRBASE + 0x100)); // ratio=0
+	writel(readl(LIGHT_APCLK_ADDRBASE + 0x100) & (~(0x1<<11)), (void *)(LIGHT_APCLK_ADDRBASE + 0x100)); // sync=0
+	writel(readl(LIGHT_APCLK_ADDRBASE + 0x100) | (0x1<<11), (void *)(LIGHT_APCLK_ADDRBASE + 0x100)); // sync=1
 
 	/* switch c910_cclk to cpu_pll1_foutpostdiv */
 	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x100);
