@@ -870,7 +870,7 @@ int pmic_reset_apcpu_voltage(void)
 	csi_iic_t          *dev_handle;
 	struct regulator_t *regu_vdd,*regu_vddm;
 	uint32_t cur_target1,cur_target2;
-	uint32_t target_uv1,target_uv2;
+	uint32_t target_uv1,target_uv2,val;
 	int ret;
 	int32_t  nstep1,nstep2;
 
@@ -931,6 +931,14 @@ int pmic_reset_apcpu_voltage(void)
 
 	mdelay(2);
 
+	/*disable watchdog*/
+	ret = pmic_read_reg_sr(dev_handle,0x31,0x0B,&val);
+	if (ret)
+		return ret;
+	val &=~(1<<2);
+	ret = pmic_write_reg(dev_handle,0x31,0x0B,val);
+	if (ret)
+		return ret;
 	return 0;
 }
 #elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_EVT)
@@ -1015,6 +1023,12 @@ int pmic_reset_apcpu_voltage(void)
 		return ret;
 	mdelay(1);
 
+	/*disable watchdog*/
+	ret = pmic_read_reg(dev_handle,regu_vdd->dev_addr,0x11,&val);
+	if (ret)
+		return ret;
+	val &=~0x7;
+	pmic_write_reg(dev_handle,regu_vdd->dev_addr,0x11,val);
 	return 0;
 }
 #else
@@ -1076,6 +1090,12 @@ int pmic_reset_apcpu_voltage(void)
 		return ret;
 	mdelay(1);
 
+	/*disable watchdog*/
+	ret = pmic_read_reg(dev_handle,regu_vdd->dev_addr,0x11,&val);
+	if (ret)
+		return ret;
+	val &=~0x7;
+	pmic_write_reg(dev_handle,regu_vdd->dev_addr,0x11,val);
 	return 0;
 }
 #endif
