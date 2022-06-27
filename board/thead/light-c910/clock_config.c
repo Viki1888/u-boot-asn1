@@ -1005,14 +1005,13 @@ int clk_light_set_rate(const char *clk_name, enum clk_device_type clk_dev_type, 
 /* disable some modules' clk that will not work in u-boot phase */
 void ap_peri_clk_disable(void)
 {
-	unsigned int clk_cfg = readl((void __iomem *)AP_PERI_CLK_CFG);
+	unsigned int clk_cfg;
 
-	clk_cfg &= ~(I2C5_CLK_EN | UART2_CLK_EN | UART3_CLK_EN | UART5_CLK_EN);
+#if (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_B) || (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_EVT) || (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE)
+	clk_cfg = readl((void __iomem *)AP_PERI_CLK_CFG);
+	clk_cfg &= ~(GMAC1_CLK_EN);
 	writel(clk_cfg, (void __iomem *)AP_PERI_CLK_CFG);
-
-	clk_cfg = readl((void __iomem *)AP_CTRL_CLK_CFG);
-	clk_cfg &= ~(SPINLOCK_CLK_EN);
-	writel(clk_cfg, (void __iomem *)AP_CTRL_CLK_CFG);
+#endif
 
 	clk_cfg = readl((void __iomem *)MISCSYS_TEE_CLK_CTRL_TEE);
 	clk_cfg &= ~(TEE_DMAC_CLK_EN);
@@ -1179,7 +1178,6 @@ int clk_config(void)
 	if (ret)
 		return ret;
 #endif
-
 	ap_hdmi_clk_endisable(false);
 	ap_mipi_dsi1_clk_endisable(false);
 

@@ -1583,5 +1583,6 @@ int board_late_init(void)
 #endif
 
 	light_usb_boot_check();
+	ap_peri_clk_disable();
 	return 0;
 }
