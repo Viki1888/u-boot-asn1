@@ -29,6 +29,19 @@
 #define VOSYS_SYSREG_BASE	(0xffef528000)
 #define VOSYS_CLK_GATE_REG	(VOSYS_SYSREG_BASE + 0x50)
 #define VOSYS_CLK_GATE1_REG	(VOSYS_SYSREG_BASE + 0x54)
+#define VOSYS_DPU_CCLK_CFG	(VOSYS_SYSREG_BASE + 0x64)
+
+/* VISYS_SYSREG_R */
+#define VISYS_SYSREG_BASE		(0xffe4040000)
+#define VISYS_MIPI_CSI0_PIXELCLK	(VISYS_SYSREG_BASE + 0x30)
+#define VISYS_ISP0_CLK_CFG		(VISYS_SYSREG_BASE + 0x24)
+#define VISYS_ISP1_CLK_CFG              (VISYS_SYSREG_BASE + 0x28)
+#define VISYS_ISP_RY_CLK_CFG            (VISYS_SYSREG_BASE + 0x2c)
+
+/* APSYS_SYSREG_R */
+#define APSYS_CLKGEN_BASE		(0xffef010000)
+#define APSYS_DPU0_PLL_DIV_CFG		(APSYS_CLKGEN_BASE + 0x1e8)
+#define APSYS_DPU1_PLL_DIV_CFG          (APSYS_CLKGEN_BASE + 0x1ec)
 
 /* AP_DPU0_PLL_CFG1 */
 #define AP_DPU0_PLL_RST		BIT(29)
@@ -104,6 +117,51 @@
 
 /* VOSYS_CLK_GATE1_REG */
 #define CLKCTRL_HDMI_PIXCLK_EN		BIT(0)
+
+/* VOSYS_DPU_CCLK_CFG */
+#define VOSYS_DPU_CCLK_DIV_NUM_MASK	0xf
+#define VOSYS_DPU_CCLK_DIV_NUM_SHIFT	0
+#define VOSYS_DPU_CCLK_DIV_EN		BIT(4)
+
+/* VISYS_MIPI_CSI0_PIXELCLK  */
+#define VISYS_MIPI_CSI0_PIXELCLK_DIV_NUM_SHIFT	0
+#define VISYS_MIPI_CSI0_PIXELCLK_DIV_NUM_MASK	0xf
+#define VISYS_MIPI_CSI0_PIXELCLK_DIV_EN		BIT(4)
+
+/* VISYS_ISP0_CLK_CFG */
+#define VISYS_ISP0_CLK_DIV_EN			BIT(4)
+#define VISYS_ISP0_CLK_DIV_NUM_SHIFT		(0)
+#define VISYS_ISP0_CLK_DIV_NUM_MASK		0xf
+
+/* VISYS_ISP1_CLK_CFG */
+#define VISYS_ISP1_CLK_DIV_EN			BIT(4)
+#define VISYS_ISP1_CLK_DIV_NUM_SHIFT		(0)
+#define VISYS_ISP1_CLK_DIV_NUM_MASK		0xf
+
+/* VISYS_ISP_RY_CLK_CFG */
+#define VISYS_ISP_RY_CLK_DIV_EN			BIT(4)
+#define VISYS_ISP_RY_CLK_DIV_NUM_SHIFT		(0)
+#define VISYS_ISP_RY_CLK_DIV_NUM_MASK		0xf
+
+/* APSYS_DPU0_PLL_DIV_CFG  */
+#define APSYS_DPU0_PLL_DIV_CLK_DIV_EN		BIT(8)
+#define APSYS_DPU0_PLL_DIV_CLK_DIV_NUM_MASK	0xff
+#define APSYS_DPU0_PLL_DIV_CLK_DIV_NUM_SHIFT	0
+
+/* APSYS_DPU1_PLL_DIV_CFG  */
+#define APSYS_DPU1_PLL_DIV_CLK_DIV_EN		BIT(8)
+#define APSYS_DPU1_PLL_DIV_CLK_DIV_NUM_MASK	0xff
+#define APSYS_DPU1_PLL_DIV_CLK_DIV_NUM_SHIFT	0
+
+enum multimedia_div_type {
+	VI_MIPI_CSI0_DIV,
+	VI_ISP0_CORE_DIV,
+	VI_ISP1_CORE_DIV,
+	VI_ISP_RY_CORE_DIV,
+	VO_DPU_CORE_DIV,
+	VO_DPU_PLL0_DIV,
+	VO_DPU_PLL1_DIV,
+};
 
 #define C910_CCLK	0
 #define C910_CCLK_I0	1
@@ -1088,6 +1146,70 @@ void ap_mipi_dsi1_clk_endisable(bool en)
 	writel(cfg1, (void __iomem *)AP_DPU1_PLL_CFG1);
 }
 
+static void ap_multimedia_div_num_set(enum multimedia_div_type type, unsigned int div_num)
+{
+	unsigned long div_reg;
+	unsigned int div_num_shift, div_num_mask, div_en;
+	unsigned int div_cfg;
+
+	switch (type) {
+	case VI_MIPI_CSI0_DIV:
+		div_reg = VISYS_MIPI_CSI0_PIXELCLK;
+		div_num_shift = VISYS_MIPI_CSI0_PIXELCLK_DIV_NUM_SHIFT;
+		div_num_mask = VISYS_MIPI_CSI0_PIXELCLK_DIV_NUM_MASK;
+		div_en = VISYS_MIPI_CSI0_PIXELCLK_DIV_EN;
+		break;
+	case VI_ISP0_CORE_DIV:
+		div_reg = VISYS_ISP0_CLK_CFG;
+		div_num_shift = VISYS_ISP0_CLK_DIV_NUM_SHIFT;
+		div_num_mask = VISYS_ISP0_CLK_DIV_NUM_MASK;
+		div_en = VISYS_ISP0_CLK_DIV_EN;
+		break;
+	case VI_ISP1_CORE_DIV:
+		div_reg = VISYS_ISP1_CLK_CFG;
+		div_num_shift = VISYS_ISP1_CLK_DIV_NUM_SHIFT;
+		div_num_mask = VISYS_ISP1_CLK_DIV_NUM_MASK;
+		div_en = VISYS_ISP1_CLK_DIV_EN;
+		break;
+	case VI_ISP_RY_CORE_DIV:
+		div_reg = VISYS_ISP_RY_CLK_CFG;
+		div_num_shift = VISYS_ISP_RY_CLK_DIV_NUM_SHIFT;
+		div_num_mask = VISYS_ISP_RY_CLK_DIV_NUM_MASK;
+		div_en = VISYS_ISP_RY_CLK_DIV_EN;
+		break;
+	case VO_DPU_CORE_DIV:
+		div_reg = VOSYS_DPU_CCLK_CFG;
+		div_num_shift = VOSYS_DPU_CCLK_DIV_NUM_SHIFT;
+		div_num_mask = VOSYS_DPU_CCLK_DIV_NUM_MASK;
+		div_en = VOSYS_DPU_CCLK_DIV_EN;
+		break;
+	case VO_DPU_PLL0_DIV:
+		div_reg =APSYS_DPU0_PLL_DIV_CFG;
+		div_num_shift = APSYS_DPU0_PLL_DIV_CLK_DIV_NUM_SHIFT;
+		div_num_mask = APSYS_DPU0_PLL_DIV_CLK_DIV_NUM_MASK;
+		div_en = APSYS_DPU0_PLL_DIV_CLK_DIV_EN;
+		break;
+	case VO_DPU_PLL1_DIV:
+		div_reg =APSYS_DPU1_PLL_DIV_CFG;
+		div_num_shift = APSYS_DPU1_PLL_DIV_CLK_DIV_NUM_SHIFT;
+		div_num_mask = APSYS_DPU1_PLL_DIV_CLK_DIV_NUM_MASK;
+		div_en = APSYS_DPU1_PLL_DIV_CLK_DIV_EN;
+		break;
+	default:
+		printf("invalid ap multimedia divider type\n");
+		return;
+	}
+
+	div_cfg = readl((void __iomem *)div_reg);
+	div_cfg &= ~div_en;
+	writel(div_cfg, (void __iomem *)div_reg);
+
+	div_cfg &= ~(div_num_mask << div_num_shift);
+	div_cfg |= (div_num & div_num_mask) << div_num_shift;
+	div_cfg |= div_en;
+	writel(div_cfg, (void __iomem *)div_reg);
+}
+
 int clk_config(void)
 {
 	unsigned long rate = clk_light_get_rate("c910_cclk", CLK_DEV_MUX);
@@ -1177,6 +1299,13 @@ int clk_config(void)
 	if (ret)
 		return ret;
 #endif
+	ap_multimedia_div_num_set(VI_MIPI_CSI0_DIV, 12); /* Input frquency: 2376MHZ */
+	ap_multimedia_div_num_set(VI_ISP0_CORE_DIV, 15); /* Input frquency: 2376MHZ */
+	ap_multimedia_div_num_set(VI_ISP1_CORE_DIV, 12); /* Input frquency: 2376MHZ */
+	ap_multimedia_div_num_set(VI_ISP_RY_CORE_DIV, 12); /* Input frquency: 2376MHZ */
+	ap_multimedia_div_num_set(VO_DPU_CORE_DIV, 4);	/* Input frquency: 2376MHZ */
+	ap_multimedia_div_num_set(VO_DPU_PLL0_DIV, 16);
+	ap_multimedia_div_num_set(VO_DPU_PLL1_DIV, 4);
 	ap_hdmi_clk_endisable(false);
 	ap_mipi_dsi1_clk_endisable(false);
 
