@@ -37,5 +37,6 @@ void ap_dpu_clk_endisable(bool en);
 void ap_hdmi_clk_endisable(bool en);
 void ap_mipi_dsi0_clk_endisable(bool en);
 void ap_mipi_dsi1_clk_endisable(bool en);
+void ap_peri_clk_disable(void);
 
 #endif
