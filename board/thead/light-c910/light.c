@@ -1567,6 +1567,7 @@ static void light_usb_boot_check(void)
 #endif
 
 	run_command("env default -a -f", 0);
+	run_command("env save", 0);
 	run_command("run gpt_partition", 0);
 	run_command("fastboot usb 0", 0);
 }
