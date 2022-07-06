@@ -123,7 +123,7 @@ U_BOOT_CMD(
 extern int light_secboot(int argc, char * const argv[]);
 int do_secboot(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
-	if (light_secboot(argc, argv) < 0)
+	if (light_secboot(argc, argv) != 0)
 		return -1;
 
 	return 0;
