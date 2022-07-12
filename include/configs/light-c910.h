@@ -47,6 +47,9 @@
 #define CONFIG_SYS_MEMTEST_END          CONFIG_SYS_SDRAM_BASE + MEMTEST_MAX_SIZE
 #define CONFIG_SYS_MEMTEST_SCRATCH      CONFIG_SYS_MEMTEST_END/2
 
+#define CONFIG_SYS_CBSIZE       1024 /* cmdline buffer size */
+#define CONFIG_SYS_MAXARGS      64 /* max #num of bootargs */
+
 /* SEC Configuration */
 //#define LIGHT_ROOTFS_SEC_CHECK	1
 #define SBI_ENTRY_ADDR			0x100000
