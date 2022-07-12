@@ -189,6 +189,7 @@ endif # !CONFIG_SPL_BUILD
 
 # core command
 obj-y += nvedit.o
+obj-y += secconfig.o
 
 obj-$(CONFIG_TI_COMMON_CMD_OPTIONS) += ti/
 
