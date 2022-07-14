@@ -851,8 +851,8 @@ static void light_iopin_init(void)
 	light_pin_mux(QSPI1_CSN0,3);
 	light_pin_cfg(QSPI1_CSN0,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(QSPI1_SCLK,PIN_SPEED_NORMAL,PIN_PN,8);
-	light_pin_cfg(QSPI1_D0_MOSI,PIN_SPEED_NORMAL,PIN_PN,8);
-	light_pin_cfg(QSPI1_D1_MISO,PIN_SPEED_NORMAL,PIN_PN,8);
+	light_pin_cfg(QSPI1_D0_MOSI,PIN_SPEED_NORMAL,PIN_PU,8);
+	light_pin_cfg(QSPI1_D1_MISO,PIN_SPEED_NORMAL,PIN_PU,8);
 	light_pin_cfg(QSPI1_D2_WP,PIN_SPEED_NORMAL,PIN_PN,8);
 	light_pin_cfg(QSPI1_D3_HOLD,PIN_SPEED_NORMAL,PIN_PN,8);
 
