@@ -47,9 +47,6 @@
 #define CONFIG_SYS_MEMTEST_END          CONFIG_SYS_SDRAM_BASE + MEMTEST_MAX_SIZE
 #define CONFIG_SYS_MEMTEST_SCRATCH      CONFIG_SYS_MEMTEST_END/2
 
-#define CONFIG_SYS_CBSIZE       1024 /* cmdline buffer size */
-#define CONFIG_SYS_MAXARGS      64 /* max #num of bootargs */
-
 /* SEC Configuration */
 //#define LIGHT_ROOTFS_SEC_CHECK	1
 #define SBI_ENTRY_ADDR			0x100000
@@ -205,6 +202,7 @@
 	"factory_reset=yes\0"\
         "\0"
 #elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
+#if defined (CONFIG_DEBUG_BUILD)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
@@ -218,6 +216,7 @@
 	"mmcdev=0\0" \
 	"boot_partition=bootA\0" \
 	"root_partition=rootfsA\0" \
+	"kernel_loglevel=7\0" \
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=4; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=5; else mmcpart=3; fi;\0" \
 	"fdt_file=light-b-product.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
@@ -225,13 +224,43 @@
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfsA};name=bootB,size=200MiB,type=boot;name=rootB,size=4000MiB,type=linux,uuid=${uuid_rootfsB};name=data,size=-,type=linux\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
-	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrw=PARTLABEL=data init=/init rootinit=/sbin/init rootrwoptions=rw,noatime rootrwreset=${factory_reset}\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr rootrw=PARTLABEL=data init=/init rootinit=/sbin/init rootrwoptions=rw,noatime rootrwreset=${factory_reset}\0" \
 	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
 	"bootcmd_load=run findpart;run load_aon;run load_c906_audio; ext4load mmc ${mmcdev}:${mmcbootpart} $opensbi_addr fw_dynamic.bin; ext4load mmc ${mmcdev}:${mmcbootpart} $dtb_addr ${fdt_file};ext4load mmc ${mmcdev}:${mmcbootpart} $kernel_addr Image;\0" \
 	"bootcmd=run bootcmd_load; bootslave ; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
 	"factory_reset=yes\0"\
         "\0"
+#else // RELEASE_BUILD
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"splashimage=0x30000000\0" \
+	"splashpos=m,m\0" \
+	"fdt_high=0xffffffffffffffff\0" \
+	"opensbi_addr=0x0\0" \
+	"dtb_addr=0x01f00000\0" \
+	"kernel_addr=0x00200000\0" \
+	"aon_ram_addr=0xffffef8000\0" \
+	"audio_ram_addr=0xffc0000000\0" \
+	"fwaddr=0x10000000\0"\
+	"mmcdev=0\0" \
+	"boot_partition=bootA\0" \
+	"root_partition=rootfsA\0" \
+	"kernel_loglevel=4\0" \
+	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=4; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=5; else mmcpart=3; fi;\0" \
+	"fdt_file=light-b-product.dtb\0" \
+	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
+	"uuid_rootfsB=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfsA};name=bootB,size=200MiB,type=boot;name=rootB,size=4000MiB,type=linux,uuid=${uuid_rootfsB};name=data,size=-,type=linux\0" \
+	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
+	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr rootrw=PARTLABEL=data init=/init rootinit=/sbin/init rootrwoptions=rw,noatime rootrwreset=${factory_reset}\0" \
+	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
+	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
+	"bootcmd_load=run findpart;run load_aon;run load_c906_audio; ext4load mmc ${mmcdev}:${mmcbootpart} $opensbi_addr fw_dynamic.bin; ext4load mmc ${mmcdev}:${mmcbootpart} $dtb_addr ${fdt_file};ext4load mmc ${mmcdev}:${mmcbootpart} $kernel_addr Image;\0" \
+	"bootcmd=run bootcmd_load; bootslave ; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
+	"factory_reset=yes\0"\
+        "\0"
+#endif
 #elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_EVT)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
