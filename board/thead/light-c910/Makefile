@@ -55,6 +55,8 @@ endif # // CONFIG_TARGET_LIGHT_FPGA_FM_C910
 else # // CONFIG_SPL_BUILD
 obj-y += light.o
 obj-y += board.o
+obj-$(CONFIG_THEAD_LIGHT_TIMER) += timer.o
+obj-$(CONFIG_THEAD_LIGHT_DIGITAL_SENSOR) += digital_sensor.o digital_sensor_test.o
 obj-y += clock_config.o
 obj-y += sec_check.o
 obj-y += boot.o

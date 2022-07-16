@@ -189,6 +189,10 @@ static const struct light_pll_rate_table light_cpupll_tbl[] = {
 	LIGHT_PLL_RATE(3000000000U, 1000000000U, 1, 125, 0, 3, 1),
 	LIGHT_PLL_RATE(3000000000U, 1500000000U, 1, 125, 0, 2, 1),
 	LIGHT_PLL_RATE(1800000000U, 1800000000U, 1, 75,  0, 1, 1),
+	LIGHT_PLL_RATE(2256000000U, 752000000U,  1, 94,  0, 3, 1),
+	LIGHT_PLL_RATE(3000000000U, 300000000U,  1, 125, 0, 5, 2),
+	LIGHT_PLL_RATE(1848000000U, 1848000000U, 1, 77,  0, 1, 1),
+	LIGHT_PLL_RATE(1872000000U, 1872000000U, 1, 78,  0, 1, 1),
 };
 
 static const struct light_pll_rate_table light_audio_pll_tbl[] = {
@@ -605,11 +609,6 @@ struct clk_lightmux {
 	enum clk_device_type clk_dev_type;
 };
 
-struct clk_info {
-	const char *clk_name;
-	enum clk_device_type clk_dev_type;
-};
-
 static const struct clk_info c910_cclk_sels[] = {
 	{"c910_cclk_i0", CLK_DEV_MUX},
 	{"cpu_pll1_foutpostdiv", CLK_DEV_PLL},
@@ -686,7 +685,7 @@ int clk_light_set_parent(const char *clk_name, const char *parent)
 	if (!strcmp(clk->clk_name, parent))
 		return 0;
 
-	printf("clk->num_parents = %d\n", clk->num_parents);
+	debug("clk->num_parents = %d\n", clk->num_parents);
 
 	for (i = 0; i < clk->num_parents; i++) {
 		pr_debug("parent%d:%s\n", i, clk->parents[i].clk_name);

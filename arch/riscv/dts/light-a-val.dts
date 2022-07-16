@@ -39,6 +39,12 @@
 		ranges;
 		u-boot,dm-pre-reloc;
 
+		intc: interrupt-controller@ffd8000000 {
+			compatible = "riscv,plic0";
+			reg = <0xff 0xd8000000 0x0 0x04000000>;
+			status = "disabled";
+		};
+
 		dummy_apb: apb-clock {
 			compatible = "fixed-clock";
 			clock-frequency = <62500000>;

@@ -89,6 +89,30 @@ config SPL_MAX_SIZE
     hex
     default 0x2f000
 
+config THEAD_PLIC
+	bool "Light PLIC Setting"
+	depends on RISCV_MMODE || SPL_RISCV_MMODE
+	select REGMAP
+	select SYSCON
+	default n
+	help
+	  The Thead PLIC block holds memory-mapped claim and pending registers
+	  associated with software interrupt.
+
+config THEAD_LIGHT_TIMER
+	bool "Light TIMER0 driver and test"
+	depends on THEAD_PLIC
+	default n
+	help
+	  The timer driver to verify the plic interrupt framework is ready
+
+config THEAD_LIGHT_DIGITAL_SENSOR
+	bool "Light Digital Sensor Setting"
+	depends on THEAD_PLIC
+	default n
+	help
+	  The security digital sensor driver
+
 config BOARD_SPECIFIC_OPTIONS
     def_bool y
     select RISCV_THEAD
