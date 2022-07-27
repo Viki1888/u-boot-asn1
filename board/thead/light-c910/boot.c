@@ -34,6 +34,47 @@ static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0
 #endif
 static unsigned int upgrade_image_version = 0;
 
+int csi_rpmb_write_access_key(void) 
+{
+    unsigned long *temp_rpmb_key_addr = NULL;
+    char runcmd[64] = {0};
+    uint8_t data[256] = {0};
+    uint8_t kdf_rpmb_key[32];
+	uint32_t kdf_rpmb_key_length = 0;
+	int ret = 0;
+
+#ifdef LIGHT_KDF_RPMB_KEY
+    /* Step1: retrive RPMB key from KDF function */
+	ret = csi_kdf_gen_hmac_key(kdf_rpmb_key, &kdf_rpmb_key_length);
+	if (ret != 0) {
+		return -1;
+	}
+    /* Make sure rpmb key length must be 32*/
+    if (kdf_rpmb_key_length != 32) {
+        return -1;
+    }
+
+	temp_rpmb_key_addr = (unsigned long *)kdf_rpmb_key;
+
+    /* Step2: check whether RPMB key is available */
+    sprintf(runcmd, "mmc rpmb read 0x%lx 0 1 0x%lx", (unsigned long)blkdata, (unsigned long)temp_rpmb_key_addr);
+	ret = run_command(runcmd, 0);
+    if (ret == CMD_RET_SUCCESS) {
+        return -1;
+    }
+
+    /* Step3: Write RPMB key at once */
+    sprintf(runcmd, "mmc rpmb key 0x%lx", (unsigned long)temp_rpmb_key_addr);
+	ret = run_command(runcmd, 0);
+    if (ret != CMD_RET_SUCCESS) {
+        return -1;
+    }
+    return 0;
+#else
+    return 1;
+#endif
+}
+
 int csi_tf_get_image_version(unsigned int *ver)
 {
 	char runcmd[64] = {0};
@@ -374,6 +415,9 @@ int light_secboot(int argc, char * const argv[])
 
 	printf("\n\n");
 	printf("Now, we start to verify all trust firmware before boot kernel !\n");
+
+    /* Enject RPMB KEY directly in startup */
+    csi_rpmb_write_access_key();
 
 	/* Initialize secure basis of functions */
 	ret = csi_sec_init();
