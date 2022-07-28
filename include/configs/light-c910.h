@@ -249,6 +249,7 @@
 	"root_partition=rootfsA\0" \
 	"kernel_loglevel=4\0" \
 	"kdump_buf=1M\0" \
+	"bootdelay=0\0" \
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=4; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=5; else mmcpart=3; fi;\0" \
 	"fdt_file=light-b-product.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
