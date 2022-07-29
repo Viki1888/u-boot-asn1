@@ -18,6 +18,8 @@
 #define LIGHT_DSP_SUBSYS_ADDRBASE	0xffff041000
 #define LIGHT_AUDIO_SUBSYS_ADDRBASE	0xffcb000000
 #define LIGHT_APSYS_RSTGEN_ADDRBASE	0xffff015000
+#define LIGHT_DPU_CLOCK_GATING_CTRL0	0xffef601A28
+#define LIGHT_DPU_CLOCK_GATING_CTRL1    0xffef601A2C
 
 void show_sys_clk(void)
 {
@@ -285,6 +287,48 @@ void sys_clk_config(void)
 	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
 	tmp |= 0x30;
 	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
+
+
+	/* axi_sram_clk: 812.8512MHz -> 688.128MHz */
+	tmp = readl((void *)LIGHT_AONCLK_ADDRBASE + 0x104);
+	tmp |= 0x2000;
+	writel(tmp, (void *)LIGHT_AONCLK_ADDRBASE + 0x104);
+
+	/* visys_aclk_m decrease frequency 792MHZ->594MHZ */
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1d0);
+	tmp &= ~0x00100000;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1d0);
+
+	tmp &= ~0x000f0000;
+	tmp |= 0x00140000;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1d0);
+	/* vosys_aclk_m：792MHz->594MHz */
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1dc);
+	tmp &= ~0x00000020;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1dc);
+
+	tmp &= ~0x0000000f;
+	tmp |= 0x00000024;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1dc);
+
+	/* vpsys_axi_aclk：792MHz->594MHz */
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1e0);
+	tmp &= ~0x00001000;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1e0);
+
+	tmp &= ~0x00000f00;
+	tmp |= 0x00001400;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1e0);
+
+	/* npu_cclk：1000MHz->792MHz */
+	tmp = readl((void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
+	tmp |= 0x00000040;
+	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
+
+
+	/* Enable dpu auto clock gating */
+	writel(0, (void __iomem *)LIGHT_DPU_CLOCK_GATING_CTRL0);
+	writel(0, (void __iomem *)LIGHT_DPU_CLOCK_GATING_CTRL1);
 #endif
 }
 
