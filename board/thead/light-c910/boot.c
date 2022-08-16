@@ -38,7 +38,7 @@ int csi_rpmb_write_access_key(void)
 {
     unsigned long *temp_rpmb_key_addr = NULL;
     char runcmd[64] = {0};
-    uint8_t data[256] = {0};
+    uint8_t blkdata[256] = {0};
     uint8_t kdf_rpmb_key[32];
 	uint32_t kdf_rpmb_key_length = 0;
 	int ret = 0;
