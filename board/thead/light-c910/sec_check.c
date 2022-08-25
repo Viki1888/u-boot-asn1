@@ -180,15 +180,6 @@ err:
 	return CMD_RET_FAILURE;
 }
 
-U_BOOT_CMD(
-	efuse, CONFIG_SYS_MAXARGS, 0, do_fuse,
-	"eFuse sub-system",
-	"read <addr> [<cnt>] - read 1 or 'cnt' fuse bytes,\n"
-	" starting at 'addr'\n"
-	"efuse write [-y] <addr> <hexval> [<hexval>...]  - program 1 or\n"
-	" several fuse bytes, starting at 'addr'\n"
-);
-
 #if CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A) || CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B) || CONFIG_IS_ENABLED(LIGHT_SEC_BOOT_WITH_VERIFY_ANT_EVT)
 /* Secure function for image verificaiton here */
 int get_image_version(unsigned long img_src_addr)
@@ -269,5 +260,13 @@ int verify_customer_image(img_type_t type, long addr)
 
 	return 0;
 }
-
+#else
+U_BOOT_CMD(
+	efuse, CONFIG_SYS_MAXARGS, 0, do_fuse,
+	"eFuse sub-system",
+	"read <addr> [<cnt>] - read 1 or 'cnt' fuse bytes,\n"
+	" starting at 'addr'\n"
+	"efuse write [-y] <addr> <hexval> [<hexval>...]  - program 1 or\n"
+	" several fuse bytes, starting at 'addr'\n"
+);
 #endif
