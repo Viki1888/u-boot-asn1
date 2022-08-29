@@ -235,7 +235,8 @@ void dump_image_header_info(long addr)
 int verify_customer_image(img_type_t type, long addr)
 {
 	int ret;
-
+    const char *image_name = "";
+    
 	/* Double check image number */
 	if (image_have_head(addr) == 0)
 		return -1;
@@ -244,10 +245,10 @@ int verify_customer_image(img_type_t type, long addr)
 	dump_image_header_info(addr);
 
 	/* Call customer image verification function */
-	if ((type == T_TF) || (type == T_TEE)) {
+	if ((type == T_TF) || (type == T_TEE) || (type == T_KRLIMG)) {
 		ret = csi_sec_custom_image_verify(addr, UBOOT_STAGE_ADDR);
 		if (ret) {
-			printf("Image(%s) is verified fail, Please go to check!\n\n", (type == T_TF)?"tf":"tee");
+			printf("Image(%d) is verified fail, Please go to check!\n\n", type);
 			return ret;
 		}
 	} else if (type == T_UBOOT) {

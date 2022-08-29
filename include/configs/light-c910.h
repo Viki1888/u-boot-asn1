@@ -75,6 +75,7 @@
 #define TEE_PART_NAME		"tee"
 #define UBOOT_PART_NAME		"uboot"
 #define STASH_PART_NAME 	"stash"
+#define KERNEL_PART_NAME	"kernel"
 
 #define UBOOT_STAGE_ADDR	SRAM_BASE_ADDR
 
