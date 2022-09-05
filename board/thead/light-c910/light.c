@@ -5,6 +5,7 @@
  */
 
 #include <common.h>
+#include <command.h>
 #include <asm/io.h>
 #include <asm/types.h>
 #include <thead/clock_config.h>
@@ -1574,7 +1575,9 @@ int board_init(void)
 static void light_usb_boot_check(void)
 {
 	int boot_mode;
-
+	uchar env_enetaddr[6]={0};
+	uchar env_enet1addr[6]={0};
+	int env_ethaddr_flag,env_eth1addr_flag;
 	boot_mode = readl((void *)SOC_OM_ADDRBASE) & 0x7;
 	if (boot_mode & BIT(2))
 		return;
@@ -1582,8 +1585,26 @@ static void light_usb_boot_check(void)
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	env_set("usb_fastboot", "yes");
 #endif
+	/*Get this version ethaddr(mac addr) env,which follows one board, trans to next version env*/
+	env_ethaddr_flag  = eth_env_get_enetaddr_by_index("eth", 0, env_enetaddr);
+	env_eth1addr_flag = eth_env_get_enetaddr_by_index("eth", 1, env_enet1addr);
 
 	run_command("env default -a -f", 0);
+	/*If mac addr in last version env  is valid, before save,inherit env mac addr */
+	if(env_ethaddr_flag){
+		eth_env_set_enetaddr_by_index("eth", 0, env_enetaddr);
+		run_command("printenv ethaddr",0);
+	}else{
+		printf("env ethaddr not exist or invalid\n");
+	}
+
+	if(env_eth1addr_flag){
+		eth_env_set_enetaddr_by_index("eth", 1, env_enet1addr);
+		run_command("printenv eth1addr",0);
+	}else{
+		printf("env eth1addr not exist or invalid\n");
+	}
+
 	run_command("env save", 0);
 	run_command("run gpt_partition", 0);
 	run_command("fastboot usb 0", 0);
@@ -1604,3 +1625,30 @@ int board_late_init(void)
 	ap_peri_clk_disable();
 	return 0;
 }
+
+static int do_env_ethaddr_check(cmd_tbl_t *cmdtp, int flag, int argc,
+		       char * const argv[])
+{
+	uchar env_enetaddr[6]={0};
+	int i;
+	for(i=0;i<2;i++){
+		if(eth_env_get_enetaddr_by_index("eth", i, env_enetaddr)){
+			printf("env (eth%d) MAC address ok- %pM\n",i, env_enetaddr);
+		}
+		else {
+			printf("env (eth%d) MAC address invalid - %pM\n",i, env_enetaddr);
+			printf(" * Check that the Ethernet address (MAC) is not 00:00:00:00:00:00,\n"
+				   " is not a multicast address(first byte low bit zero is not multi addr), \n"
+					"and is not FF:FF:FF:FF:FF:FF.\n");
+		}
+
+	}
+	return 0;
+
+}
+
+U_BOOT_CMD(
+	chk_ethaddr, 2, 0,	do_env_ethaddr_check,
+	"check ethaddrs in environment variables is valid",
+	""
+);
