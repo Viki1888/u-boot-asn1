@@ -34,10 +34,6 @@ config SYS_BOARD
 config SYS_CONFIG_NAME
     default "light-c910"
 
-config DEBUG_BUILD
-    bool "build mode"
-    default y
-
 config LIGHT_SEC_UPGRADE
     bool "light secure upgrade"
     default n
