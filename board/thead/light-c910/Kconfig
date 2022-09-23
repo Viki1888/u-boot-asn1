@@ -12,15 +12,15 @@ config PMIC_VOL_INIT
 
 config DDR_REGU_0V6
     int "uint in uv"
-    default 640000
+    default 600000
 
 config DDR_REGU_0V8
     int "uint in uv"
-    default 820000
+    default 800000
 
 config DDR_REGU_1V1
     int "uint in uv"
-    default 1200000
+    default 1100000
 
 config SYS_CPU
     default "c9xx"
@@ -60,8 +60,16 @@ config TARGET_LIGHT_FM_C910_VAL_A
     bool "light fullmask VAL board-a for system validation"
     default n
 
+config TARGET_LIGHT_FM_C910_A_REF
+    bool "light fullmask reference A board"
+    default n
+
 config TARGET_LIGHT_FM_C910_VAL_B
     bool "light fullmask VAL board-b for system validation"
+    default n
+
+config TARGET_LIGHT_FM_C910_B_REF
+    bool "light fullmask reference B board"
     default n
 
 config TARGET_LIGHT_FM_C910_VAL_ANT_EVT

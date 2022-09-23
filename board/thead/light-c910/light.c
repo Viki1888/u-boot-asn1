@@ -806,7 +806,7 @@ static void light_iopin_init(void)
 	light_pin_cfg(GMAC0_RXD3, PIN_SPEED_NORMAL, PIN_PN, 0xF);
 
 }
-#elif defined   ( CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
+#elif defined ( CONFIG_TARGET_LIGHT_FM_C910_VAL_B) || defined ( CONFIG_TARGET_LIGHT_FM_C910_B_REF)
 static void light_iopin_init(void)
 {
 	/* aon-padmux config */
