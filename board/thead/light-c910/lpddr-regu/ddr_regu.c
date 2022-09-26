@@ -817,7 +817,7 @@ int pmic_ddr_regu_init(void)
 
 int pmic_ddr_set_voltage(void)
 {
-	int ret = -1;
+	int ret = 0;
 	uint32_t val = 0;
 	uint32_t regu_num = ARRAY_SIZE(g_regu_id_list);
 	uint32_t i;
