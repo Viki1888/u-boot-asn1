@@ -45,8 +45,8 @@ config LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A
 config LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B
 	bool "light board-b security boot with verification"
 
-config LIGHT_SEC_BOOT_WITH_VERIFY_ANT_EVT
-	bool "light ant evt security boot with verification"
+config LIGHT_SEC_BOOT_WITH_VERIFY_ANT_REF
+	bool "light ant ref security boot with verification"
 
 config TARGET_LIGHT_FPGA_FM_C910
     bool "light fullmask FPGA board"
@@ -72,12 +72,12 @@ config TARGET_LIGHT_FM_C910_B_REF
     bool "light fullmask reference B board"
     default n
 
-config TARGET_LIGHT_FM_C910_VAL_ANT_EVT
-    bool "light fullmask for ant-evt board "
+config TARGET_LIGHT_FM_C910_VAL_ANT_REF
+    bool "light fullmask for ant-ref board "
     default n
 
 config TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE
-    bool "light fullmask for ant-evt board "
+    bool "light fullmask for ant-discrete board "
     default n
 
 config TARGET_LIGHT_FM_C910_BEAGLE
@@ -90,8 +90,8 @@ config SYS_TEXT_BASE
 
 config SPL_TEXT_BASE
     hex
-    default 0xffe0000800 if LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A || LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B || LIGHT_SEC_BOOT_WITH_VERIFY_ANT_EVT
-    default 0xffe0000000 if !(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A || LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B || LIGHT_SEC_BOOT_WITH_VERIFY_ANT_EVT)
+    default 0xffe0000800 if LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A || LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B || LIGHT_SEC_BOOT_WITH_VERIFY_ANT_REF
+    default 0xffe0000000 if !(LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A || LIGHT_SEC_BOOT_WITH_VERIFY_VAL_B || LIGHT_SEC_BOOT_WITH_VERIFY_ANT_REF)
 
 config SPL_MAX_SIZE
     hex

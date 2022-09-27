@@ -1064,7 +1064,7 @@ void ap_peri_clk_disable(void)
 {
 	unsigned int clk_cfg;
 
-#if (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_B) || (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_EVT) || (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE)
+#if (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_B) || (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_REF) || (defined CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE)
 	clk_cfg = readl((void __iomem *)AP_PERI_CLK_CFG);
 	clk_cfg &= ~(GMAC1_CLK_EN);
 	writel(clk_cfg, (void __iomem *)AP_PERI_CLK_CFG);

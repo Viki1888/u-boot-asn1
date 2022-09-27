@@ -158,7 +158,7 @@
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; secboot; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
 
-#elif defined (CONFIG_LIGHT_SEC_BOOT_WITH_VERIFY_ANT_EVT)
+#elif defined (CONFIG_LIGHT_SEC_BOOT_WITH_VERIFY_ANT_REF)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"fdt_high=0xffffffffffffffff\0" \
 	"tf_addr=0x100000\0" \
@@ -172,7 +172,7 @@
 	"mmcdev=0\0" \
 	"mmcpart=6\0" \
 	"uboot_version=0x0000000000000000\0"\
-	"fdt_file=light-ant-evt-sec.dtb\0" \
+	"fdt_file=light-ant-ref-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=50MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfs};name=data,size=-,type=linux\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
@@ -269,7 +269,7 @@
 	"bootcmd_load=run findpart;run load_aon;run load_c906_audio; ext4load mmc ${mmcdev}:${mmcbootpart} $opensbi_addr fw_dynamic.bin; ext4load mmc ${mmcdev}:${mmcbootpart} $dtb_addr ${fdt_file};ext4load mmc ${mmcdev}:${mmcbootpart} $kernel_addr Image;\0" \
 	"bootcmd=run bootcmd_load; bootslave ; run finduuid; run set_bootargs; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
-#elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_EVT)
+#elif defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_REF)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
@@ -285,7 +285,7 @@
 	"root_partition=rootfsA\0" \
 	"kdump_buf=1M\0" \
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=4; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=5; else mmcpart=3; fi;\0" \
-	"fdt_file=light-ant-evt.dtb\0" \
+	"fdt_file=light-ant-ref.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
 	"uuid_rootfsB=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfsA};name=bootB,size=200MiB,type=boot;name=rootB,size=4000MiB,type=linux,uuid=${uuid_rootfsB};name=data,size=-,type=linux\0" \
