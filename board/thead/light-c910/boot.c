@@ -499,27 +499,27 @@ int light_secboot(int argc, char * const argv[])
 		#endif
 	}
 
-    /* Step3. Check and verify light kernel image */
-	if (image_have_head(kernel_addr) == 1) {
-		printf("Process kernel image verification ...\n");
-		ret = verify_customer_image(T_KRLIMG, kernel_addr);
-		if (ret != 0) {
-			return CMD_RET_FAILURE;
-		}
+    // /* Step3. Check and verify light kernel image */
+	// if (image_have_head(kernel_addr) == 1) {
+	// 	printf("Process kernel image verification ...\n");
+	// 	ret = verify_customer_image(T_KRLIMG, kernel_addr);
+	// 	if (ret != 0) {
+	// 		return CMD_RET_FAILURE;
+	// 	}
 
-		kernel_image_size = get_image_size(kernel_addr);
-		printf("Kernel image size: %d\n", kernel_image_size);
-		if (kernel_image_size < 0) {
-			printf("GET kernel image size error\n");
-			return CMD_RET_FAILURE;
-		}
+	// 	kernel_image_size = get_image_size(kernel_addr);
+	// 	printf("Kernel image size: %d\n", kernel_image_size);
+	// 	if (kernel_image_size < 0) {
+	// 		printf("GET kernel image size error\n");
+	// 		return CMD_RET_FAILURE;
+	// 	}
 
-		memmove((void *)kernel_addr, (const void *)(kernel_addr + HEADER_SIZE), kernel_image_size);
-	} else {
-		#ifndef LIGHT_NON_COT_BOOT
-			return CMD_RET_FAILURE;
-		#endif
-	}
+	// 	memmove((void *)kernel_addr, (const void *)(kernel_addr + HEADER_SIZE), kernel_image_size);
+	// } else {
+	// 	#ifndef LIGHT_NON_COT_BOOT
+	// 		return CMD_RET_FAILURE;
+	// 	#endif
+	// }
 
 	return 0;
 }
