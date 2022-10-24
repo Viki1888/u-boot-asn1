@@ -288,7 +288,9 @@ void sys_clk_config(void)
 	tmp |= 0x30;
 	writel(tmp, (void *)LIGHT_APCLK_ADDRBASE + 0x1c8);
 
+	/* The boards other than the LightA board perform the bus down-speed operation */
 
+#if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE) || defined (CONFIG_TARGET_LIGHT_FM_C910_BEAGLE) || defined (CONFIG_TARGET_LIGHT_FM_C910_B_REF) || defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_REF) || defined (CONFIG_TARGET_LIGHT_FM_C910_B_POWER) || defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
 	/* axi_sram_clk: 812.8512MHz -> 688.128MHz */
 	tmp = readl((void *)LIGHT_AONCLK_ADDRBASE + 0x104);
 	tmp |= 0x2000;
@@ -329,6 +331,8 @@ void sys_clk_config(void)
 	/* Enable dpu auto clock gating */
 	writel(0, (void __iomem *)LIGHT_DPU_CLOCK_GATING_CTRL0);
 	writel(0, (void __iomem *)LIGHT_DPU_CLOCK_GATING_CTRL1);
+#endif
+
 #endif
 }
 

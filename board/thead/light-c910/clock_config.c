@@ -1299,6 +1299,10 @@ int clk_config(void)
 	if (ret)
 		return ret;
 #endif
+
+	/* The boards other than the LightA board perform the bus down-speed operation */
+
+#if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_DISCRETE) || defined (CONFIG_TARGET_LIGHT_FM_C910_BEAGLE) || defined (CONFIG_TARGET_LIGHT_FM_C910_B_REF) || defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_ANT_REF) || defined (CONFIG_TARGET_LIGHT_FM_C910_B_POWER) || defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
 	ap_multimedia_div_num_set(VI_MIPI_CSI0_DIV, 12); /* Input frquency: 2376MHZ */
 	ap_multimedia_div_num_set(VI_ISP0_CORE_DIV, 15); /* Input frquency: 2376MHZ */
 	ap_multimedia_div_num_set(VI_ISP1_CORE_DIV, 12); /* Input frquency: 2376MHZ */
@@ -1306,6 +1310,7 @@ int clk_config(void)
 	ap_multimedia_div_num_set(VO_DPU_CORE_DIV, 4);	/* Input frquency: 2376MHZ */
 	ap_multimedia_div_num_set(VO_DPU_PLL0_DIV, 16);
 	ap_multimedia_div_num_set(VO_DPU_PLL1_DIV, 4);
+#endif
 	ap_hdmi_clk_endisable(false);
 	ap_mipi_dsi1_clk_endisable(false);
 
