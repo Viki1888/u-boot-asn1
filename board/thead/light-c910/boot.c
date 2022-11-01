@@ -16,14 +16,17 @@
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
 
-/* The micro is used to enable NON-COT boot with non-signed image */
+/* The macro is used to enable NON-COT boot with non-signed image */
 #define LIGHT_NON_COT_BOOT	1
 
-/* The micro is used to enable uboot version in efuse */
+/* The macro is used to enable uboot version in efuse */
 #define	LIGHT_UBOOT_VERSION_IN_ENV	1
 
-/* The micro is used to enble RPMB ACCESS KEY from KDF */
+/* The macro is used to enble RPMB ACCESS KEY from KDF */
 //#define LIGHT_KDF_RPMB_KEY	1
+
+/* The macro is used to enable secure image version check in boot */
+//#define LIGHT_IMG_VERSION_CHECK_IN_BOOT	1
 
 /* the sample rpmb key is only used for testing */
 #ifndef LIGHT_KDF_RPMB_KEY 
@@ -320,6 +323,79 @@ int verify_image_version_rule(unsigned int new_ver, unsigned int cur_ver)
 	return 0;
 }
 
+int check_image_version_rule(unsigned int new_ver, unsigned int cur_ver)
+{
+	unsigned char new_ver_x = 0, new_ver_y = 0;
+	unsigned char cur_ver_x = 0, cur_ver_y = 0;
+
+	/* Get secure version X from image version X.Y */
+	new_ver_x = (new_ver & 0xFF00) >> 8;
+	new_ver_y = new_ver & 0xFF;
+	cur_ver_x = (cur_ver & 0xFF00) >> 8;
+	cur_ver_y = cur_ver & 0xFF;
+
+	/* Ensure image version must be less than expected version */
+	if (new_ver_x < cur_ver_x) {
+		return -1;
+	}
+
+	return 0;
+}
+
+int check_tf_version_in_boot(unsigned long tf_addr)
+{
+	int ret = 0;
+	unsigned int img_version = 0;
+	unsigned int expected_img_version = 0;
+	
+	img_version = get_image_version(tf_addr);
+	if (img_version == 0) {
+		printf("get tf image version fail\n");
+		return -1;
+	}
+
+	ret = csi_tf_get_image_version(&expected_img_version);
+	if (ret != 0) {
+		printf("Get tf expected img version fail\n");
+		return -1;
+	}
+
+	ret = check_image_version_rule(image_version, expected_img_version);
+	if (ret != 0) {
+		printf("Image version breaks the rule\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+int check_tee_version_in_boot(unsigned long tee_addr)
+{
+	int ret = 0;
+	unsigned int img_version = 0;
+	unsigned int expected_img_version = 0;
+	
+	img_version = get_image_version(tf_addr);
+	if (img_version == 0) {
+		printf("get tf image version fail\n");
+		return -1;
+	}
+
+	ret = csi_tee_get_image_version(&expected_img_version);
+	if (ret != 0) {
+		printf("Get tf expected img version fail\n");
+		return -1;
+	}
+
+	ret = check_image_version_rule(image_version, expected_img_version);
+	if (ret != 0) {
+		printf("Image version breaks the rule\n");
+		return -1;
+	}
+
+	return 0;
+}
+
 int light_vimage(int argc, char *const argv[])
 {
 	int ret = 0;
@@ -454,6 +530,13 @@ int light_secboot(int argc, char * const argv[])
 
 	/* Step1. Check and verify TF image */
 	if (image_have_head(LIGHT_TF_FW_TMP_ADDR) == 1) {
+#ifdef LIGHT_IMG_VERSION_CHECK_IN_BOOT
+		printf("check TF version in boot \n");
+		ret = check_tf_version_in_boot(LIGHT_TF_FW_TMP_ADDR);
+		if (ret != 0) {
+			return CMD_RET_FAILURE;
+		}
+#endif
 
 		printf("Process TF image verification ...\n");
 		ret = verify_customer_image(T_TF, LIGHT_TF_FW_TMP_ADDR);
@@ -479,6 +562,14 @@ int light_secboot(int argc, char * const argv[])
 
 	/* Step2. Check and verify TEE image */
 	if (image_have_head(tee_addr) == 1) {
+#ifdef LIGHT_IMG_VERSION_CHECK_IN_BOOT
+		printf("check TEE version in boot \n");
+		ret = check_tee_version_in_boot(tee_addr);
+		if (ret != 0) {
+			return CMD_RET_FAILURE;
+		}
+#endif
+
 		printf("Process TEE image verification ...\n");
 		ret = verify_customer_image(T_TEE, tee_addr);
 		if (ret != 0) {
