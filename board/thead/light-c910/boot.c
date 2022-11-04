@@ -7,12 +7,14 @@
 #include <dm.h>
 #include <fdt_support.h>
 #include <fdtdec.h>
+#include <mmc.h>
 #include <opensbi.h>
 #include <asm/csr.h>
 #include <asm/arch-thead/boot_mode.h>
 #include "../../../lib/sec_library/include/csi_efuse_api.h"
-
-
+#include "../../../lib/sec_library/include/sec_crypto_sha.h"
+#include "../../../lib/sec_library/include/kdf.h"
+#include "../../../lib/sec_library/include/sec_crypto_mac.h"
 
 #if CONFIG_IS_ENABLED(LIGHT_SEC_UPGRADE)
 
@@ -37,18 +39,87 @@ static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0
 #endif
 static unsigned int upgrade_image_version = 0;
 
+#define RPMB_EMMC_CID_SIZE 16
+#define RPMB_CID_PRV_OFFSET             9
+#define RPMB_CID_CRC_OFFSET             15
+static int tee_rpmb_key_gen(uint8_t* key, uint32_t * length)
+{
+	uint32_t data[RPMB_EMMC_CID_SIZE / 4];
+    uint8_t huk[32];
+    uint32_t huk_len;
+	struct mmc *mmc = find_mmc_device(0);
+	int i;
+	sc_mac_t mac_handle;
+	int ret = 0;
+
+	if (!mmc)
+		return -1;
+
+	if (!mmc->ext_csd)
+		return -1;
+
+	for (i = 0; i < ARRAY_SIZE(mmc->cid); i++)
+		data[i] = cpu_to_be32(mmc->cid[i]);
+	/*
+	 * PRV/CRC would be changed when doing eMMC FFU
+	 * The following fields should be masked off when deriving RPMB key
+	 *
+	 * CID [55: 48]: PRV (Product revision)
+	 * CID [07: 01]: CRC (CRC7 checksum)
+	 * CID [00]: not used
+	 */
+	memset((void *)((uint64_t)data + RPMB_CID_PRV_OFFSET), 0, 1);
+	memset((void *)((uint64_t)data + RPMB_CID_CRC_OFFSET), 0, 1);
+
+    /* Step1: Derive HUK from KDF function */
+	ret = csi_kdf_gen_hmac_key(huk, &huk_len);
+	if (ret) {
+		printf("kdf gen hmac key faild[%d]\r\n", ret);
+		return -1;
+	}
+
+    /* Step2: Using HUK and data to generate RPMB key */
+	ret = sc_mac_init(&mac_handle, 0);
+	if (ret) {
+		printf("mac init faild[%d]\r\n", ret);
+		ret = -1;
+		return -1;
+	}
+
+	/* LSB 16 bytes are used as key */
+	ret = sc_mac_set_key(&mac_handle, huk, 16);
+	if (ret) {
+		printf("mac set key faild[%d]\r\n", ret);
+		ret = -1;
+		goto func_exit;
+	}
+
+	ret = sc_mac_calc(&mac_handle, SC_SHA_MODE_256, (uint8_t *)&data, sizeof(data), key, length);
+	if (ret) {
+		printf("mac calc faild[%d]\r\n", ret);
+		ret = -1;
+		goto func_exit;
+	}
+
+func_exit:
+	sc_mac_uninit(&mac_handle);
+
+	return ret;
+
+}
+
 int csi_rpmb_write_access_key(void) 
 {
     unsigned long *temp_rpmb_key_addr = NULL;
     char runcmd[64] = {0};
     uint8_t blkdata[256] = {0};
-    uint8_t kdf_rpmb_key[32];
+    __attribute__((__aligned__(8))) uint8_t kdf_rpmb_key[32];
 	uint32_t kdf_rpmb_key_length = 0;
 	int ret = 0;
 
 #ifdef LIGHT_KDF_RPMB_KEY
     /* Step1: retrive RPMB key from KDF function */
-	ret = csi_kdf_gen_hmac_key(kdf_rpmb_key, &kdf_rpmb_key_length);
+	ret = tee_rpmb_key_gen(kdf_rpmb_key, &kdf_rpmb_key_length);
 	if (ret != 0) {
 		return -1;
 	}
