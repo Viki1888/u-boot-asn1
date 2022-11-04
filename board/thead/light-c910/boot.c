@@ -360,7 +360,7 @@ int check_tf_version_in_boot(unsigned long tf_addr)
 		return -1;
 	}
 
-	ret = check_image_version_rule(image_version, expected_img_version);
+	ret = check_image_version_rule(img_version, expected_img_version);
 	if (ret != 0) {
 		printf("Image version breaks the rule\n");
 		return -1;
@@ -375,7 +375,7 @@ int check_tee_version_in_boot(unsigned long tee_addr)
 	unsigned int img_version = 0;
 	unsigned int expected_img_version = 0;
 	
-	img_version = get_image_version(tf_addr);
+	img_version = get_image_version(tee_addr);
 	if (img_version == 0) {
 		printf("get tf image version fail\n");
 		return -1;
@@ -387,7 +387,7 @@ int check_tee_version_in_boot(unsigned long tee_addr)
 		return -1;
 	}
 
-	ret = check_image_version_rule(image_version, expected_img_version);
+	ret = check_image_version_rule(img_version, expected_img_version);
 	if (ret != 0) {
 		printf("Image version breaks the rule\n");
 		return -1;
