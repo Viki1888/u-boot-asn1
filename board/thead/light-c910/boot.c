@@ -448,13 +448,13 @@ int check_tee_version_in_boot(unsigned long tee_addr)
 	
 	img_version = get_image_version(tee_addr);
 	if (img_version == 0) {
-		printf("get tf image version fail\n");
+		printf("get tee image version fail\n");
 		return -1;
 	}
 
 	ret = csi_tee_get_image_version(&expected_img_version);
 	if (ret != 0) {
-		printf("Get tf expected img version fail\n");
+		printf("Get tee expected img version fail\n");
 		return -1;
 	}
 
