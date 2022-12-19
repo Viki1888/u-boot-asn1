@@ -132,7 +132,7 @@
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=50MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfsA};name=bootB,size=200MiB,type=boot;name=rootB,size=4000MiB,type=linux,uuid=${uuid_rootfsB};name=data,size=-,type=linux\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
-	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrwreset=${factory_reset} crashkernel=${kdump_buf}\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrw=PARTLABEL=data init=/init rootinit=/sbin/init rootrwoptions=rw,noatime rootrwreset=${factory_reset} crashkernel=${kdump_buf}\0" \
 	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
 	"bootcmd_load=run findpart;run load_aon;run load_c906_audio; ext4load mmc 0:3 $tf_addr trust_firmware.bin; ext4load mmc 0:4 $tee_addr tee.bin;ext4load mmc ${mmcdev}:${mmcbootpart} $dtb_addr ${fdt_file}; ext4load mmc ${mmcdev}:${mmcbootpart} $kernel_addr Image\0" \
