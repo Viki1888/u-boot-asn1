@@ -120,12 +120,11 @@
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"mmcdev=0\0" \
-	"mmcpart=6\0" \
 	"boot_partition=bootA\0" \
 	"root_partition=rootfsA\0" \
 	"kdump_buf=1M\0" \
 	"uboot_version=0x0000000000000000\0"\
-	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=7; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=8; else mmcpart=6; fi;\0" \	
+	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=7; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=8; else mmcpart=6; fi;\0" \
 	"fdt_file=light-a-val-sec.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
 	"uuid_rootfsB=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
