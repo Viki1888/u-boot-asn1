@@ -702,10 +702,10 @@ void sec_firmware_version_dump(void)
 	tee_ver_env = env_get_hex("tee_version", 0);
 	tf_ver_env = env_get_hex("tf_version", 0);
 	if (tee_ver_env != tee_ver) {
-		env_set_hex('tee_version', tee_ver_env);
+		env_set_hex('tee_version', tee_ver);
 	}
 	if (tf_ver_env != tf_ver) {
-		env_set_hex('tf_version', tf_ver_env);
+		env_set_hex('tf_version', tf_ver);
 	}
 
 
