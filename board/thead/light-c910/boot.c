@@ -691,10 +691,23 @@ void sec_firmware_version_dump(void)
 	unsigned int tf_ver = 0;
 	unsigned int tee_ver = 0;
 	unsigned int uboot_ver = 0;
+	unsigned int tf_ver_env = 0;
+	unsigned int tee_ver_env = 0;
 
 	csi_uboot_get_image_version(&uboot_ver);
 	csi_tf_get_image_version(&tf_ver);
 	csi_tee_get_image_version(&tee_ver);
+
+	/* Keep sync with version in RPMB, the Following version could be leveraged by OTA client */
+	tee_ver_env = env_get_hex("tee_version", 0);
+	tf_ver_env = env_get_hex("tf_version", 0);
+	if (tee_ver_env != tee_ver) {
+		env_set_hex('tee_version', tee_ver_env);
+	}
+	if (tf_ver_env != tf_ver) {
+		env_set_hex('tf_version', tf_ver_env);
+	}
+
 
 	printf("\n\n");
 	printf("Secure Firmware image version info: \n");
