@@ -124,6 +124,8 @@
 	"root_partition=rootfsA\0" \
 	"kdump_buf=1M\0" \
 	"uboot_version=0x0000000000000000\0"\
+	"tee_version=0x00000000\0"\
+	"tf_version=0x00000000\0"\
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=7; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=8; else mmcpart=6; fi;\0" \
 	"fdt_file=light-a-val-sec.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
@@ -157,6 +159,8 @@
 	"root_partition=rootfsA\0" \
 	"kdump_buf=1M\0" \
 	"uboot_version=0x0000000000000000\0"\
+	"tee_version=0x00000000\0"\
+	"tf_version=0x00000000\0"\
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=7; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=8; else mmcpart=6; fi;\0" \
 	"fdt_file=light-b-product-sec.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
@@ -190,6 +194,8 @@
 	"root_partition=rootfsA\0" \
 	"kdump_buf=1M\0" \
 	"uboot_version=0x0000000000000000\0"\
+	"tee_version=0x00000000\0"\
+	"tf_version=0x00000000\0"\
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=7; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=8; else mmcpart=6; fi;\0" \
 	"fdt_file=light-ant-ref-sec.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
