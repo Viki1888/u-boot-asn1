@@ -91,6 +91,14 @@
 #define TEE_SEC_UPGRADE_FLAG 0x5a5aa5a5
 #define UBOOT_SEC_UPGRADE_FLAG	0xa5a5aa55
 
+/* Define secure debug log level */
+//#define LOG_LEVEL	1
+#if defined (LOG_LEVEL)
+#define SECLOG_PRINT	printf
+#else
+#define SECLOG_PRINT
+#endif
+
 #define UBOOT_MAX_VER		64
 #define CONFIG_SYS_CBSIZE 	512
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
