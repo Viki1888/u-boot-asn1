@@ -92,7 +92,7 @@
 #define UBOOT_SEC_UPGRADE_FLAG	0xa5a5aa55
 
 /* Define secure debug log level */
-//#define LOG_LEVEL	1
+#define LOG_LEVEL	1
 #if defined (LOG_LEVEL)
 #define SECLOG_PRINT	printf
 #else
