@@ -153,13 +153,16 @@ int csi_tf_get_image_version(unsigned int *ver)
 {
 	char runcmd[64] = {0};
 	unsigned char blkdata[256];
+	int ret = 0;
 
 	/* tf version reside in RPMB block#0, offset#16*/
 	sprintf(runcmd, "mmc rpmb read 0x%lx 0 1", (unsigned long)blkdata);
-	run_command(runcmd, 0);
-	*ver = (blkdata[16] << 8) + blkdata[17];
-
-	return 0;
+	ret = run_command(runcmd, 0);
+	if (ret == 0) {
+		*ver = (blkdata[16] << 8) + blkdata[17];
+	}
+	
+	return ret;
 }
 
 int csi_tf_set_image_version(unsigned int ver)
@@ -203,13 +206,16 @@ int csi_tee_get_image_version(unsigned int *ver)
 {
 	char runcmd[64] = {0};
 	unsigned char blkdata[256];
+	int ret = 0;
 
 	/* tf version reside in RPMB block#0, offset#0*/
 	sprintf(runcmd, "mmc rpmb read 0x%lx 0 1", (unsigned long)blkdata);
-	run_command(runcmd, 0);
-	*ver = (blkdata[0] << 8) + blkdata[1];
+	ret = run_command(runcmd, 0);
+	if (ret == 0) {
+		*ver = (blkdata[0] << 8) + blkdata[1];
+	}
 
-	return 0;
+	return ret;
 }
 
 int csi_kernel_get_image_version(unsigned int *ver)
@@ -701,10 +707,10 @@ void sec_firmware_version_dump(void)
 	/* Keep sync with version in RPMB, the Following version could be leveraged by OTA client */
 	tee_ver_env = env_get_hex("tee_version", 0);
 	tf_ver_env = env_get_hex("tf_version", 0);
-	if (tee_ver_env != tee_ver) {
+	if ((tee_ver_env != tee_ver) && (tee_ver != 0)) {
 		env_set_hex('tee_version', tee_ver);
 	}
-	if (tf_ver_env != tf_ver) {
+	if ((tf_ver_env != tf_ver) && (tf_ver != 0)) {
 		env_set_hex('tf_version', tf_ver);
 	}
 
