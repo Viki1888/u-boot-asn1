@@ -726,6 +726,8 @@ void sec_upgrade_thread(void)
 {
 	const unsigned long temp_addr=0x200000;
 	char runcmd[80];
+    uint8_t * image_buffer = NULL;
+    uint8_t * image_malloc_buffer = NULL;
 	int ret = 0;
 	unsigned int sec_upgrade_flag = 0;
 	unsigned int upgrade_file_size = 0;
@@ -750,6 +752,15 @@ void sec_upgrade_thread(void)
 		upgrade_file_size = env_get_hex("filesize", 0);
 		printf("upgrade file size: %d\n", upgrade_file_size);
 
+        /*store image to temp buffer as temp_addr may be decrypted*/
+        image_malloc_buffer = malloc(upgrade_file_size);
+        if ( image_malloc_buffer == NULL ) {
+			image_buffer = (uint8_t*)temp_addr + upgrade_file_size;
+		} else {
+            image_buffer = image_malloc_buffer;
+        }
+        memcpy(image_buffer, temp_addr, upgrade_file_size);
+
 		/* STEP 2: verify its authentiticy here */
 		sprintf(runcmd, "vimage 0x%p tf", (void *)temp_addr);
 		printf("runcmd:%s\n", runcmd);
@@ -761,7 +772,7 @@ void sec_upgrade_thread(void)
 
 		/* STEP 3: update tf partition */
 		printf("read upgrade image (trust_firmware.bin) into tf partition \n");
-		sprintf(runcmd, "ext4write mmc 0:3 0x%p /trust_firmware.bin 0x%x", (void *)temp_addr, upgrade_file_size);
+		sprintf(runcmd, "ext4write mmc 0:3 0x%p /trust_firmware.bin 0x%x", (void *)image_buffer, upgrade_file_size);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
@@ -783,6 +794,10 @@ _upgrade_tf_exit:
 		run_command("saveenv", 0);
 		run_command("reset", 0);
 
+        if ( image_malloc_buffer != NULL ) {
+            free(image_malloc_buffer);
+            image_malloc_buffer = NULL;
+        }
 	} else if (sec_upgrade_flag == TEE_SEC_UPGRADE_FLAG) {
 
  		/* STEP 1: read upgrade image (tee.bin) from stash partition */
@@ -797,6 +812,15 @@ _upgrade_tf_exit:
 		/* Fetch the total file size after read out operation end */
 		upgrade_file_size = env_get_hex("filesize", 0);
 		printf("TEE upgrade file size: %d\n", upgrade_file_size);
+        
+        /*store image to temp buffer as temp_addr may be decrypted*/
+        image_malloc_buffer = malloc(upgrade_file_size);
+        if ( image_malloc_buffer == NULL ) {
+			image_buffer = (uint8_t*)temp_addr + upgrade_file_size;
+		} else {
+            image_buffer = image_malloc_buffer;
+        }
+        memcpy(image_buffer, temp_addr, upgrade_file_size);
 
 		/* STEP 2: verify its authentiticy here */
 		sprintf(runcmd, "vimage 0x%p tee", (void *)temp_addr);
@@ -809,7 +833,7 @@ _upgrade_tf_exit:
 
 		/* STEP 3: update tee partition */
 		printf("read upgrade image (tee.bin) into tf partition \n");
-		sprintf(runcmd, "ext4write mmc 0:4 0x%p /tee.bin 0x%x", (void *)temp_addr, upgrade_file_size);
+		sprintf(runcmd, "ext4write mmc 0:4 0x%p /tee.bin 0x%x", (void *)image_buffer, upgrade_file_size);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
@@ -830,7 +854,11 @@ _upgrade_tee_exit:
 		run_command("env set sec_upgrade_mode 0", 0);
 		run_command("saveenv", 0);
 		run_command("reset", 0);
-
+        
+        if ( image_malloc_buffer != NULL ) {
+            free(image_malloc_buffer);
+            image_malloc_buffer = NULL;
+        }
 	} else if (sec_upgrade_flag == UBOOT_SEC_UPGRADE_FLAG) { 
 		unsigned int block_cnt;
 		struct blk_desc *dev_desc;
