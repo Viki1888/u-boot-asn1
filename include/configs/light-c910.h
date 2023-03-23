@@ -108,7 +108,7 @@
 /* List of different env in debug/release version  */
 #if defined (U_BUILD_DEBUG)
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=7\0"
-#define ENV_STR_BOOT_DELAY  
+#define ENV_STR_BOOT_DELAY
 #else
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=4\0"
 #define ENV_STR_BOOT_DELAY	"bootdelay=0\0"
@@ -554,7 +554,7 @@
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
 	"findpart=rollback; if test ${boot_partition} = bootB; then mmcbootpart=4; else mmcbootpart=2; fi; if test ${root_partition} = rootfsB; then mmcpart=5; else mmcpart=3; fi;\0" \
-	"fdt_file=light-a-val-dsi0-hdmi.dtb\0" \
+	"fdt_file=light-a-val-dsi0-hdmi-audio.dtb\0" \
 	"uuid_rootfsA=80a5a8e9-c744-491a-93c1-4f4194fd690a\0" \
 	"uuid_rootfsB=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=4000MiB,type=linux,uuid=${uuid_rootfsA};name=bootB,size=200MiB,type=boot;name=rootB,size=4000MiB,type=linux,uuid=${uuid_rootfsB};name=data,size=-,type=linux\0" \
