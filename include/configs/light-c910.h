@@ -129,7 +129,7 @@
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=6\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
@@ -163,7 +163,7 @@
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=6\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
@@ -197,7 +197,7 @@
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=6\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
@@ -231,7 +231,7 @@
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=6\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
