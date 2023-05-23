@@ -296,7 +296,7 @@
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
-	"fdt_file=light-b-product.dtb\0" \
+	"fdt_file=light-b-audio-hdmi.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
@@ -520,7 +520,7 @@
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
-	"fdt_file=light-a-val-dsi0-hdmi-audio.dtb\0" \
+	"fdt_file=light-a-val-audio-hdmi.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
