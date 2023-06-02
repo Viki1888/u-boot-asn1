@@ -48,6 +48,7 @@ static struct light_reset_list light_post_reset_lists[] = {
 	{0x00000002, 0xFFEF528000}, /* VO sys_reg: GPU rst */
 	{0x00000003, 0xFFEF528000}, /* VO sys_reg: GPU rst */
 	{0x00000007, 0xFFFF529004}, /* VO sys_reg: DPU rst */
+	{0x07FFFF18, 0xFFCB000014}, /* Audio sys_reg: DMA rst */
 };
 
 static void light_pre_reset_config(void)
