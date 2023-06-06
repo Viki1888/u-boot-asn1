@@ -219,7 +219,7 @@ endif
 
 ifeq ($(KBUILD_SRC),)
         # building in the source tree
-        srctree := .
+        srctree := $(shell pwd)
 else
         ifeq ($(KBUILD_SRC)/,$(dir $(CURDIR)))
                 # building in a subdirectory of the source tree
@@ -811,7 +811,7 @@ PLATFORM_LIBGCC := -L $(shell dirname `$(CC) $(c_flags) -print-libgcc-file-name`
 endif
 PLATFORM_LIBS += $(PLATFORM_LIBGCC)
 ifeq ($(CONFIG_TARGET_LIGHT_C910),y)
-PLATFORM_LIBS += -L $(shell pwd)/lib/sec_library -lsec_library
+PLATFORM_LIBS += -L $(srctree)/lib/sec_library -lsec_library
 endif
 
 ifdef CONFIG_CC_COVERAGE
