@@ -818,13 +818,14 @@ int pmic_ddr_regu_init(void)
 int pmic_ddr_set_voltage(void)
 {
 	int ret = 0;
+
+#if 0 //currently,no need to modify ddr regulator voltage
 	uint32_t val = 0;
 	uint32_t regu_num = ARRAY_SIZE(g_regu_id_list);
 	uint32_t i;
 	struct regulator_t *pregu;
 	csi_iic_t          *dev_handle;
 
-#if 0 //currently,no need to modify ddr regulator voltage
 	pregu = (struct regulator_t*)g_regu_id_list;
 	for (i = 0; i < regu_num; i++, pregu++) {
 		if (pregu->regu_vol_target < pregu->regu_vol_min || pregu->regu_vol_target > pregu->regu_vol_max)
@@ -838,6 +839,10 @@ int pmic_ddr_set_voltage(void)
 #endif
 
 #if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
+	uint32_t val = 0;
+	struct regulator_t *pregu;
+	csi_iic_t          *dev_handle;
+
 	/*enable lcd0_en ldo*/
 	pregu = (struct regulator_t*)&g_regu_id_list[LCD0_EN];
 	dev_handle = pmic_get_iic_handle(pregu->iic_id);
