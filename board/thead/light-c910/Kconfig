@@ -34,6 +34,10 @@ config SYS_BOARD
 config SYS_CONFIG_NAME
     default "light-c910"
 
+config LIGHT_BOOT_FORCE_SEQ
+	bool "light boot force sequence"
+	default n
+
 config LIGHT_SEC_UPGRADE
     bool "light secure upgrade"
     default n
