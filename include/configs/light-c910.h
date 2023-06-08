@@ -254,8 +254,8 @@
 	"bootcmd_load=run load_aon;run load_c906_audio; ext4load mmc 0:3 $tf_addr trust_firmware.bin; ext4load mmc 0:4 $tee_addr tee.bin;ext4load mmc ${mmcdev}:${mmcbootpart} $dtb_addr ${fdt_file}; ext4load mmc ${mmcdev}:${mmcbootpart} $kernel_addr Image\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; secboot; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
-// for android partition
-#elif defined(CONFIG_ANDROID_BOOT_IMAGE)
+
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_A)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
