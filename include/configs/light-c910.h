@@ -23,7 +23,7 @@
 #define CONFIG_SYS_INIT_SP_ADDR     (CONFIG_SYS_TEXT_BASE + SZ_1M)
 #define CONFIG_SYS_LOAD_ADDR        (CONFIG_SYS_TEXT_BASE + SZ_1M)
 #ifdef CONFIG_ANDROID_BOOT_IMAGE
-#define CONFIG_SYS_MALLOC_LEN       (64*SZ_1M)
+#define CONFIG_SYS_MALLOC_LEN       (128*SZ_1M)
 #else
 #define CONFIG_SYS_MALLOC_LEN       SZ_1M
 #endif
@@ -255,7 +255,7 @@
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; secboot; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
 
-#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_A)
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_A) || defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_B)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
@@ -268,11 +268,12 @@
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0xffc0000000\0" \
 	"fwaddr=0x10000000\0"\
+	"boot_ab=_a\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
 	"fdt_file=light-val.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=sparse,size=2031kb;name=bootpart,size=8MiB;name=boot_a,size=32MiB;name=boot_b,size=32MiB;name=vendor_boot_a,size=32MiB;name=vendor_boot_b,size=32MiB;name=dtbo,size=8MiB;name=super,size=4096MiB;name=vbmeta_a,size=1MiB;name=vbmeta_b,size=1MiB;name=vbmeta_system_a,size=1MiB;name=vbmeta_system_b,size=1MiB;name=misc,size=2MiB;name=metadata,size=16MiB;name=userdata,size=-\0" \
+	"partitions=name=sparse,size=2031kb;name=bootpart,size=8MiB;name=boot_a,size=32MiB;name=boot_b,size=32MiB;name=vendor_boot_a,size=32MiB;name=vendor_boot_b,size=32MiB;name=dtbo_a,size=8MiB;name=dtbo_b,size=8MiB;name=super,size=4096MiB;name=vbmeta_a,size=1MiB;name=vbmeta_b,size=1MiB;name=vbmeta_system_a,size=1MiB;name=vbmeta_system_b,size=1MiB;name=misc,size=2MiB;name=metadata,size=16MiB;name=userdata,size=-\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 earlycon clk_ignore_unused loop.max_part=7 loglevel=7 init=/init bootconfig video=HDMI-A-1:800x600-32@60 firmware_class.path=/vendor/firmware\0" \
