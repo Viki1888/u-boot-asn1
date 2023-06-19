@@ -417,10 +417,7 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 									  htflags,
 									&slot_data);
 
-		if (slot_result != AVB_SLOT_VERIFY_RESULT_OK) {
-			printf("BootAndriod Err: Verification failed, slot_result=%d\n", slot_result);
-			prepare_partition_data(BOOT_PARTITION);
-		} else {
+		if (slot_result == AVB_SLOT_VERIFY_RESULT_OK) {
 			printf("BootAndriod Info: Request Partition are verified successfully\n");
 			printf("BootAndriod cmdline: slot_data.cmdline:%s\n", slot_data->cmdline);
 			prepare_boot_data(slot_data);
@@ -428,6 +425,9 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 				if (slot_data != NULL)
 					avb_slot_verify_data_free(slot_data);
 			}
+		} else {
+			/* avb slot verification failure. Force system reset */
+			run_command("reset", 0);
 		}
 _ba_err:
 		if (avb_ops)
