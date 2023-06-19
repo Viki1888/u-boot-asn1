@@ -12,7 +12,7 @@
 #include <asm/arch-thead/boot_mode.h>
 #include "../../../lib/sec_library/include/csi_sec_img_verify.h"
 
-extern int csi_efuse_api_int(void);
+extern int csi_efuse_api_init(void);
 extern int csi_efuse_api_unint(void);
 extern int csi_efuse_read_raw(uint32_t addr, void *data, uint32_t cnt);
 extern int csi_efuse_write_raw(uint32_t addr, const void *data, uint32_t cnt);
@@ -35,7 +35,7 @@ int csi_sec_init(void)
 	char *version;
 
 	/* Initialize eFuse module */
-	ret = csi_efuse_api_int();
+	ret = csi_efuse_api_init();
 	if (ret) {
 		printf("efuse init faild[%d]\n", ret);
 		 goto exit;
@@ -62,7 +62,7 @@ void designware_get_mac_from_fuse(unsigned char *mac)
 	int ret;
 
 	/* Initialize eFuse module */
-	ret = csi_efuse_api_int();
+	ret = csi_efuse_api_init();
 	if (ret) {
 		printf("efuse init faild[%d]\n", ret);
 		return;
@@ -191,7 +191,7 @@ static int do_fuse(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 	int ret, i;
 
 	/* Initialize eFuse module */
-	ret = csi_efuse_api_int();
+	ret = csi_efuse_api_init();
 	if (ret) {
 		printf("efuse init faild[%d]\n", ret);
 		goto err;
