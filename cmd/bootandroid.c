@@ -363,7 +363,7 @@ static bool get_system_boot_type(void)
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
 
-	ret = csi_efuse_get_lc(WJ_EFUSE_BASE, &lc);
+	ret = csi_efuse_get_lc(&lc);
 	/* 0: LC_INIT, 1: LC_DEV, 2: LC_OEM, 3: LC_PRO */
 	if ((ret == 0) && (lc != 0)) {
 		csi_efuse_api_init();
@@ -440,7 +440,7 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 					avb_slot_verify_data_free(slot_data);
 			}
 		} else {
-			/* avb slot verification failure. Force system reset */
+			/* In case of avb slot verification failure, Force system reset */
 			run_command("reset", 0);
 		}
 _ba_err:
