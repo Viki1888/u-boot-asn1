@@ -165,6 +165,7 @@ static const struct regulator_t g_apcpu_regu_id_list[] = {
 	}
 };
 #else
+#if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
 /**
  * board for EB064A10/EB064A11
  *
@@ -183,6 +184,7 @@ static const struct regulator_t g_regu_id_list[] = {
 		REGU_ID_DEF(IIC_IDX_AONIIC,DDR_VDD_REGU_1V1,0x5A,0xA7,0,1,CONFIG_DDR_REGU_1V1,800000,1500000,20000,0),
 	}
 };
+#endif
 
 static const struct regulator_t g_apcpu_regu_id_list[] = {
 	{
@@ -651,6 +653,7 @@ int32_t csi_iic_mem_receive_sr(csi_iic_t *iic, uint32_t devaddr, uint16_t memadd
     return read_count;
 }
 
+#if defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_A) ||defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
 static int pmic_read_reg_sr(csi_iic_t *iic_handle,uint16_t dev_addr,uint32_t offset, uint32_t *val)
 {
 	int32_t num;
@@ -662,6 +665,7 @@ static int pmic_read_reg_sr(csi_iic_t *iic_handle,uint16_t dev_addr,uint32_t off
 	*val = temp[0];
 	return 0;
 }
+#endif
 
 static int pmic_write_reg(csi_iic_t *iic_handle,uint16_t dev_addr,uint32_t offset, uint32_t val)
 {
@@ -688,6 +692,7 @@ static int pmic_write_reg(csi_iic_t *iic_handle,uint16_t dev_addr,uint32_t offse
 	return 0;
 }
 
+#if !defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_A) && !defined (CONFIG_TARGET_LIGHT_FM_C910_VAL_B)
 static int pmic_read_reg(csi_iic_t *iic_handle,uint16_t dev_addr,uint32_t offset, uint32_t *val)
 {
 	int32_t num;
@@ -716,6 +721,7 @@ static int pmic_read_reg(csi_iic_t *iic_handle,uint16_t dev_addr,uint32_t offset
 	*val = temp[0];
 	return 0;
 }
+#endif 
 
 static int _pmic_ddr_regu_init(uint32_t idx)
 {

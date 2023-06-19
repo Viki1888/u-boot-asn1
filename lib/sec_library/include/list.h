@@ -168,9 +168,10 @@ static inline int dlist_empty(const dlist_t *head)
  \param[in]   member    The name of the variable within the struct
  \return      None
  */
+#ifndef list_entry
 #define list_entry(ptr, type, member) \
     aos_container_of(ptr, type, member)
-
+#endif
 
 /**
  \brief       Iterate backwards over list of given type

@@ -413,7 +413,7 @@ static uint32_t get_custom_boot_seq(void)
 void board_boot_order(u32 *spl_boot_list)
 {
 #define SOC_OM_ADDRBASE        0xffef018010
-#ifndef CONFIG_IS_ENABLED(LIGHT_BOOT_FORCE_SEQ)
+#if CONFIG_IS_ENABLED(LIGHT_BOOT_FORCE_SEQ)
 	switch (readl((void *)SOC_OM_ADDRBASE) & 0x7) {
 	case 0:
 	case 1:
