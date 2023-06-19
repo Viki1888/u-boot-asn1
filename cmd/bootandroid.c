@@ -363,10 +363,8 @@ static bool get_system_boot_type(void)
 	int lc = 0;
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
-	
-	#define WJ_EFUSE_BASE               0xFFFF210000UL
-	extern int wj_efuse_get_lc(uint64_t reg_base, int *lc);
-	ret = wj_efuse_get_lc(WJ_EFUSE_BASE, &lc);
+
+	ret = csi_efuse_get_lc(WJ_EFUSE_BASE, &lc);
 	/* 0: LC_INIT, 1: LC_DEV, 2: LC_OEM, 3: LC_PRO */
 	if ((ret == 0) && (lc != 0)) {
 		csi_efuse_api_init();
