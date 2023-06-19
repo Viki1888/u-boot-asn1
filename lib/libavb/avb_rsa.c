@@ -82,7 +82,7 @@ fail:
 static void iavb_free_parsed_key(IAvbKey* key) {
   avb_free(key);
 }
-
+#if !defined(CONFIG_CONFIG_AVB_HW_ENGINE_ENABLE)
 /* a[] -= mod */
 static void subM(const IAvbKey* key, uint32_t* a) {
   int64_t A = 0;
@@ -200,7 +200,7 @@ out:
     avb_free(aaR);
   }
 }
-
+#endif
 /* Verify a RSA PKCS1.5 signature against an expected hash.
  * Returns false on failure, true on success.
  */
@@ -212,6 +212,34 @@ bool avb_rsa_verify(const uint8_t* key,
                     size_t hash_num_bytes,
                     const uint8_t* padding,
                     size_t padding_num_bytes) {
+#if defined(CONFIG_CONFIG_AVB_HW_ENGINE_ENABLE)
+  IAvbKey* parsed_key = NULL;
+  bool success = false;
+  int i;
+
+  if (key == NULL || sig == NULL || hash == NULL || padding == NULL) {
+    avb_error("Invalid input.\n");
+    goto out;
+  }
+
+  parsed_key = iavb_parse_key_data(key, key_num_bytes);
+  if (parsed_key == NULL) {
+    avb_error("Error parsing key.\n");
+    goto out;
+  }
+
+  if (padding_num_bytes != sig_num_bytes - hash_num_bytes) {
+    avb_error("Padding length does not match hash and signature lengths.\n");
+    goto out;
+  }
+
+
+out:
+  if (parsed_key != NULL) {
+    iavb_free_parsed_key(parsed_key);
+  }
+  return success;
+#else
   uint8_t* buf = NULL;
   IAvbKey* parsed_key = NULL;
   bool success = false;
@@ -272,4 +300,5 @@ out:
     avb_free(buf);
   }
   return success;
+#endif
 }

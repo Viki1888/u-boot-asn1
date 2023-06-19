@@ -50,6 +50,10 @@ config AVB_USE_OEM_KEY
     bool "AVB signature with OEM key"
     default n
 
+config AVB_HW_ENGINE_ENABLE
+    bool "AVB Hardware cryptographic engine enable"
+    default n
+
 config LIGHT_ANDROID_BOOT_IMAGE_VAL_B
     bool "light board-b android image"
     default n

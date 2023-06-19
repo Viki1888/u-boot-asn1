@@ -358,7 +358,7 @@ _bcb_err:
    non-secure boot in lifecycle(INIT) */
 static bool get_system_boot_type(void)
 {
-	bool btype = false; /* false: non-secure boot | true: secure boot */
+	bool btype = true; /* false: non-secure boot | true: secure boot */
 	int lc = 0;
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
