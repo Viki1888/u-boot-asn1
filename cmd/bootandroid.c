@@ -25,11 +25,10 @@
 #define ENV_RAMDISK_SIZE "ramdisk_size"
 #define MISC_PARTITION "misc"
 #define RECOVERY_PARTITION "recovery"
+#define BOOT_PARTITION "boot"
 #if defined (CONFIG_ANDROID_AB)
-#define BOOT_PARTITION "boot_a"
 #define VENDOR_BOOT_PARTITION "vendor_boot_a"
 #else
-#define BOOT_PARTITION "boot"
 #define VENDOR_BOOT_PARTITION "vendor_boot"
 #endif
 
@@ -450,7 +449,11 @@ _ba_err:
 
 	} else {
 	/* Go to load BOOT partition directly in non-secure boot */
-		prepare_partition_data(BOOT_PARTITION);
+		char bp_name[32] = {0};
+		
+		strcat(bp_name, BOOT_PARTITION);
+		strcat(bp_name, slot_name_suffix);
+		prepare_partition_data(bp_name);
 	}
 
 	return res;
