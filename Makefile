@@ -726,6 +726,7 @@ UBOOTINCLUDE    := \
 			$(if $(CONFIG_HAS_THUMB2),, \
 				-I$(srctree)/arch/$(ARCH)/thumb1/include),) \
 		-I$(srctree)/arch/$(ARCH)/include \
+		$(if $(CONFIG_TARGET_LIGHT_C910), -I$(srctree)/lib/sec_library/include) \
 		-include $(srctree)/include/linux/kconfig.h
 
 NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)

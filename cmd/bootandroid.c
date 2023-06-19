@@ -14,6 +14,7 @@
 #include <android_image.h>
 #include <android_bootloader_message.h>
 #include <xbc.h>
+#include "sec_library.h"
 
 #define ENV_KERNEL_ADDR  "kernel_addr"
 #define ENV_RAMDISK_ADDR "ramdisk_addr"
@@ -359,8 +360,24 @@ _bcb_err:
 static bool get_system_boot_type(void)
 {
 	bool btype = false; /* false: non-secure boot | true: secure boot */
+	int lc = 0;
+	sboot_st_t sb_flag = SECURE_BOOT_DIS;
+	int ret = 0;
 	
-	//TODO
+	#define WJ_EFUSE_BASE               0xFFFF210000UL
+	extern int wj_efuse_get_lc(uint64_t reg_base, int *lc);
+	ret = wj_efuse_get_lc(WJ_EFUSE_BASE, &lc);
+	/* 0: LC_INIT, 1: LC_DEV, 2: LC_OEM, 3: LC_PRO */
+	if ((ret == 0) && (lc != 0)) {
+		csi_efuse_api_init();
+
+		/* Check platform secure boot enable ? */
+		ret = csi_efuse_get_secure_boot_st(&sb_flag);
+		if ((ret == 0) && (sb_flag == SECURE_BOOT_EN))
+			btype = true;
+
+		csi_efuse_api_uninit();
+	}
 
 	return btype;
 }
