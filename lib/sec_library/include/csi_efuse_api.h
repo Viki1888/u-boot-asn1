@@ -48,6 +48,8 @@ int csi_efuse_read_raw(uint32_t addr, void *data, uint32_t cnt);
 
 int csi_efuse_write_raw(uint32_t addr, const void *data, uint32_t cnt);
 
+int csi_efuse_get_lc(int *lc);
+
 #ifdef __cplusplus
 }
 #endif
