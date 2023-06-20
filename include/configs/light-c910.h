@@ -128,7 +128,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
@@ -162,7 +162,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
@@ -196,7 +196,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
@@ -230,7 +230,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
@@ -266,7 +266,7 @@
 	"kernel_addr=0x00200000\0" \
 	"ramdisk_addr=0x02000000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"boot_ab=_a\0"\
 	"mmcdev=0\0" \
@@ -293,7 +293,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -321,7 +321,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -349,7 +349,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -377,7 +377,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -405,7 +405,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -433,7 +433,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -461,7 +461,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -489,7 +489,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -517,7 +517,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
@@ -545,7 +545,7 @@
 	"dtb_addr=0x02400000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
