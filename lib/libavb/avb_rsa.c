@@ -256,8 +256,8 @@ bool avb_rsa_verify(const uint8_t* key,
   }
 
   key_bytes = parsed_key->len * sizeof(uint32_t);
-  /* Currently, we only support RSA key 2048bits */
-  if (key_bytes * 8 != 2048) {
+  /* Currently, we only support RSA key 2048bits and SHA256 */
+  if ((key_bytes * 8 != 2048) || (hash_num_bytes * 8 != 256)) {
     avb_error("Error unsupported keybits length.\n");
     goto out;
   }
