@@ -238,7 +238,7 @@ static int wait_iic_receive(dw_iic_regs_t *iic_base, uint32_t wait_data_num, uin
 }
 
 
-unsigned long soc_get_iic_freq(uint32_t idx)
+static unsigned long soc_get_iic_freq(uint32_t idx)
 {
 	if (idx == IIC_IDX_AONIIC){
 		return 49152000U;
