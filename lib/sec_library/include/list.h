@@ -173,6 +173,7 @@ static inline int dlist_empty(const dlist_t *head)
     aos_container_of(ptr, type, member)
 #endif
 
+
 /**
  \brief       Iterate backwards over list of given type
  \param[in]   pos       The type * to use as a loop cursor
