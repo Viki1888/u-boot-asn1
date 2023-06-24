@@ -14,7 +14,6 @@
 #include <android_image.h>
 #include <android_bootloader_message.h>
 #include <xbc.h>
-#include "sec_library.h"
 
 #define ENV_KERNEL_ADDR  "kernel_addr"
 #define ENV_RAMDISK_ADDR "ramdisk_addr"
@@ -26,15 +25,22 @@
 #define MISC_PARTITION "misc"
 #define RECOVERY_PARTITION "recovery"
 #define BOOT_PARTITION "boot"
-#if defined (CONFIG_ANDROID_AB)
-#define VENDOR_BOOT_PARTITION "vendor_boot_a"
-#else
 #define VENDOR_BOOT_PARTITION "vendor_boot"
-#endif
 
 #define BOOTDEV_DEFAULT		0
 #define BCB_BOOTONCE	"bootonce-bootloader"
 #define BCB_BOOTRECOVERY	"boot-recovery"
+
+
+/*
+ * Knowing secure boot is enable or disable dependents on 
+ * special data field in efuse and efuse control register.
+ */
+extern bool get_system_boot_type(void);
+/*
+ * The suffix for partition name is from the value of ENV_BOOTAB
+ */
+static const char *slot_name_suffix = NULL;;
 
 /*
  * BOOT IMAGE HEADER V3/V4 PAGESIZE
@@ -71,21 +77,28 @@ static int prepare_data_from_vendor_boot(struct andr_img_hdr *hdr, int dtb_start
 	disk_partition_t part_info;
 	uint8_t* vendor_boot_data = NULL;
 	struct blk_desc *dev_desc  = blk_get_dev("mmc", CONFIG_FASTBOOT_FLASH_MMC_DEV);
+	char vb_part_name[32] = {0};
 
 	if (hdr == NULL) {
 		printf("invalid hdr\n");
 		return -1;
 	}
 
-	printf("blk_get_dev %s\n", VENDOR_BOOT_PARTITION);
+	/* if the vendor boot partition name is beyond 32B, arise error */
+	if ((32 - strlen(VENDOR_BOOT_PARTITION)) < 2)
+		return -1;
+	memcpy(vb_part_name, VENDOR_BOOT_PARTITION, strlen(VENDOR_BOOT_PARTITION));
+	strcat(vb_part_name, slot_name_suffix);
+
+	printf("blk_get_dev %s\n", vb_part_name);
 	if (!dev_desc || dev_desc->type == DEV_TYPE_UNKNOWN) {
 		printf("MMC err: invalid mmc device\n");
 		return -1;
 	}
 	/* Get boot partition info */
-	ret = part_get_info_by_name(dev_desc, VENDOR_BOOT_PARTITION, &part_info);
+	ret = part_get_info_by_name(dev_desc, vb_part_name, &part_info);
 	if (ret < 0) {
-		printf("MMC err: cannot find %s partition\n", VENDOR_BOOT_PARTITION);
+		printf("MMC err: cannot find %s partition\n", vb_part_name);
 		return -1;
 	}
 
@@ -352,33 +365,6 @@ _bcb_err:
 	return res;
 }
 
-/* In order to use common bootloader for both secure boot and non-secure boot,
-   we only know the boot type through reading the sec_boot field in efuse. Due to 
-   the efuse is only accessed in lifecycle(DEV/OEM/PRO/RMP), we ensure it must be 
-   non-secure boot in lifecycle(INIT) */
-static bool get_system_boot_type(void)
-{
-	bool btype = true; /* false: non-secure boot | true: secure boot */
-	int lc = 0;
-	sboot_st_t sb_flag = SECURE_BOOT_DIS;
-	int ret = 0;
-
-	ret = csi_efuse_get_lc(&lc);
-	/* 0: LC_INIT, 1: LC_DEV, 2: LC_OEM, 3: LC_PRO */
-	if ((ret == 0) && (lc != 0)) {
-		csi_efuse_api_init();
-
-		/* Check platform secure boot enable ? */
-		ret = csi_efuse_get_secure_boot_st(&sb_flag);
-		if ((ret == 0) && (sb_flag == SECURE_BOOT_EN))
-			btype = true;
-
-		csi_efuse_api_uninit();
-	}
-
-	return btype;
-}
-
 static const char *get_boot_partition_name_suffix(void)
 {
 #if defined (CONFIG_ANDROID_AB)
@@ -402,7 +388,6 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 	AvbSlotVerifyResult slot_result = AVB_SLOT_VERIFY_RESULT_OK;
 	AvbSlotVerifyData *slot_data = NULL;
 	AvbIOResult ret = AVB_IO_RESULT_OK;
-	const char *slot_name_suffix = NULL;
 	AvbSlotVerifyFlags slotflags = AVB_SLOT_VERIFY_FLAGS_NONE;
 	AvbHashtreeErrorMode htflags = AVB_HASHTREE_ERROR_MODE_RESTART_AND_INVALIDATE;
 	int res = CMD_RET_FAILURE;

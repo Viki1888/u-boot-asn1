@@ -261,6 +261,8 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"serial#=1234567890\0" \
+	"tf_addr=0x100000\0" \
+	"tee_addr=0x1c000000\0" \
 	"opensbi_addr=0x0\0" \
 	"dtb_addr=0x01f00000\0" \
 	"kernel_addr=0x00200000\0" \
@@ -279,7 +281,8 @@
 	"set_bootargs=setenv bootargs console=ttyS0,115200 earlycon clk_ignore_unused loop.max_part=7 loglevel=7 init=/init bootconfig video=HDMI-A-1:800x600-32@60 firmware_class.path=/vendor/firmware\0" \
 	"load_aon=ext4load mmc 0:2 $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc 0:2 $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
-	"bootcmd_load=run load_aon;run load_c906_audio;ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin;bootandroid\0" \
+	"sec_m_load=ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin\0"\
+	"bootcmd_load=run load_aon;run load_c906_audio;secimg_load;run sec_m_load;bootandroid\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; bootm $kernel_addr $ramdisk_addr:$ramdisk_size $dtb_addr;\0" \
          "\0"
 
