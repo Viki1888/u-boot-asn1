@@ -21,7 +21,7 @@ bool get_system_boot_type(void)
 	int lc = 0;
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
-
+#if 0
 	ret = csi_efuse_get_lc(&lc);
 	/* 0: LC_INIT, 1: LC_DEV, 2: LC_OEM, 3: LC_PRO */
 	if ((ret == 0) && (lc != 0)) {
@@ -34,7 +34,7 @@ bool get_system_boot_type(void)
 
 		csi_efuse_api_uninit();
 	}
-
+#endif
 	return btype;
 }
 
