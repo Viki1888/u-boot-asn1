@@ -471,8 +471,6 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 
 	/* Start with slot verification in secure boot */
 	if (get_system_boot_type()) {
-        verify_and_load_tee_tf_image();
-
 		/* Verify boot partition requested in vbmeta.img */
 		slot_result = avb_slot_verify(avb_ops,
 									  requested_partitions,
