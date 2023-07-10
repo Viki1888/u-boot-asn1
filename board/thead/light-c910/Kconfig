@@ -50,6 +50,10 @@ config AVB_USE_OEM_KEY
     bool "AVB signature with OEM key"
     default n
 
+config AVB_ROLLBACK_ENABLE
+    bool "AVB rollback index in RPMB"
+    default n
+
 config AVB_HW_ENGINE_ENABLE
     bool "AVB Hardware cryptographic engine enable"
     default n

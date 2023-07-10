@@ -14,6 +14,11 @@
 #include <tee.h>
 #include <tee/optee_ta_avb.h>
 
+#ifdef CONFIG_AVB_ROLLBACK_ENABLE
+extern int sec_write_rollback_index(size_t rollback_index_slot, uint64_t rollback_index);
+extern int sec_read_rollback_index(size_t rollback_index_slot, uint64_t *out_rollback_index);
+#endif
+
 #if defined (CONFIG_AVB_USE_OEM_KEY)
 static const unsigned char avb_root_oem_pub[520] = {
 	0x00,0x00,0x08,0x00,0x11,0x70,0xEA,0xC9,0xC2,0xAD,0x66,0x2A,0x57,0x2A,0x89,0x68,
@@ -732,8 +737,15 @@ static AvbIOResult read_rollback_index(AvbOps *ops,
 				       size_t rollback_index_slot,
 				       u64 *out_rollback_index)
 {
+#ifdef CONFIG_AVB_ROLLBACK_ENABLE
+    if (sec_read_rollback_index(rollback_index_slot, out_rollback_index) != 0) {
+        return AVB_IO_RESULT_ERROR_IO;
+    }
+
+	return AVB_IO_RESULT_OK;
+#else
 #ifndef CONFIG_OPTEE_TA_AVB
-	/* For now we always return 0 as the stored rollback index. */
+    /* For now we always return 0 as the stored rollback index. */
 	printf("%s not supported yet\n", __func__);
 
 	if (out_rollback_index)
@@ -759,7 +771,9 @@ static AvbIOResult read_rollback_index(AvbOps *ops,
 
 	*out_rollback_index = (u64)param[1].u.value.a << 32 |
 			      (u32)param[1].u.value.b;
+
 	return AVB_IO_RESULT_OK;
+#endif
 #endif
 }
 
@@ -778,6 +792,13 @@ static AvbIOResult write_rollback_index(AvbOps *ops,
 					size_t rollback_index_slot,
 					u64 rollback_index)
 {
+#ifdef CONFIG_AVB_ROLLBACK_ENABLE
+    if (sec_write_rollback_index(rollback_index_slot, rollback_index) != 0) {
+        return AVB_IO_RESULT_ERROR_IO;
+    }
+    
+	return AVB_IO_RESULT_OK;
+#else
 #ifndef CONFIG_OPTEE_TA_AVB
 	/* For now this is a no-op. */
 	printf("%s not supported yet\n", __func__);
@@ -798,6 +819,7 @@ static AvbIOResult write_rollback_index(AvbOps *ops,
 
 	return invoke_func(ops->user_data, TA_AVB_CMD_WRITE_ROLLBACK_INDEX,
 			   ARRAY_SIZE(param), param);
+#endif
 #endif
 }
 
