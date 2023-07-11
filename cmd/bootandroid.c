@@ -19,8 +19,8 @@
 #define ENV_RAMDISK_ADDR "ramdisk_addr"
 #define ENV_DTB_ADDR     "dtb_addr"
 #define DEFAULT_KERNEL_ADDR  0x00200800
-#define DEFAULT_RAMDISK_ADDR 0x02000000
-#define DEFAULT_DTB_ADDR     0x01f00000
+#define DEFAULT_RAMDISK_ADDR LIGHT_ROOTFS_ADDR
+#define DEFAULT_DTB_ADDR     LIGHT_DTB_ADDR
 #define ENV_RAMDISK_SIZE "ramdisk_size"
 #define MISC_PARTITION "misc"
 #define RECOVERY_PARTITION "recovery"
