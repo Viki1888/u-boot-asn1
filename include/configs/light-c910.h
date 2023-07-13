@@ -114,6 +114,7 @@
 #if defined (U_BUILD_DEBUG)
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=7\0"
 #define ENV_STR_BOOT_DELAY
+#define CONFIG_ENV_OVERWRITE
 #else
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=4\0"
 #define ENV_STR_BOOT_DELAY	"bootdelay=0\0"
