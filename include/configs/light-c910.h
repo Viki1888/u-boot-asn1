@@ -62,14 +62,14 @@
 #define THEAD_LIGHT_FASTBOOT	1
 #define LIGHT_FW_ADDR		0x0
 #define LIGHT_KERNEL_ADDR	0x200000
-#define LIGHT_DTB_ADDR		0x2800000
+#define LIGHT_DTB_ADDR		0x3800000
 #define LIGHT_ROOTFS_ADDR	0x2000000
 #define LIGHT_AON_FW_ADDR	0xffffef8000
 #define LIGHT_TEE_FW_ADDR	0x1c000000
 #define LIGHT_TF_FW_ADDR	LIGHT_FW_ADDR
 #define LIGHT_TF_FW_TMP_ADDR	0x100000
 #define LIGHT_KERNEL_ADDR_CMD	"0x200000"
-#define LIGHT_DTB_ADDR_CMD	"0x2800000"
+#define LIGHT_DTB_ADDR_CMD	"0x3800000"
 
 
 /* trust image name string */
@@ -126,7 +126,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"tf_addr=0x100000\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -160,7 +160,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"tf_addr=0x100000\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -194,7 +194,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"tf_addr=0x100000\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -228,7 +228,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"tf_addr=0x100000\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -294,7 +294,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -322,7 +322,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -350,7 +350,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -378,7 +378,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -406,7 +406,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -434,7 +434,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -462,7 +462,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -490,7 +490,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -518,7 +518,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
@@ -546,7 +546,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x02800000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
 	"audio_ram_addr=0x32000000\0" \
