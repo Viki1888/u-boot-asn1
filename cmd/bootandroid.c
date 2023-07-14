@@ -130,11 +130,11 @@ static int prepare_data_from_vendor_boot(struct andr_img_hdr *hdr, int dtb_start
 		return -1;
 	}
 
-	vendor_boot_data = avb_malloc(part_info.size * part_info.blksz);
-	if (vendor_boot_data == NULL) {
-		printf("vendor boot data malloc fail \n");
-		return -1;
-	}
+    if (part_info.size * part_info.blksz > CONFIG_FASTBOOT_BUF_SIZE) {
+        return -1;
+    }
+    vendor_boot_data = (uint8_t*)CONFIG_FASTBOOT_BUF_ADDR;
+
 	ret = blk_dread(dev_desc, part_info.start, part_info.size, vendor_boot_data);
 	// vendor_boot.img
 	//* +------------------------+
@@ -198,8 +198,6 @@ static int prepare_data_from_vendor_boot(struct andr_img_hdr *hdr, int dtb_start
 	*buf_bootconfig = avb_malloc(*vendor_bootconfig_size);
 	if (*buf_bootconfig == NULL) {
 		printf("vendor bootconfig malloc fail\n");
-		if (vendor_boot_data != NULL)
-			avb_free(vendor_boot_data);
 		return -1;
 	}
 	int bootconfig_offset=vendor_boot_pagesize * (o + p + q + r);
@@ -217,9 +215,6 @@ static int prepare_data_from_vendor_boot(struct andr_img_hdr *hdr, int dtb_start
 		memcpy(find_str + strlen(slot_suffx_pre), slot_suffix, strlen(slot_suffix));
 	}
 #endif
-
-	if (vendor_boot_data != NULL)
-		avb_free(vendor_boot_data);
 
 	return 0;
 }
