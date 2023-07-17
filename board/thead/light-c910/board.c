@@ -118,3 +118,36 @@ int do_bootslave(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 	return 0;
 }
 #endif
+
+#ifdef CONFIG_BOARD_RNG_SEED
+const char pre_gen_seed[128] = {211, 134, 226, 116, 1, 13, 224, 196, 88, 213, 188, 219, 128, 41, 231, 228, 129, 123, 173, 234, 219, 79, 152, 154, 169, 27, 183, 166, 52, 21, 118, 7, 155, 89, 124, 156, 102, 92, 96, 190, 49, 28, 154, 177, 69, 129, 149, 199, 253, 66, 177, 216, 146, 73, 114, 59, 100, 41, 225, 152, 62, 88, 160, 217, 177, 28, 117, 23, 120, 213, 213, 169, 242, 111, 90, 55, 241, 239, 254, 238, 50, 175, 198, 196, 248, 56, 255, 92, 97, 224, 245, 160, 56, 149, 121, 233, 177, 239, 0, 41, 196, 214, 210, 182, 69, 44, 238, 54, 27, 236, 36, 77, 156, 234, 17, 148, 34, 16, 241, 132, 241, 230, 36, 41, 123, 157, 19, 44};
+/* Use hardware rng to seed Linux random. */
+int board_rng_seed(struct abuf *buf)
+{
+        struct udevice *dev;
+        size_t len = 128;
+        u64 *data;
+
+        /* TODO: runtime gen rng seed
+        data = malloc(len);
+        if (!data) {
+                printf("Out of memory\n");
+                return -ENOMEM;
+        }
+
+	if (uclass_get_device(UCLASS_RNG, 0, &dev) || !dev) {
+                printf("No RNG device\n");
+                return -ENODEV;
+        }
+
+        if (dm_rng_read(dev, data, len)) {
+                printf("Reading RNG failed\n");
+                return -EIO;
+        }
+	*/
+
+        abuf_init_set(buf, pre_gen_seed, len);
+
+        return 0;
+}
+#endif
