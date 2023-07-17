@@ -112,12 +112,12 @@ int verify_and_load_tee_tf_image(void)
 }
 
 /* In order to use common bootloader for both secure boot and non-secure boot,
-   we only know the boot type through reading the sec_boot field in efuse. Due to 
-   the efuse is only accessed in lifecycle(DEV/OEM/PRO/RMP), we ensure it must be 
+   we only know the boot type through reading the sec_boot field in efuse. Due to
+   the efuse is only accessed in lifecycle(DEV/OEM/PRO/RMP), we ensure it must be
    non-secure boot in lifecycle(INIT) */
 bool get_system_boot_type(void)
 {
-	bool btype = false; /* false: non-secure boot | true: secure boot */
+	bool btype = true; /* false: non-secure boot | true: secure boot */
 	int lc = 0;
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
@@ -190,6 +190,7 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
     const char *secimgs_load_str = VAL_SECIMG_LOAD;
     int ret = -1;
     sb_enable = get_system_boot_type();
+#if 0
     if (sb_enable) {
         /* By default, the value for ENV-SEC-M-LOAD is always to load opensbi image.
          * if secure boot is enable, we force to change the value to load tee image.
@@ -201,7 +202,7 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
             return CMD_RET_FAILURE;
         }
     }
-    
+#endif
 	return CMD_RET_SUCCESS;
 }
 
