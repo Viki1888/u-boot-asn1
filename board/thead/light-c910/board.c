@@ -9,6 +9,7 @@
 #include <dwc3-uboot.h>
 #include <usb.h>
 #include <cpu_func.h>
+#include "sec_library.h"
 
 #ifdef CONFIG_USB_DWC3
 static struct dwc3_device dwc3_device_data = {
@@ -124,30 +125,41 @@ const char pre_gen_seed[128] = {211, 134, 226, 116, 1, 13, 224, 196, 88, 213, 18
 /* Use hardware rng to seed Linux random. */
 int board_rng_seed(struct abuf *buf)
 {
-        struct udevice *dev;
-        size_t len = 128;
-        u64 *data;
+	size_t len = 128;
+	uint8_t *data = NULL;
+	int sc_err = SC_FAIL;
 
-        /* TODO: runtime gen rng seed
-        data = malloc(len);
-        if (!data) {
-                printf("Out of memory\n");
-                return -ENOMEM;
-        }
+#if defined(CONFIG_AVB_HW_ENGINE_ENABLE)
+	data = malloc(len);
+	if (!data) {
+		printf("Fail to allocate memory, using pre-defined entropy\n");
+		goto _err;
+	}
 
-	if (uclass_get_device(UCLASS_RNG, 0, &dev) || !dev) {
-                printf("No RNG device\n");
-                return -ENODEV;
-        }
+	/* We still use pre-define entropy data in case hardware random engine does not work */
+	sc_err = csi_sec_library_init();
+	if (sc_err != SC_OK) {
+		printf("Fail to initialize sec library, using pre-defined entropy\n");
+		goto _err;
+	}
 
-        if (dm_rng_read(dev, data, len)) {
-                printf("Reading RNG failed\n");
-                return -EIO;
-        }
-	*/
+	sc_err = sc_rng_get_random_bytes(data, len);
+	if (sc_err != SC_OK) {
+		printf("Fail to retrieve random data, using pre-defined entropy\n");
+		goto _err;
+	}
 
-        abuf_init_set(buf, pre_gen_seed, len);
+	abuf_init_set(buf, data, len);
+	if (data != NULL)
+		free(data);
+	return 0;
 
-        return 0;
+_err:
+	if (data != NULL)
+		free(data);
+#endif
+	abuf_init_set(buf, pre_gen_seed, len);
+
+	return 0;
 }
 #endif
