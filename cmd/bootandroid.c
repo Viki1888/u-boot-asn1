@@ -232,21 +232,21 @@ static int prepare_data_from_vendor_boot(struct andr_img_hdr *hdr, int dtb_start
 		int vendor_ramdisk_table_entry_size = byteToInt(vendor_boot_data,2120);//offset 2116
 		printf("vendor_boot vendor_ramdisk_table_entry_size:%d\n",vendor_ramdisk_table_entry_size);
 		for (i = 0; i < vendor_ramdisk_table_entry_num; i++) {
-			ramdisk_entry = vendor_boot_data + vendor_ramdisk_table_offset
-											 + ( i * vendor_ramdisk_table_entry_size );
+			ramdisk_entry = (struct vendor_ramdisk_table_entry*)(vendor_boot_data + vendor_ramdisk_table_offset
+											 + ( i * vendor_ramdisk_table_entry_size ));
 			if (ramdisk_entry->ramdisk_type != VENDOR_RAMDISK_TYPE_RECOVERY) {
 				continue;
 			}
 			printf("find recovery from ramdisk table.");
 			int ramdisk_start = env_get_hex(ENV_RAMDISK_ADDR, DEFAULT_RAMDISK_ADDR);
 			int recovery_ramdisk_offset = vendor_boot_pagesize * o + ramdisk_entry->ramdisk_offset;
-			memcpy(ramdisk_start, vendor_boot_data + recovery_ramdisk_offset,
+			memcpy((void *)(uint64_t)ramdisk_start, vendor_boot_data + recovery_ramdisk_offset,
 													 ramdisk_entry->ramdisk_size);//ramdisk
 			//get bootconfig form vendor_boot.img and append bootconfig to ramdisk
 			char* bootconfig_params = (char*)*buf_bootconfig;
 			int ret = addBootConfigParameters(bootconfig_params, *vendor_bootconfig_size,
 						ramdisk_start + ramdisk_entry->ramdisk_size , 0);
-			if(ret == -1) {
+			if (ret == -1) {
 				printf("\nadd BootConfig Parameters error!!!\n");
 			} else {
 				printf("\nramdisk size is changed,new value is:%d\n",ramdisk_entry->ramdisk_size + ret);
@@ -406,14 +406,9 @@ static void clear_bcb(void)
 
 static int do_andriod_bcb_business(int *boot_recovery)
 {
-	const char * const requested_partitions[] = {"boot", NULL};
 	AvbIOResult ret = AVB_IO_RESULT_OK;
-	AvbSlotVerifyResult slot_result;
 	size_t bytes_read = 0;
 	int res = CMD_RET_FAILURE;
-	AvbSlotVerifyData *out_data;
-	AvbSlotVerifyFlags flags = 0;
-	char bp_name[32] = {0};
 
 #ifdef CONFIG_ANDROID_AB
 	char *slot_suffix = "_a";
@@ -538,7 +533,7 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 		if (slot_result == AVB_SLOT_VERIFY_RESULT_OK) {
 			printf("BootAndriod Info: Request Partition are verified successfully\n");
 			printf("BootAndriod cmdline: slot_data.cmdline:%s\n", slot_data->cmdline);
-			prepare_boot_data(slot_data, false);
+			prepare_boot_data(slot_data, boot_recovery ? true:false);
 			if (ret == 0) {
 				if (slot_data != NULL)
 					avb_slot_verify_data_free(slot_data);
@@ -548,11 +543,11 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 			run_command("reset", 0);
 		}
 	} else {
-	/* Go to load BOOT partition directly in non-secure boot */		
+	/* Go to load BOOT partition directly in non-secure boot */
         get_partition_name(BOOT_PARTITION, bp_name);
 		prepare_partition_data(bp_name, boot_recovery ? true:false);
 	}
-    
+
 exit:
 	return res;
 }
