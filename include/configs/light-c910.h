@@ -117,7 +117,7 @@
 #define CONFIG_ENV_OVERWRITE
 #else
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=4\0"
-#define ENV_STR_BOOT_DELAY	"bootdelay=0\0"
+#define ENV_STR_BOOT_DELAY
 #endif
 
 #if defined (CONFIG_LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A)
@@ -261,7 +261,7 @@
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
-	"serial#=1234567890\0" \
+	"serial#=\0" \
 	"tf_addr=0x100000\0" \
 	"tee_addr=0x1c000000\0" \
 	"opensbi_addr=0x0\0" \
@@ -272,6 +272,7 @@
 	"audio_ram_addr=0xffc0000000\0" \
 	"fwaddr=0x10000000\0"\
 	"boot_ab=_a\0"\
+	"sb_emulater=0\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
         ENV_KERNEL_LOGLEVEL \

@@ -121,6 +121,12 @@ bool get_system_boot_type(void)
 	int lc = 0;
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
+	int sb_emulater = 0;
+
+	sb_emulater = env_get_ulong("sb_emulater", 10, 0);
+	if (sb_emulater == 0) {
+		btype = false;
+	}
 # if 0
 	ret = csi_efuse_get_lc(&lc);
 	/* 0: LC_INIT, 1: LC_DEV, 2: LC_OEM, 3: LC_PRO */
