@@ -275,18 +275,20 @@
 	"sb_emulater=0\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
-        ENV_KERNEL_LOGLEVEL \
-        ENV_STR_BOOT_DELAY \
+	"mmcbootpart=2\0" \
+	"mmcteepart=8\0" \
+	ENV_KERNEL_LOGLEVEL \
+	ENV_STR_BOOT_DELAY \
 	"fdt_file=light-val.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=sparse,size=2031kb;name=bootpart,size=8MiB;name=boot_a,size=32MiB;name=boot_b,size=32MiB;name=vendor_boot_a,size=32MiB;name=vendor_boot_b,size=32MiB;name=tee_a,size=32MiB;name=tee_b,size=32MiB;name=dtbo_a,size=8MiB;name=dtbo_b,size=8MiB;name=super,size=4096MiB;name=vbmeta_a,size=1MiB;name=vbmeta_b,size=1MiB;name=vbmeta_system_a,size=1MiB;name=vbmeta_system_b,size=1MiB;name=misc,size=2MiB;name=metadata,size=16MiB;name=userdata,size=-\0" \
+	"partitions=name=sparse,size=2031kb;name=bootpart_a,size=8MiB;name=bootpart_b,size=8MiB;name=boot_a,size=32MiB;name=boot_b,size=32MiB;name=vendor_boot_a,size=32MiB;name=vendor_boot_b,size=32MiB;name=tee_a,size=32MiB;name=tee_b,size=32MiB;name=dtbo_a,size=8MiB;name=dtbo_b,size=8MiB;name=super,size=4096MiB;name=vbmeta_a,size=1MiB;name=vbmeta_b,size=1MiB;name=vbmeta_system_a,size=1MiB;name=vbmeta_system_b,size=1MiB;name=misc,size=2MiB;name=metadata,size=16MiB;name=userdata,size=-\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
 	"set_bootargs=setenv bootargs console=ttyS0,115200 earlycon clk_ignore_unused loop.max_part=7 loglevel=${kernel_loglevel} init=/init bootconfig video=HDMI-A-1:800x600-32@60 firmware_class.path=/vendor/firmware androidboot.serialno=${serial#}\0" \
-	"load_aon=ext4load mmc 0:2 $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
-	"load_c906_audio=ext4load mmc 0:2 $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
-	"sec_m_load=ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin\0"\
-	"bootcmd_load=run load_aon;run load_c906_audio;secimg_load;run sec_m_load;bootandroid;fdt addr ${dtb_addr};fdt resize 100;fdt chosen;\0" \
+	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
+	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
+	"sec_m_load=ext4load mmc ${mmcdev}:${mmcbootpart} $opensbi_addr fw_dynamic.bin\0"\
+	"bootcmd_load=bootandroid;run sec_m_load;run load_aon;run load_c906_audio;secimg_load;fdt addr ${dtb_addr};fdt resize 100;fdt chosen;\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; bootm $kernel_addr $ramdisk_addr:$ramdisk_size $dtb_addr;\0" \
          "\0"
 

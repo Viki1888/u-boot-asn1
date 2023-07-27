@@ -10,7 +10,7 @@
 #include "sec_library.h"
 
 #define ENV_SECIMG_LOAD     "sec_m_load"
-#define VAL_SECIMG_LOAD     "ext4load mmc 0:7 $tf_addr trust_firmware.bin; ext4load mmc 0:7 $tee_addr tee.bin"
+#define VAL_SECIMG_LOAD     "ext4load mmc ${mmcdev}:${mmcteepart}$tf_addr trust_firmware.bin; ext4load mmc ${mmcdev}:${mmcteepart} $tee_addr tee.bin"
 
 #define RPMB_BLOCK_SIZE 256
 #define RPMB_ROLLBACK_BLOCK_START 1
@@ -23,6 +23,7 @@ static const unsigned char emmc_rpmb_key_sample[32] = {0x33, 0x22, 0x11, 0x00, 0
 #endif
 
 extern int sprintf(char *buf, const char *fmt, ...);
+extern char * get_slot_name_suffix(void);
 
 static int get_rpmb_key(uint8_t key[32])
 {
@@ -209,6 +210,19 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
         }
     }
 #endif
+
+#ifdef CONFIG_ANDROID_AB
+	char *slot_suffix = get_slot_name_suffix();
+	if (strcmp(slot_suffix, "_a") == 0) {
+		/* Keep mmcbootpart index as "_a" by default */
+	} else if (strcmp(slot_suffix, "_b") == 0) {
+		/* Switch mmcbootpart to "_b" */
+		env_set("mmcbootpart", 3);
+		/* Switch mmcteepart to "_b" */
+		env_set("mmcteepart", 9);
+	}
+#endif
+
 	return CMD_RET_SUCCESS;
 }
 

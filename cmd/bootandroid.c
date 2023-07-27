@@ -32,14 +32,14 @@
 
 
 /*
- * Knowing secure boot is enable or disable dependents on 
+ * Knowing secure boot is enable or disable dependents on
  * special data field in efuse and efuse control register.
  */
 extern bool get_system_boot_type(void);
 /*
  * The suffix for partition name is from the value of ENV_BOOTAB
  */
-static const char *slot_name_suffix = NULL;;
+static const char *slot_name_suffix = NULL;
 
 /*
  * BOOT IMAGE HEADER V3/V4 PAGESIZE
@@ -550,6 +550,11 @@ static int do_bootandroid(struct cmd_tbl_s *cmdtp, int flag, int argc,
 
 exit:
 	return res;
+}
+
+char * get_slot_name_suffix(void)
+{
+	return slot_name_suffix;
 }
 
 U_BOOT_CMD(
