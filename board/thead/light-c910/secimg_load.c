@@ -10,7 +10,7 @@
 #include "sec_library.h"
 
 #define ENV_SECIMG_LOAD     "sec_m_load"
-#define VAL_SECIMG_LOAD     "ext4load mmc ${mmcdev}:${mmcteepart}$tf_addr trust_firmware.bin; ext4load mmc ${mmcdev}:${mmcteepart} $tee_addr tee.bin"
+#define VAL_SECIMG_LOAD     "ext4load mmc ${mmcdev}:${mmcteepart} $tf_addr trust_firmware.bin; ext4load mmc ${mmcdev}:${mmcteepart} $tee_addr tee.bin"
 
 #define RPMB_BLOCK_SIZE 256
 #define RPMB_ROLLBACK_BLOCK_START 1
@@ -197,7 +197,7 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
     const char *secimgs_load_str = VAL_SECIMG_LOAD;
     int ret = -1;
     sb_enable = get_system_boot_type();
-#if 0
+
     if (sb_enable) {
         /* By default, the value for ENV-SEC-M-LOAD is always to load opensbi image.
          * if secure boot is enable, we force to change the value to load tee image.
@@ -209,7 +209,6 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
             return CMD_RET_FAILURE;
         }
     }
-#endif
 
 #ifdef CONFIG_ANDROID_AB
 	char *slot_suffix = get_slot_name_suffix();

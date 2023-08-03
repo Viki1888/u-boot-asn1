@@ -262,7 +262,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	"serial#=\0" \
-	"tf_addr=0x100000\0" \
+	"tf_addr=0x0\0" \
 	"tee_addr=0x1c000000\0" \
 	"opensbi_addr=0x0\0" \
 	"dtb_addr=0x01f00000\0" \
@@ -288,7 +288,7 @@
 	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
 	"sec_m_load=ext4load mmc ${mmcdev}:${mmcbootpart} $opensbi_addr fw_dynamic.bin\0"\
-	"bootcmd_load=bootandroid;run sec_m_load;run load_aon;run load_c906_audio;secimg_load;fdt addr ${dtb_addr};fdt resize 100;fdt chosen;\0" \
+	"bootcmd_load=bootandroid;secimg_load;run sec_m_load;run load_aon;run load_c906_audio;fdt addr ${dtb_addr};fdt resize 100;fdt chosen;\0" \
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; bootm $kernel_addr $ramdisk_addr:$ramdisk_size $dtb_addr;\0" \
          "\0"
 
