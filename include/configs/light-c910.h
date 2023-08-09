@@ -115,9 +115,11 @@
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=7\0"
 #define ENV_STR_BOOT_DELAY
 #define CONFIG_ENV_OVERWRITE
+#define ENV_STR_SERIAL 		"serial#=1234567890\0"
 #else
 #define ENV_KERNEL_LOGLEVEL "kernel_loglevel=4\0"
 #define ENV_STR_BOOT_DELAY
+#define ENV_STR_SERIAL 		"serial#=\0"
 #endif
 
 #if defined (CONFIG_LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A)
@@ -261,7 +263,7 @@
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
-	"serial#=\0" \
+	ENV_STR_SERIAL \
 	"tf_addr=0x0\0" \
 	"tee_addr=0x1c000000\0" \
 	"opensbi_addr=0x0\0" \
