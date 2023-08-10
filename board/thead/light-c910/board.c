@@ -129,13 +129,15 @@ int board_rng_seed(struct abuf *buf)
 	uint8_t *data = NULL;
 	int sc_err = SC_FAIL;
 
-#if defined(CONFIG_AVB_HW_ENGINE_ENABLE)
+	/* abuf is working up in asynchronization mode, so the memory usage for random data storage must
+	   be allocated first. */
 	data = malloc(len);
 	if (!data) {
 		printf("Fail to allocate memory, using pre-defined entropy\n");
-		goto _err;
+		return -1;
 	}
 
+#if defined(CONFIG_AVB_HW_ENGINE_ENABLE)
 	/* We still use pre-define entropy data in case hardware random engine does not work */
 	sc_err = csi_sec_library_init();
 	if (sc_err != SC_OK) {
@@ -150,15 +152,13 @@ int board_rng_seed(struct abuf *buf)
 	}
 
 	abuf_init_set(buf, data, len);
-	if (data != NULL)
-		free(data);
 	return 0;
 
 _err:
-	if (data != NULL)
-		free(data);
 #endif
-	abuf_init_set(buf, pre_gen_seed, len);
+	/* use pre-defined random data in case of the random engine is disable */
+	memcpy(data, pre_gen_seed, len);
+	abuf_init_set(buf, data, len);
 
 	return 0;
 }
