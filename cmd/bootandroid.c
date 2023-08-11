@@ -552,7 +552,7 @@ exit:
 	return res;
 }
 
-char * get_slot_name_suffix(void)
+const char * get_slot_name_suffix(void)
 {
 	return slot_name_suffix;
 }

@@ -119,9 +119,11 @@ int verify_and_load_tee_tf_image(void)
 bool get_system_boot_type(void)
 {
 	bool btype = true; /* false: non-secure boot | true: secure boot */
+#if 0
 	int lc = 0;
 	sboot_st_t sb_flag = SECURE_BOOT_DIS;
 	int ret = 0;
+#endif
 	int sb_emulater = 0;
 
 	sb_emulater = env_get_ulong("sb_emulater", 10, 0);
@@ -216,9 +218,9 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
 		/* Keep mmcbootpart index as "_a" by default */
 	} else if (strcmp(slot_suffix, "_b") == 0) {
 		/* Switch mmcbootpart to "_b" */
-		env_set("mmcbootpart", 3);
+		env_set_ulong("mmcbootpart", 3);
 		/* Switch mmcteepart to "_b" */
-		env_set("mmcteepart", 9);
+		env_set_ulong("mmcteepart", 9);
 	}
 #endif
 

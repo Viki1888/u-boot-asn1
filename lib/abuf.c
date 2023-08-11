@@ -27,6 +27,8 @@ void abuf_map_sysmem(struct abuf *abuf, ulong addr, size_t size)
 {
 	abuf_set(abuf, map_sysmem(addr, size), size);
 }
+
+char *memdup(const void *src, size_t len);
 #else
 /* copied from lib/string.c for convenience */
 static char *memdup(const void *src, size_t len)

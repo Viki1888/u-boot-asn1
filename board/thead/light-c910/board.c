@@ -9,6 +9,7 @@
 #include <dwc3-uboot.h>
 #include <usb.h>
 #include <cpu_func.h>
+#include <abuf.h>
 #include "sec_library.h"
 
 #ifdef CONFIG_USB_DWC3
