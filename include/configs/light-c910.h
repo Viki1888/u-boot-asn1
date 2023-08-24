@@ -258,7 +258,9 @@
 	"bootcmd=run bootcmd_load; bootslave; run finduuid; run set_bootargs; secboot; booti $kernel_addr - $dtb_addr;\0" \
         "\0"
 
-#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_A) || defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_B) || defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_LPI4A) || defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_BEAGLE)
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_A) || defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_B) || \
+      defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_LPI4A) || defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_BEAGLE) || \
+      defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_ANT_REF)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
 	"splashpos=m,m\0" \
