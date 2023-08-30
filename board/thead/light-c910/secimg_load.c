@@ -10,7 +10,7 @@
 #include "sec_library.h"
 
 #define ENV_SECIMG_LOAD     "sec_m_load"
-#define VAL_SECIMG_LOAD     "ext4load mmc ${mmcdev}:${mmcteepart} $tf_addr trust_firmware.bin; ext4load mmc ${mmcdev}:${mmcteepart} $tee_addr tee.bin"
+#define VAL_SECIMG_LOAD     "ext4load mmc ${mmcdev}:${mmcteepart} $tf_addr trust_firmware.bin; ext4load mmc ${mmcdev}:${mmcteepart} $tee_addr tee.bin\0"
 
 #define RPMB_BLOCK_SIZE 256
 #define RPMB_ROLLBACK_BLOCK_START 1
@@ -27,11 +27,11 @@ extern char * get_slot_name_suffix(void);
 
 static int get_rpmb_key(uint8_t key[32])
 {
-#ifndef LIGHT_KDF_RPMB_KEY 
+#ifndef LIGHT_KDF_RPMB_KEY
     memcpy(key, emmc_rpmb_key_sample, sizeof(emmc_rpmb_key_sample));
 
     return 0;
-#else 
+#else
 	uint32_t kdf_rpmb_key_length = 0;
 	int ret = 0;
 	ret = csi_kdf_gen_hmac_key(key, &kdf_rpmb_key_length);
@@ -47,7 +47,7 @@ static int get_image_file_size(unsigned long img_src_addr)
 {
 	img_header_t *img = (img_header_t *)img_src_addr;
 	uint8_t magiccode[4] = {0};
-	
+
 	magiccode[3] = img->magic_num & 0xff;
 	magiccode[2] = (img->magic_num & 0xff00) >> 8;
 	magiccode[1] = (img->magic_num & 0xff0000) >> 16;
@@ -55,7 +55,7 @@ static int get_image_file_size(unsigned long img_src_addr)
 	if (memcmp(header_magic, magiccode, 4) == 0) {
 		return -1;
 	}
-	
+
 	return img->image_size;
 }
 
@@ -69,13 +69,13 @@ static int verify_and_load_image(unsigned long image_addr_src, unsigned long ima
         if (ret != 0) {
 			return -1;
 		}
-        
+
         ret = csi_sec_custom_image_verify(image_addr_src, UBOOT_STAGE_ADDR);
         if (ret != 0) {
             printf("image verify error\r\n");
             return -2;
         }
-		
+
 		image_size = get_image_file_size(image_addr_src);
 		if (image_size  < 0) {
             printf("image get size error\r\n");
@@ -179,7 +179,7 @@ int sec_write_rollback_index(size_t rollback_index_slot, uint64_t rollback_index
     }
 
     *(uint64_t*)(blkdata + rpmb_offset) = rollback_index;
-    
+
     if (get_rpmb_key(rpmb_key) != 0) {
         return -2;
     }
@@ -198,31 +198,36 @@ static int do_secimg_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const arg
     bool sb_enable = false;
     const char *secimgs_load_str = VAL_SECIMG_LOAD;
     int ret = -1;
-    sb_enable = get_system_boot_type();
-
-    if (sb_enable) {
-        /* By default, the value for ENV-SEC-M-LOAD is always to load opensbi image.
-         * if secure boot is enable, we force to change the value to load tee image.
-         * but Never to save it in volatile-RAM
-         */
-        ret = env_set(ENV_SECIMG_LOAD, secimgs_load_str);
-        if (ret != 0) {
-            printf("Rewrite ENV (%s) fails\n", ENV_SECIMG_LOAD);
-            return CMD_RET_FAILURE;
-        }
-    }
+    int teepart = 0;
 
 #ifdef CONFIG_ANDROID_AB
 	char *slot_suffix = get_slot_name_suffix();
-	if (strcmp(slot_suffix, "_a") == 0) {
-		/* Keep mmcbootpart index as "_a" by default */
-	} else if (strcmp(slot_suffix, "_b") == 0) {
+    teepart = env_get_ulong("mmcteepart", 10, 8);
+	if ((strcmp(slot_suffix, "_a") == 0) && (teepart != 8)) {
+		/* Switch mmcbootpart to "_b" */
+		env_set_ulong("mmcbootpart", 2);
+		/* Switch mmcteepart to "_b" */
+		env_set_ulong("mmcteepart", 8);
+	} else if ((strcmp(slot_suffix, "_b") == 0) && (teepart != 9)){
 		/* Switch mmcbootpart to "_b" */
 		env_set_ulong("mmcbootpart", 3);
 		/* Switch mmcteepart to "_b" */
 		env_set_ulong("mmcteepart", 9);
 	}
 #endif
+
+	sb_enable = get_system_boot_type();
+	if (sb_enable) {
+		/* By default, the value for ENV-SEC-M-LOAD is always to load opensbi image.
+		* if secure boot is enable, we force to change the value to load tee image.
+		* but Never to save it in volatile-RAM
+		*/
+		ret = env_set(ENV_SECIMG_LOAD, secimgs_load_str);
+		if (ret != 0) {
+			printf("Rewrite ENV (%s) fails\n", ENV_SECIMG_LOAD);
+			return CMD_RET_FAILURE;
+		}
+	}
 
 	return CMD_RET_SUCCESS;
 }
