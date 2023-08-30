@@ -124,6 +124,19 @@
 #define ENV_KERNEL_KDUMP	"kdump_buf=0M\0"
 #endif
 
+/* Define board ID in ENV for firmware download protection */
+#if defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_A)
+#define ENV_STR_BOARD "board#=LA\0"
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_B)
+#define ENV_STR_BOARD "board#=LB\0"
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_LPI4A)
+#define ENV_STR_BOARD "board#=LP\0"
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_VAL_BEAGLE)
+#define ENV_STR_BOARD "board#=LG\0"
+#elif defined(CONFIG_LIGHT_ANDROID_BOOT_IMAGE_ANT_REF)
+#define ENV_STR_BOARD "board#=LD\0"
+#endif
+
 #if defined (CONFIG_LIGHT_SEC_BOOT_WITH_VERIFY_VAL_A)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"splashimage=0x30000000\0" \
@@ -268,6 +281,7 @@
 	"splashpos=m,m\0" \
 	"fdt_high=0xffffffffffffffff\0" \
 	ENV_STR_SERIAL \
+	ENV_STR_BOARD \
 	"tf_addr=0x0\0" \
 	"tee_addr=0x1c000000\0" \
 	"opensbi_addr=0x0\0" \
