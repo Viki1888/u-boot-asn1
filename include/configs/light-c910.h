@@ -285,7 +285,7 @@
 	"tf_addr=0x0\0" \
 	"tee_addr=0x1c000000\0" \
 	"opensbi_addr=0x0\0" \
-	"dtb_addr=0x01f00000\0" \
+	"dtb_addr=0x03800000\0" \
 	"kernel_addr=0x00200000\0" \
 	"ramdisk_addr=0x02000000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
