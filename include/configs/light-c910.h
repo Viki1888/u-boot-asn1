@@ -289,7 +289,7 @@
 	"kernel_addr=0x00200000\0" \
 	"ramdisk_addr=0x02000000\0" \
 	"aon_ram_addr=0xffffef8000\0" \
-	"audio_ram_addr=0xffc0000000\0" \
+	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"boot_ab=_a\0"\
 	"sb_emulater=0\0"\
