@@ -163,7 +163,7 @@
 	"tee_addr=0x1c000000\0" \
 	"sec_upgrade_mode=0\0"\
 	"mmcdev=0\0" \
-	"mmcpart=7\0" \
+	"mmcpart=8\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
@@ -173,10 +173,10 @@
 	"tf_version=0x00000000\0"\
 	"fdt_file=light-a-val-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=50MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=sbmeta,size=8MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tf,size=50MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=sbmeta,size=8MiB,type=boot;name=swap,size=2048MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
-	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr crashkernel=${kdump_buf}\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr crashkernel=${kdump_buf} resume=/dev/mmcblk0p7\0" \
 	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
 	"load_str=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr str.bin;cp.b $fwaddr $str_ram_addr $filesize\0"\
@@ -349,17 +349,17 @@
 	"fwaddr=0x10000000\0"\
     ENV_STR_BOARD \
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=4\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
 	"fdt_file=light-a-product.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=swap,size=2048MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
-	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr crashkernel=${kdump_buf}\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr crashkernel=${kdump_buf} resume=/dev/mmcblk0p3\0" \
 	"load_aon=ext4load mmc 0:2 $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc 0:2 $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
 	"bootcmd_load=run load_aon;run load_c906_audio; ext4load mmc 0:2 $opensbi_addr fw_dynamic.bin; ext4load mmc 0:2 $dtb_addr ${fdt_file}; ext4load mmc 0:2 $kernel_addr Image\0" \
@@ -602,17 +602,17 @@
 	"str_ram_addr=0xffe0000000\0" \
 	"fwaddr=0x10000000\0"\
 	"mmcdev=0\0" \
-	"mmcpart=3\0" \
+	"mmcpart=4\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
 	"fdt_file=light-a-val-audio-hdmi.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
-	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
+	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=swap,size=2048MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
 	"finduuid=part uuid mmc ${mmcdev}:${mmcpart} uuid\0" \
 	"gpt_partition=gpt write mmc ${mmcdev} $partitions\0" \
-	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr crashkernel=${kdump_buf}\0" \
+	"set_bootargs=setenv bootargs console=ttyS0,115200 root=PARTUUID=${uuid} rootfstype=ext4 rdinit=/sbin/init rootwait rw earlycon clk_ignore_unused loglevel=${kernel_loglevel} eth=$ethaddr crashkernel=${kdump_buf} resume=/dev/mmcblk0p3\0" \
 	"load_aon=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_aon_fpga.bin;cp.b $fwaddr $aon_ram_addr $filesize\0"\
 	"load_c906_audio=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr light_c906_audio.bin;cp.b $fwaddr $audio_ram_addr $filesize\0"\
 	"load_str=ext4load mmc ${mmcdev}:${mmcbootpart} $fwaddr str.bin;cp.b $fwaddr $str_ram_addr $filesize\0"\
