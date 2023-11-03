@@ -738,13 +738,11 @@ void sec_upgrade_thread(void)
 	sec_upgrade_flag = env_get_hex("sec_upgrade_mode", 0);
 	if (sec_upgrade_flag == 0)
 		return;
-	
 	printf("bootstrap: sec_upgrade_flag: %x\n", sec_upgrade_flag);
 	if (sec_upgrade_flag == TF_SEC_UPGRADE_FLAG) {
-		
 		/* STEP 1: read upgrade image (trust_firmware.bin) from stash partition */
 		printf("read upgrade image (trust_firmware.bin) from stash partition \n");
-		sprintf(runcmd, "ext4load mmc 0:5 0x%p trust_firmware.bin", (void *)temp_addr);
+		sprintf(runcmd, "ext4load mmc 0:4 0x%p trust_firmware.bin", (void *)temp_addr);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
@@ -805,7 +803,7 @@ _upgrade_tf_exit:
 
  		/* STEP 1: read upgrade image (tee.bin) from stash partition */
 		printf("read upgrade image (tee.bin) from stash partition \n");
-		sprintf(runcmd, "ext4load mmc 0:5 0x%p tee.bin", (void *)temp_addr);
+		sprintf(runcmd, "ext4load mmc 0:4 0x%p tee.bin", (void *)temp_addr);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
@@ -815,7 +813,7 @@ _upgrade_tf_exit:
 		/* Fetch the total file size after read out operation end */
 		upgrade_file_size = env_get_hex("filesize", 0);
 		printf("TEE upgrade file size: %d\n", upgrade_file_size);
-        
+
         /*store image to temp buffer as temp_addr may be decrypted*/
         image_malloc_buffer = malloc(upgrade_file_size);
         if ( image_malloc_buffer == NULL ) {
@@ -836,7 +834,7 @@ _upgrade_tf_exit:
 
 		/* STEP 3: update tee partition */
 		printf("read upgrade image (tee.bin) into tf partition \n");
-		sprintf(runcmd, "ext4write mmc 0:4 0x%p /tee.bin 0x%x", (void *)image_buffer, upgrade_file_size);
+		sprintf(runcmd, "ext4write mmc 0:3 0x%p /tee.bin 0x%x", (void *)image_buffer, upgrade_file_size);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {
@@ -857,12 +855,12 @@ _upgrade_tee_exit:
 		run_command("env set sec_upgrade_mode 0", 0);
 		run_command("saveenv", 0);
 		run_command("reset", 0);
-        
+
         if ( image_malloc_buffer != NULL ) {
             free(image_malloc_buffer);
             image_malloc_buffer = NULL;
         }
-	} else if (sec_upgrade_flag == UBOOT_SEC_UPGRADE_FLAG) { 
+	} else if (sec_upgrade_flag == UBOOT_SEC_UPGRADE_FLAG) {
 		unsigned int block_cnt;
 		struct blk_desc *dev_desc;
 		const unsigned long uboot_temp_addr=0x80000000;
@@ -871,7 +869,7 @@ _upgrade_tee_exit:
 
 		/* STEP 1: read upgrade image (u-boot-with-spl.bin) from stash partition */
 		printf("read upgrade image (u-boot-with-spl.bin) from stash partition \n");
-		sprintf(runcmd, "ext4load mmc 0:5 0x%p u-boot-with-spl.bin", (void *)temp_addr);
+		sprintf(runcmd, "ext4load mmc 0:4 0x%p u-boot-with-spl.bin", (void *)temp_addr);
 		printf("runcmd:%s\n", runcmd);
 		ret = run_command(runcmd, 0);
 		if (ret != 0) {

@@ -18,7 +18,7 @@
 #define LIGHT_SBMETA_ADDR   0x10000000
 #endif
 #define SBMETA_DEV          0
-#define SBMETA_PART         6
+#define SBMETA_PART         5
 #define ENTRY_SIZE          128
 #define PLAIN_SBMETA_TEXT   4096
 #define SBMETA_SIZE         4736  /* 4K SMBETA image + 640 footer */
