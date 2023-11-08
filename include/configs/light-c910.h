@@ -314,7 +314,7 @@
 	"audio_ram_addr=0x32000000\0" \
 	"fwaddr=0x10000000\0"\
 	"boot_ab=_a\0"\
-	"sb_emulater=0\0"\
+	"sb_emulater=1\0"\
 	"mmcdev=0\0" \
 	"mmcpart=3\0" \
 	"mmcbootpart=2\0" \
