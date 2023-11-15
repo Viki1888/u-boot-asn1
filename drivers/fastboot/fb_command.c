@@ -393,6 +393,22 @@ static void flash(char *cmd_parameter, char *response)
 		run_command("saveenv", 0);
 		run_command("reset", 0);
 		return;
+	} else if (strcmp(cmd_parameter, SBMETA_IMG_UPD_NAME) == 0) {
+		#if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
+		/* tee/tf/uboot image must be written into stash partition */
+		sprintf(cmdbuf, "%s", STASH_PART_NAME);
+		fastboot_mmc_flash_write(cmdbuf, fastboot_buf_addr, image_size, response);
+		#endif
+
+		/* Send ACK to host */
+		fastboot_okay(NULL, response);
+
+		/* set secure upgrade flag to indicate it is TEE image upgrade*/
+		sprintf(cmdbuf,"env set sec_upgrade_mode 0x%x", SBMETA_SEC_UPGRADE_FLAG);
+		run_command(cmdbuf, 0);
+		run_command("saveenv", 0);
+		run_command("reset", 0);
+		return;
 	} else if (strcmp(cmd_parameter, UBOOT_IMG_UPD_NAME) == 0) {
 		#if CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC)
 
