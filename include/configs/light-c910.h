@@ -76,11 +76,13 @@
 #define TF_IMG_UPD_NAME		"stashtf"
 #define TEE_IMG_UPD_NAME	"stashtee"
 #define UBOOT_IMG_UPD_NAME	"stashuboot"
+#define SBMETA_IMG_UPD_NAME	"stashsbmeta"
 #define TF_PART_NAME		"tf"
 #define TEE_PART_NAME		"tee"
 #define UBOOT_PART_NAME		"uboot"
 #define STASH_PART_NAME 	"stash"
 #define KERNEL_PART_NAME	"kernel"
+#define SBMETA_PART_NAME	"sbmeta"
 
 #define UBOOT_STAGE_ADDR	SRAM_BASE_ADDR
 
@@ -95,6 +97,7 @@
 #define TF_SEC_UPGRADE_FLAG	0x5555aaaa
 #define TEE_SEC_UPGRADE_FLAG 0x5a5aa5a5
 #define UBOOT_SEC_UPGRADE_FLAG	0xa5a5aa55
+#define SBMETA_SEC_UPGRADE_FLAG 0xaaaa5555
 
 /* Define secure debug log level */
 #define LOG_LEVEL	1
@@ -168,9 +171,11 @@
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
+	"sbmeta_security_level=2\0" \
 	"uboot_version=0x0000000000000000\0"\
 	"tee_version=0x00000000\0"\
 	"tf_version=0x00000000\0"\
+	"sbmeta_version=0x00000000\0"\
 	"fdt_file=light-a-val-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=sbmeta,size=8MiB,type=boot;name=swap,size=2048MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
@@ -205,9 +210,11 @@
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
+	"sbmeta_security_level=2\0" \
 	"uboot_version=0x0000000000000000\0"\
 	"tee_version=0x00000000\0"\
 	"tf_version=0x00000000\0"\
+	"sbmeta_version=0x00000000\0"\
 	"fdt_file=light-b-product-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=sbmeta,size=8MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
@@ -277,11 +284,13 @@
 	"mmcpart=6\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
+	"sbmeta_security_level=2\0" \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
 	"uboot_version=0x0000000000000000\0"\
 	"tee_version=0x00000000\0"\
 	"tf_version=0x00000000\0"\
+	"sbmeta_version=0x00000000\0"\
 	"fdt_file=light-lpi4a-sec.dtb\0" \
 	"uuid_rootfs=80a5a8e9-c744-491a-93c1-4f4194fd690b\0" \
 	"partitions=name=table,size=2031KB;name=boot,size=200MiB,type=boot;name=tee,size=50MiB,type=boot;name=stash,size=50MiB,type=boot;name=sbmeta,size=8MiB,type=boot;name=root,size=-,type=linux,uuid=${uuid_rootfs}\0" \
