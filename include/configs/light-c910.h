@@ -171,7 +171,7 @@
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
-	"sbmeta_security_level=2\0" \
+	"sbmeta_security_level=1\0" \
 	"uboot_version=0x0000000000000000\0"\
 	"tee_version=0x00000000\0"\
 	"tf_version=0x00000000\0"\
@@ -210,7 +210,7 @@
 	ENV_KERNEL_LOGLEVEL \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
-	"sbmeta_security_level=2\0" \
+	"sbmeta_security_level=1\0" \
 	"uboot_version=0x0000000000000000\0"\
 	"tee_version=0x00000000\0"\
 	"tf_version=0x00000000\0"\
@@ -284,7 +284,7 @@
 	"mmcpart=6\0" \
 	"mmcbootpart=2\0" \
 	ENV_KERNEL_LOGLEVEL \
-	"sbmeta_security_level=2\0" \
+	"sbmeta_security_level=1\0" \
 	"kdump_buf=180M\0" \
 	ENV_STR_BOOT_DELAY \
 	"uboot_version=0x0000000000000000\0"\
