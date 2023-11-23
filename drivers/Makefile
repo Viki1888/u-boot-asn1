@@ -69,6 +69,7 @@ endif
 
 ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_TPL_BUILD),)
 
+obj-$(CONFIG_ASN1) += asn1c/
 obj-y += adc/
 obj-y += ata/
 obj-$(CONFIG_DM_DEMO) += demo/

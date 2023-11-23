@@ -1,0 +1,39 @@
+obj-y += JEDEC-ID.o
+obj-y += DiscoveryAdditonalData.o
+obj-y += RVVConfig.o
+obj-y += DiscoveryErrata.o
+obj-y += DiscoveryData.o
+obj-y += INTEGER.o
+obj-y += NativeEnumerated.o
+obj-y += NativeInteger.o
+obj-y += OBJECT_IDENTIFIER.o
+obj-y += UTF8String.o
+obj-y += asn_SEQUENCE_OF.o
+obj-y += asn_SET_OF.o
+obj-y += constr_CHOICE.o
+obj-y += constr_CHOICE.o
+obj-y += constr_SEQUENCE.o
+obj-y += constr_SEQUENCE_OF.o
+obj-y += constr_SET_OF.o
+obj-y += OCTET_STRING.o
+obj-y += BIT_STRING.o
+obj-y += asn_codecs_prim.o
+obj-y += ber_tlv_length.o
+obj-y += ber_tlv_tag.o
+obj-y += ber_decoder.o
+obj-y += der_encoder.o
+obj-y += constr_TYPE.o
+obj-y += constraints.o
+obj-y += xer_support.o
+obj-y += xer_decoder.o
+obj-y += xer_encoder.o
+obj-y += per_support.o
+obj-y += per_decoder.o
+obj-y += per_encoder.o
+obj-y += per_opentype.o
+obj-y += converter-sample.o
+# ASN_CONVERTER_SOURCES+=pdu_collection.o
+
+# regenerate-from-asn1-source:
+# 	asn1c -S /usr/local/share/asn1c -fcompound-names -fskeletons-copy -gen-PER -pdu=auto discoverdata.asn
+

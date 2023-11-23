@@ -15,7 +15,7 @@
 #define CONFIG_SPL_BSS_START_ADDR       0xffe011d000
 #define CONFIG_SPL_BSS_MAX_SIZE         0x0000002000
 
-#define CONFIG_SYS_MONITOR_LEN                         (898 * 1024) /* Assumed U-Boot size */
+#define CONFIG_SYS_MONITOR_LEN                         (1000 * 1024) /* Assumed U-Boot size */
 #define CONFIG_SYS_MMCSD_RAW_MODE_EMMC_BOOT_PARTITION  1
 #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
 #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR        0x178
