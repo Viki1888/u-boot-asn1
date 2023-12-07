@@ -299,6 +299,17 @@ config LPDDR_EYE
         def_bool n
 config LPDDR_TXEYE
         def_bool n if LPDDR_EYE
+config ASN1
+        bool "Support ASN1 de/encode"
+        default n
+config CMD_ASN2FDT
+        bool "Support asn2fdt command"
+        default n
+        depends on ASN1
+config CMD_ASN1
+        bool "Support ASN1 utitliy"
+        default n
+        depends on ASN1
 endif
 
 endif
