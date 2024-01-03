@@ -27,6 +27,7 @@ make light_a_val_sec_defconfig
 ./run.sh
 ```
 Note: change the compiler path to your local compiler path.
+
 4. Burn `u-boot-with-spl.bin` into Xuantie Light A board.
 
 ## Run
