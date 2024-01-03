@@ -94,4 +94,3 @@ root@light-a-val:/sys/firmware/devicetree/base/cpus/cpu@0# ls
 
 ```
 It can be observed that some new properties, such as `sv57`, `rvv` has been newly inserted to the /cpus/cpu@0 node.
-
